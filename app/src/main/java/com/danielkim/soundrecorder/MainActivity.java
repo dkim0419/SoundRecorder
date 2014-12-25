@@ -3,12 +3,8 @@ package com.danielkim.soundrecorder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.media.MediaRecorder;
 import android.os.Environment;
-import android.os.SystemClock;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -17,22 +13,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.media.MediaPlayer;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Chronometer;
-import android.widget.ImageButton;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.danielkim.soundrecorder.fragments.FileViewerFragment;
 import com.danielkim.soundrecorder.fragments.RecordFragment;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity{
 
     private static final String LOG_TAG = "SoundRecorder";
 
@@ -48,31 +39,12 @@ public class MainActivity extends ActionBarActivity {
     private ViewPager pager;
 
     private RecordFragment mRecordFragment;
-    private com.danielkim.soundrecorder.FileViewerFragment mFileViewerFragment;
+    private FileViewerFragment mFileViewerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setViewPager(pager);
-
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        mRecordFragment = new RecordFragment();
-        mRecordFragment.setRetainInstance(true);
-
-        mFileViewerFragment = new com.danielkim.soundrecorder.FileViewerFragment();
-        mFileViewerFragment.setRetainInstance(true);
-
-        //transaction.add(R.id.container, mRecordFragment);
-
-        transaction.replace(R.id.container, mRecordFragment);
-        //transaction.replace(R.id.fragment_file_viewer, mFileViewerFragment);
-        transaction.commit();
 
         File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
         boolean success = true;
@@ -81,6 +53,22 @@ public class MainActivity extends ActionBarActivity {
         if (!folder.exists()) {
             success = folder.mkdir();
         }
+
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(pager);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        mRecordFragment = new RecordFragment();
+        //mRecordFragment.setRetainInstance(true);
+
+        mFileViewerFragment = new FileViewerFragment();
+        //mFileViewerFragment.setRetainInstance(true);
+
+        transaction.add(R.id.container, mRecordFragment);
+        //transaction.replace(R.id.fragment_file_viewer, mFileViewerFragment);
+        transaction.commit();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
@@ -148,7 +136,7 @@ public class MainActivity extends ActionBarActivity {
                     return new RecordFragment();
                 }
                 case 1:{
-                    return new com.danielkim.soundrecorder.FileViewerFragment();
+                    return new FileViewerFragment();
                 }
             }
             return null;

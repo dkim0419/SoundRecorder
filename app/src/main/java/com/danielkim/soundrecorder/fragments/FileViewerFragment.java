@@ -1,10 +1,12 @@
-package com.danielkim.soundrecorder;
+package com.danielkim.soundrecorder.fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.danielkim.soundrecorder.R;
 
 /**
  * Created by Daniel on 12/23/2014.
