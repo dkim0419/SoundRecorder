@@ -19,10 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".FileViewer"
-            android:label="@string/title_activity_file_viewer" >
-        </activity>
     </application>
 
 </manifest>

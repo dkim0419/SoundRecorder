@@ -59,17 +59,6 @@ public class MainActivity extends ActionBarActivity{
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        mRecordFragment = new RecordFragment();
-        //mRecordFragment.setRetainInstance(true);
-
-        mFileViewerFragment = new FileViewerFragment();
-        //mFileViewerFragment.setRetainInstance(true);
-
-        transaction.add(R.id.container, mRecordFragment);
-        //transaction.replace(R.id.fragment_file_viewer, mFileViewerFragment);
-        transaction.commit();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
         if (toolbar != null) {
@@ -133,10 +122,10 @@ public class MainActivity extends ActionBarActivity{
         public Fragment getItem(int position) {
             switch(position){
                 case 0:{
-                    return new RecordFragment();
+                    return RecordFragment.newInstance(position);
                 }
                 case 1:{
-                    return new FileViewerFragment();
+                    return FileViewerFragment.newInstance(position);
                 }
             }
             return null;
