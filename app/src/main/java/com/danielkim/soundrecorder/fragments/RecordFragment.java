@@ -1,24 +1,22 @@
 package com.danielkim.soundrecorder.fragments;
 
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
+import com.danielkim.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,14 +28,9 @@ import java.util.Date;
 public class RecordFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
-
-    private static final String LOG_TAG = "SoundRecorder";
+    private static final String LOG_TAG = "SoundRecorder_RecordFragment";
 
     private int position;
-
-    private String mFileName = null;
-    private MediaRecorder mRecorder = null;
-    private MediaPlayer mPlayer = null;
 
     private FloatingActionButton mRecordButton = null;
     private ImageButton mPauseButton = null;
@@ -62,12 +55,6 @@ public class RecordFragment extends Fragment {
     }
 
     public RecordFragment() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-        Date now = new Date();
-        String fileName = formatter.format(now) + "_soundrecorder.mp4";
-
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/SoundRecorder/" + fileName;
     }
 
     @Override
@@ -84,7 +71,8 @@ public class RecordFragment extends Fragment {
         mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
 
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
-        mRecordButton.setColorNormal(getResources().getColor(R.color.accent));
+        mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
+        mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,58 +87,33 @@ public class RecordFragment extends Fragment {
         return recordView;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
-        }
-
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-        }
-    }
-
     // Recording Start/Stop
     private void onRecord(boolean start){
+
+        Intent intent = new Intent(getActivity(), RecordingService.class);
+
         if (start) {
-            startRecording();
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
-        } else {
-            stopRecording();
-            mRecordButton.setImageResource(R.drawable.perm_group_microphone);
-        }
-    }
+            mPauseButton.setVisibility(View.VISIBLE);
+            Toast.makeText(getActivity(),"Recording started",Toast.LENGTH_SHORT).show();
 
-    private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
+            //folder /SoundRecorder doesn't exist, create the folder
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
 
-        //Animation an = new RotateAnimation(0.0f, 270.0f, 250f, 273f);
-        //an.setFillAfter(true);
-        //timerCircle.startAnimation(an);
-
-        try {
-            mRecorder.prepare();
-            mRecorder.start();
             mChronometer.setBase(SystemClock.elapsedRealtime());
             mChronometer.start();
 
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            getActivity().startService(intent);
+
+        } else {
+            mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
+            mPauseButton.setVisibility(View.GONE);
+            mChronometer.stop();
+
+            getActivity().stopService(intent);
         }
     }
-
-    private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-        mChronometer.stop();
-    }
-
 }

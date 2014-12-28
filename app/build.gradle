@@ -20,7 +20,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'

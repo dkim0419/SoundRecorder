@@ -10,11 +10,11 @@
         android:id="@+id/btnRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:fab_colorNormal="@color/accent"
+        fab:fab_colorNormal="@color/primary"
         android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/perm_group_microphone" />
+        android:src="@drawable/ic_mic_white_36dp" />
 
     <Chronometer
         android:layout_width="wrap_content"
@@ -22,9 +22,9 @@
         android:id="@+id/chronometer"
         android:textSize="60sp"
         android:fontFamily="sans-serif-light"
-        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/timerCircle"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="208dp" />
+        android:layout_marginBottom="64dp" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -35,7 +35,7 @@
         android:indeterminate="false"
         android:max="100"
         android:progress="0"
-        android:layout_marginTop="146dp"
+        android:layout_marginTop="27dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
