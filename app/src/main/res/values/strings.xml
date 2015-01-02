@@ -11,7 +11,7 @@
     <string name="tab_title_saved_recordings">Saved Recordings</string>
 
     <string name="toast_recording_start">Recording started</string>
-    <string name="toast_recording_finish">Recording saved to </string>
+    <string name="toast_recording_finish">Recording saved to</string>
 
     <string name="no_saved_recordings">No saved recordings</string>
 

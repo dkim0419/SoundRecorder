@@ -1,10 +1,12 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.os.FileObserver;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +19,10 @@ import com.danielkim.soundrecorder.adapters.FileViewerAdapter;
  */
 public class FileViewerFragment extends Fragment{
     private static final String ARG_POSITION = "position";
+    private static final String LOG_TAG = "FileViewerFragment";
 
     private int position;
+    private FileViewerAdapter mFileViewerAdapter;
 
     public static FileViewerFragment newInstance(int position) {
         FileViewerFragment f = new FileViewerFragment();
@@ -33,6 +37,7 @@ public class FileViewerFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments().getInt(ARG_POSITION);
+        observer.startWatching();
     }
 
     @Override
@@ -43,15 +48,41 @@ public class FileViewerFragment extends Fragment{
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+        llm.setReverseLayout(true);
+        llm.setStackFromEnd(true);
 
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        FileViewerAdapter adapter = new FileViewerAdapter(getActivity().getApplicationContext());
-        mRecyclerView.setAdapter(adapter);
+        mFileViewerAdapter = new FileViewerAdapter(getActivity().getApplicationContext());
+        mRecyclerView.setAdapter(mFileViewerAdapter);
 
         return v;
     }
+
+    FileObserver observer =
+            new FileObserver(android.os.Environment.getExternalStorageDirectory().toString()
+                    + "/SoundRecorder") {
+                // set up a file observer to watch this directory on sd card
+                @Override
+                public void onEvent(int event, String file) {
+                    if(event == FileObserver.DELETE){
+                        // user deletes a recording file out of the app
+
+                        Log.d(LOG_TAG, "File deleted ["
+                                + android.os.Environment.getExternalStorageDirectory().toString()
+                                + "/SoundRecorder" + file + "]");
+
+                        // remove file from database and recyclerview, if the file is a recording
+                        // in the database
+                        try {
+                            //TODO: REMOVE FILE
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "exception", e);
+                        }
+                    }
+                }
+            };
 }
 
 

@@ -8,13 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.danielkim.soundrecorder.activities.MainActivity;
+import com.danielkim.soundrecorder.adapters.FileViewerAdapter;
+import com.danielkim.soundrecorder.fragments.FileViewerFragment;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -112,11 +116,17 @@ public class RecordingService extends Service {
     public void stopRecording() {
         mRecorder.stop();
         mRecorder.release();
-        Toast.makeText(this, R.string.toast_recording_finish + mFileName, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.toast_recording_finish + " " + mFilePath, Toast.LENGTH_LONG).show();
         mRecorder = null;
 
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedSeconds);
+            FileViewerAdapter adapter = new FileViewerAdapter(getApplicationContext());
+            RecyclerView view = new RecyclerView(getApplicationContext());
+            view.swapAdapter(adapter, true);
+
+            //add the new file to the top of the list (position 0)
+            adapter.notifyItemInserted(0);
 
         } catch (Exception e){
             Log.e(LOG_TAG, "exception", e);
