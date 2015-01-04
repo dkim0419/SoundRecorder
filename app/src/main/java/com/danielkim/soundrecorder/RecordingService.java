@@ -10,9 +10,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,8 +24,6 @@ public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
 
-    SimpleDateFormat formatter;
-    Date now;
     private String mFileName = null;
     private String mFilePath = null;
 
@@ -67,12 +65,8 @@ public class RecordingService extends Service {
     }
 
     public void startRecording() {
-        formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-        now = new Date();
 
-        mFileName = formatter.format(now) + ".mp4";
-        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFilePath += "/SoundRecorder/" + mFileName;
+        setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -88,6 +82,22 @@ public class RecordingService extends Service {
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
         }
+    }
+
+    public void setFileNameAndPath(){
+        int count = 0;
+        File f;
+
+        do{
+            count++;
+
+            mFileName = getString(R.string.default_file_name)
+                    + " #" + (mDatabase.getCount() + count) + ".mp4";
+            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFilePath += "/SoundRecorder/" + mFileName;
+
+            f = new File(mFilePath);
+        }while (f.exists() && !f.isDirectory());
     }
 
     public void stopRecording() {

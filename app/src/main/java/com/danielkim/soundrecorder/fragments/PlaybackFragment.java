@@ -2,6 +2,8 @@ package com.danielkim.soundrecorder.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,11 +77,18 @@ public class PlaybackFragment extends DialogFragment{
         mCurrentProgressTextView = (TextView) view.findViewById(R.id.current_progress_text_view);
 
         mSeekBar = (SeekBar) view.findViewById(R.id.seekbar);
+        ColorFilter filter = new LightingColorFilter
+                (getResources().getColor(R.color.primary), getResources().getColor(R.color.primary));
+        mSeekBar.getProgressDrawable().setColorFilter(filter);
+        mSeekBar.getThumb().setColorFilter(filter);
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(mMediaPlayer != null && fromUser) {
                     mMediaPlayer.seekTo(progress);
+                    mHandler.removeCallbacks(mRunnable);
+                    mCurrentProgressTextView.setText(mLengthFormatter.format(mMediaPlayer.getCurrentPosition()));
                     updateSeekBar();
 
                 } else if (mMediaPlayer == null && fromUser) {
@@ -99,8 +108,9 @@ public class PlaybackFragment extends DialogFragment{
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 if (mMediaPlayer != null) {
-                    //mHandler.removeCallbacks(mRunnable);
+                    mHandler.removeCallbacks(mRunnable);
                     mMediaPlayer.seekTo(seekBar.getProgress());
+                    mCurrentProgressTextView.setText(mLengthFormatter.format(mMediaPlayer.getCurrentPosition()));
                     updateSeekBar();
                 }
             }
@@ -264,14 +274,13 @@ public class PlaybackFragment extends DialogFragment{
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    //updating mSeekBar every second
+    //updating mSeekBar
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
             if(mMediaPlayer != null){
 
                 int mCurrentPosition = mMediaPlayer.getCurrentPosition();
-
                 mSeekBar.setProgress(mCurrentPosition);
                 mCurrentProgressTextView.setText(mLengthFormatter.format(mCurrentPosition));
                 updateSeekBar();
