@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -79,9 +80,11 @@ public class PlaybackFragment extends DialogFragment{
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if(mMediaPlayer != null && fromUser) {
                     mMediaPlayer.seekTo(progress);
+                    updateSeekBar();
 
                 } else if (mMediaPlayer == null && fromUser) {
                     prepareMediaPlayerFromPoint(progress);
+                    updateSeekBar();
                 }
             }
 
@@ -199,6 +202,9 @@ public class PlaybackFragment extends DialogFragment{
         });
 
         updateSeekBar();
+
+        //keep screen on while playing audio
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void prepareMediaPlayerFromPoint(int progress) {
@@ -222,6 +228,9 @@ public class PlaybackFragment extends DialogFragment{
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
         }
+
+        //keep screen on while playing audio
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void pausePlaying() {
@@ -247,6 +256,12 @@ public class PlaybackFragment extends DialogFragment{
 
         mSeekBar.setProgress(mSeekBar.getMax());
         isPlaying = !isPlaying;
+
+        mCurrentProgressTextView.setText(mLengthFormatter.format(item.getLength()));
+        mSeekBar.setProgress(mSeekBar.getMax());
+
+        //allow the screen to turn off again once audio is finished playing
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     //updating mSeekBar every second

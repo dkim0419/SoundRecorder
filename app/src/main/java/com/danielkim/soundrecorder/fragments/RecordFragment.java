@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ public class RecordFragment extends Fragment {
         Bundle b = new Bundle();
         b.putInt(ARG_POSITION, position);
         f.setArguments(b);
+
         return f;
     }
 
@@ -87,13 +89,14 @@ public class RecordFragment extends Fragment {
     }
 
     // Recording Start/Stop
+    //TODO: recording pause
     private void onRecord(boolean start){
 
         Intent intent = new Intent(getActivity(), RecordingService.class);
 
         if (start) {
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            mPauseButton.setVisibility(View.VISIBLE);
+            //mPauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
 
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
@@ -107,12 +110,18 @@ public class RecordFragment extends Fragment {
 
             getActivity().startService(intent);
 
+            //keep screen on while recording
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         } else {
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-            mPauseButton.setVisibility(View.GONE);
+            //mPauseButton.setVisibility(View.GONE);
             mChronometer.stop();
 
             getActivity().stopService(intent);
+
+            //allow the screen to turn off again once recording is finished
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 }
