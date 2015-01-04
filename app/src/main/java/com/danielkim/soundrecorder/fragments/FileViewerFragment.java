@@ -1,8 +1,8 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.os.Bundle;
 import android.os.FileObserver;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,13 +48,15 @@ public class FileViewerFragment extends Fragment{
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
+
+        //newest to oldest order (database stores from oldest to newest)
         llm.setReverseLayout(true);
         llm.setStackFromEnd(true);
 
         mRecyclerView.setLayoutManager(llm);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mFileViewerAdapter = new FileViewerAdapter(getActivity().getApplicationContext());
+        mFileViewerAdapter = new FileViewerAdapter(getActivity(), llm);
         mRecyclerView.setAdapter(mFileViewerAdapter);
 
         return v;
@@ -69,17 +71,15 @@ public class FileViewerFragment extends Fragment{
                     if(event == FileObserver.DELETE){
                         // user deletes a recording file out of the app
 
+                        String filePath = android.os.Environment.getExternalStorageDirectory().toString()
+                                + "/SoundRecorder" + file + "]";
+
                         Log.d(LOG_TAG, "File deleted ["
                                 + android.os.Environment.getExternalStorageDirectory().toString()
                                 + "/SoundRecorder" + file + "]");
 
-                        // remove file from database and recyclerview, if the file is a recording
-                        // in the database
-                        try {
-                            //TODO: REMOVE FILE
-                        } catch (Exception e) {
-                            Log.e(LOG_TAG, "exception", e);
-                        }
+                        // remove file from database and recyclerview
+                        mFileViewerAdapter.removeOutOfApp(filePath);
                     }
                 }
             };

@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
+    <string name="action_licenses">Licenses</string>
     <string name="action_settings">Settings</string>
-
-    <string name="settings_licenses">Open Source Licenses</string>
-    <string name="settings_about">About</string>
-
     <string name="tab_title_record">Record</string>
     <string name="tab_title_saved_recordings">Saved Recordings</string>
 
+    <!-- Toasts -->
     <string name="toast_recording_start">Recording started</string>
     <string name="toast_recording_finish">Recording saved to</string>
 
-    <string name="no_saved_recordings">No saved recordings</string>
-
+    <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Dialogs -->
+    <string name="dialog_title_delete">Confirm Delete...</string>
+    <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
+    <string name="dialog_title_licenses">Open Source Licenses</string>
+
+    <string name="no_saved_recordings_message">No saved recordings</string>
 
 </resources>

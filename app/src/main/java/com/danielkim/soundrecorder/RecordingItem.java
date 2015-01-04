@@ -7,10 +7,10 @@ import android.os.Parcelable;
  * Created by Daniel on 12/30/2014.
  */
 public class RecordingItem implements Parcelable {
-    private String mName;
-    private String mFilePath;
-    private int mId;
-    private int mLength; // length of recording
+    private String mName; // file name
+    private String mFilePath; //file path
+    private int mId; //id in database
+    private int mLength; // length of recording in seconds
     private long mTime; // date/time of the recording
 
     public RecordingItem()

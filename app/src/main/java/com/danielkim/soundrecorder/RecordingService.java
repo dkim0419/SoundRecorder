@@ -1,24 +1,14 @@
 package com.danielkim.soundrecorder;
 
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.os.FileObserver;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.danielkim.soundrecorder.activities.MainActivity;
-import com.danielkim.soundrecorder.adapters.FileViewerAdapter;
-import com.danielkim.soundrecorder.fragments.FileViewerFragment;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,7 +33,8 @@ public class RecordingService extends Service {
 
     private DBHelper mDatabase;
 
-    private int mElapsedSeconds = 0;
+    private long mStartingTimeMillis = 0;
+    private int mElapsedMillis = 0;
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
     private Timer mTimer = null;
@@ -63,22 +54,7 @@ public class RecordingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startRecording();
-        startTimer();
         return START_STICKY;
-    }
-
-    private void startTimer() {
-        mTimer = new Timer();
-        mIncrementTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mElapsedSeconds++;
-                // NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                // mgr.notify(1, createNotification());
-            }
-        };
-
-        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
     }
 
     @Override
@@ -107,6 +83,7 @@ public class RecordingService extends Service {
         try {
             mRecorder.prepare();
             mRecorder.start();
+            mStartingTimeMillis = System.currentTimeMillis();
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
@@ -115,30 +92,26 @@ public class RecordingService extends Service {
 
     public void stopRecording() {
         mRecorder.stop();
+        mElapsedMillis = (int) (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
-        Toast.makeText(this, R.string.toast_recording_finish + " " + mFilePath, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+
         mRecorder = null;
 
         try {
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedSeconds);
-            FileViewerAdapter adapter = new FileViewerAdapter(getApplicationContext());
-            RecyclerView view = new RecyclerView(getApplicationContext());
-            view.swapAdapter(adapter, true);
-
-            //add the new file to the top of the list (position 0)
-            adapter.notifyItemInserted(0);
+            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
 
         } catch (Exception e){
             Log.e(LOG_TAG, "exception", e);
         }
     }
 
+    //TODO: add timer
     private Notification createNotification() {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_mic_white_36dp)
                         .setContentTitle(getString(R.string.notification_recording))
-                        .setContentText(mTimerFormat.format(1000 * mElapsedSeconds))
                         .setOngoing(true);
 
         return mBuilder.build();

@@ -9,7 +9,10 @@
         android:layout_height="75dp"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        card_view:cardCornerRadius="4dp">
+        android:foreground="?android:attr/selectableItemBackground"
+        android:transitionName="open_mediaplayer"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
