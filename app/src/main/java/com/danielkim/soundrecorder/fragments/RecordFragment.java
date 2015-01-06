@@ -1,10 +1,8 @@
 package com.danielkim.soundrecorder.fragments;
 
-import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
@@ -40,14 +38,14 @@ public class RecordFragment extends Fragment {
     private FloatingActionButton mRecordButton = null;
     private Button mPauseButton = null;
 
-    // ProgressBar around Chronometer
-    private ProgressBar mProgressBar;
-    private ValueAnimator mProgressAnimator;
-    private Handler mHandler = new Handler();
+    private TextView mRecordingPrompt;
+    private int mRecordPromptCount = 0;
 
     private boolean mStartRecording = true;
+    private boolean mPauseRecording = true;
 
     private Chronometer mChronometer = null;
+    long timeWhenPaused = 0; //stores time when user clicks pause button
 
     /**
      * Use this factory method to create a new instance of
@@ -79,6 +77,8 @@ public class RecordFragment extends Fragment {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
         mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
+        //update recording prompt text
+        mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
 
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
         mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
@@ -91,9 +91,15 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        mProgressBar = (ProgressBar)recordView.findViewById(R.id.recordProgressBar);
         mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
+        mPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPauseRecord(mPauseRecording);
+                mPauseRecording = !mPauseRecording;
+            }
+        });
 
         return recordView;
     }
@@ -106,7 +112,6 @@ public class RecordFragment extends Fragment {
 
         if (start) {
             // start recording
-
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             //mPauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
@@ -119,49 +124,61 @@ public class RecordFragment extends Fragment {
             //start Chronometer
             mChronometer.setBase(SystemClock.elapsedRealtime());
             mChronometer.start();
+            mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+                @Override
+                public void onChronometerTick(Chronometer chronometer) {
+                    if (mRecordPromptCount == 0) {
+                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
+                    } else if (mRecordPromptCount == 1) {
+                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "..");
+                    } else if (mRecordPromptCount == 2) {
+                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+                        mRecordPromptCount = -1;
+                    }
+
+                    mRecordPromptCount++;
+                }
+            });
 
             //start RecordingService
             getActivity().startService(intent);
             //keep screen on while recording
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            //start progressbar animation
-            updateProgressBar();
+
+            mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
+            mRecordPromptCount++;
 
         } else {
             //stop recording
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
             //mPauseButton.setVisibility(View.GONE);
             mChronometer.stop();
+            mChronometer.setBase(SystemClock.elapsedRealtime());
+            timeWhenPaused = 0;
+            mRecordingPrompt.setText(getString(R.string.record_prompt));
 
             getActivity().stopService(intent);
             //allow the screen to turn off again once recording is finished
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            mHandler.removeCallbacks(mRunnable);
         }
     }
 
-    //progress bar animation start
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if(true){
-                mProgressAnimator = ValueAnimator.ofInt(0, mProgressBar.getMax());
-                mProgressAnimator.setDuration(1000);
-                mProgressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        int animProgress = (Integer) animation.getAnimatedValue();
-                        mProgressBar.setProgress(animProgress);
-                    }
-                });
-
-                mProgressAnimator.start();
-                updateProgressBar();
-            }
+    //TODO: implement pause recording
+    private void onPauseRecord(boolean pause) {
+        if (pause) {
+            //pause recording
+            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
+                    (R.drawable.ic_media_play ,0 ,0 ,0);
+            mRecordingPrompt.setText(getString(R.string.resume_recording_button));
+            timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
+            mChronometer.stop();
+        } else {
+            //resume recording
+            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
+                    (R.drawable.ic_media_pause ,0 ,0 ,0);
+            mRecordingPrompt.setText(getString(R.string.pause_recording_button));
+            mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
+            mChronometer.start();
         }
-    };
-
-    private void updateProgressBar() {
-        mHandler.postDelayed(mRunnable, 1000);
     }
 }

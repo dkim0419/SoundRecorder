@@ -19,9 +19,14 @@
     <string name="dialog_title_delete">Confirm Delete...</string>
     <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
+    <string name="dialog_title_rename">Rename File</string>
+    <string name="dialog_title_options">Options</string>
 
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">PAUSE</string>
+    <string name="resume_recording_button">RESUME</string>
     <string name="default_file_name">My Recording</string>
+    <string name="record_prompt">Tap the button to start recording</string>
+    <string name="record_in_progress">Recording</string>
 
 </resources>

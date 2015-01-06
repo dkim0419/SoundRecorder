@@ -3,6 +3,7 @@ package com.danielkim.soundrecorder.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,33 +83,30 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public boolean onLongClick(View v) {
 
+                final CharSequence[] items = { "Rename File", "Delete File" };
+
+
                 // File delete confirm
-                AlertDialog.Builder confirmDelete = new AlertDialog.Builder(mContext);
-                confirmDelete.setTitle(mContext.getString(R.string.dialog_title_delete));
-                confirmDelete.setMessage(mContext.getString(R.string.dialog_text_delete));
-                confirmDelete.setCancelable(true);
-                confirmDelete.setPositiveButton("Yes",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                try {
-                                    //remove item from database, recyclerview, and storage
-                                    remove(holder.getPosition());
-
-                                } catch (Exception e) {
-                                    Log.e(LOG_TAG, "exception", e);
-                                }
-
-                                dialog.cancel();
-                            }
-                        });
-                confirmDelete.setNegativeButton("No",
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle(mContext.getString(R.string.dialog_title_options));
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (item == 0) {
+                            renameFileDialog(holder.getPosition());
+                        } else if (item == 1) {
+                            deleteFileDialog(holder.getPosition());
+                        }
+                    }
+                });
+                builder.setCancelable(true);
+                builder.setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });
 
-                AlertDialog alert = confirmDelete.create();
+                AlertDialog alert = builder.create();
                 alert.show();
 
                 return false;
@@ -181,5 +180,95 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     //TODO
     public void removeOutOfApp(String filePath) {
         //user deletes a saved recording out of the application through another application
+    }
+
+    public void rename(int position, String name) {
+        //rename a file
+
+        String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFilePath += "/SoundRecorder/" + name;
+        File f = new File(mFilePath);
+
+        if (f.exists() && !f.isDirectory()) {
+            //file name is not unique, cannot rename file.
+            Toast.makeText(mContext,
+                    "The file " + name + " already exists. Please choose a different file name",
+                    Toast.LENGTH_SHORT).show();
+
+        } else {
+            //file name is unique, rename file
+            File oldFilePath = new File(getItem(position).getFilePath());
+            oldFilePath.renameTo(f);
+            mDatabase.renameItem(getItem(position), name);
+            notifyItemChanged(position);
+        }
+    }
+
+    public void renameFileDialog (final int position) {
+        // File rename dialog
+        AlertDialog.Builder renameFileBuilder = new AlertDialog.Builder(mContext);
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(R.layout.dialog_rename_file, null);
+
+        final EditText input = (EditText) view.findViewById(R.id.new_name);
+
+        renameFileBuilder.setTitle(mContext.getString(R.string.dialog_title_rename));
+        renameFileBuilder.setCancelable(true);
+        renameFileBuilder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            String value = input.getText().toString().trim() + ".mp4";
+                            rename(position, value);
+
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "exception", e);
+                        }
+
+                        dialog.cancel();
+                    }
+                });
+        renameFileBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        renameFileBuilder.setView(view);
+        AlertDialog alert = renameFileBuilder.create();
+        alert.show();
+    }
+
+    public void deleteFileDialog (final int position) {
+        // File delete confirm
+        AlertDialog.Builder confirmDelete = new AlertDialog.Builder(mContext);
+        confirmDelete.setTitle(mContext.getString(R.string.dialog_title_delete));
+        confirmDelete.setMessage(mContext.getString(R.string.dialog_text_delete));
+        confirmDelete.setCancelable(true);
+        confirmDelete.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        try {
+                            //remove item from database, recyclerview, and storage
+                            remove(position);
+
+                        } catch (Exception e) {
+                            Log.e(LOG_TAG, "exception", e);
+                        }
+
+                        dialog.cancel();
+                    }
+                });
+        confirmDelete.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = confirmDelete.create();
+        alert.show();
     }
 }

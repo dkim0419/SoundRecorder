@@ -1,7 +1,10 @@
 package com.danielkim.soundrecorder;
 
 import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -9,6 +12,8 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.danielkim.soundrecorder.activities.MainActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +38,8 @@ public class RecordingService extends Service {
 
     private long mStartingTimeMillis = 0;
     private int mElapsedMillis = 0;
+    private int mElapsedSeconds = 0;
+    private OnTimerChangedListener onTimerChangedListener = null;
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
     private Timer mTimer = null;
@@ -41,6 +48,10 @@ public class RecordingService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public interface OnTimerChangedListener {
+        void onTimerChanged(int seconds);
     }
 
     @Override
@@ -79,6 +90,9 @@ public class RecordingService extends Service {
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
 
+            //startTimer();
+            //startForeground(1, createNotification());
+
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
         }
@@ -106,6 +120,12 @@ public class RecordingService extends Service {
         mRecorder.release();
         Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
+        //remove notification
+        if (mIncrementTimerTask != null) {
+            mIncrementTimerTask.cancel();
+            mIncrementTimerTask = null;
+        }
+
         mRecorder = null;
 
         try {
@@ -116,13 +136,32 @@ public class RecordingService extends Service {
         }
     }
 
-    //TODO: add timer
+    private void startTimer() {
+        mTimer = new Timer();
+        mIncrementTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mElapsedSeconds++;
+                if (onTimerChangedListener != null)
+                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
+                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                mgr.notify(1, createNotification());
+            }
+        };
+        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
+    }
+
+    //TODO:
     private Notification createNotification() {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_mic_white_36dp)
                         .setContentTitle(getString(R.string.notification_recording))
+                        .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
                         .setOngoing(true);
+
+        mBuilder.setContentIntent(PendingIntent.getActivities(getApplicationContext(), 0,
+                new Intent[]{new Intent(getApplicationContext(), MainActivity.class)}, 0));
 
         return mBuilder.build();
     }
