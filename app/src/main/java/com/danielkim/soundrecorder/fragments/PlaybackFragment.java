@@ -21,8 +21,7 @@ import com.danielkim.soundrecorder.RecordingItem;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Daniel on 1/1/2015.
@@ -36,7 +35,6 @@ public class PlaybackFragment extends DialogFragment{
 
     private Handler mHandler = new Handler();
 
-    private static final SimpleDateFormat mLengthFormatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
     private MediaPlayer mMediaPlayer = null;
 
     private SeekBar mSeekBar = null;
@@ -47,6 +45,10 @@ public class PlaybackFragment extends DialogFragment{
 
     //stores whether or not the mediaplayer is currently playing audio
     private boolean isPlaying = false;
+
+    //stores minutes and seconds of the length of the file.
+    long minutes = 0;
+    long seconds = 0;
 
     public PlaybackFragment newInstance(RecordingItem item) {
         PlaybackFragment f = new PlaybackFragment();
@@ -61,6 +63,16 @@ public class PlaybackFragment extends DialogFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         item = getArguments().getParcelable(ARG_ITEM);
+
+        long itemDuration = item.getLength();
+        minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
+        seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
+                - TimeUnit.MINUTES.toSeconds(minutes);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @NonNull
@@ -88,7 +100,12 @@ public class PlaybackFragment extends DialogFragment{
                 if(mMediaPlayer != null && fromUser) {
                     mMediaPlayer.seekTo(progress);
                     mHandler.removeCallbacks(mRunnable);
-                    mCurrentProgressTextView.setText(mLengthFormatter.format(mMediaPlayer.getCurrentPosition()));
+
+                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
+                            - TimeUnit.MINUTES.toSeconds(minutes);
+                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
+
                     updateSeekBar();
 
                 } else if (mMediaPlayer == null && fromUser) {
@@ -110,7 +127,11 @@ public class PlaybackFragment extends DialogFragment{
                 if (mMediaPlayer != null) {
                     mHandler.removeCallbacks(mRunnable);
                     mMediaPlayer.seekTo(seekBar.getProgress());
-                    mCurrentProgressTextView.setText(mLengthFormatter.format(mMediaPlayer.getCurrentPosition()));
+
+                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
+                            - TimeUnit.MINUTES.toSeconds(minutes);
+                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
                     updateSeekBar();
                 }
             }
@@ -126,7 +147,7 @@ public class PlaybackFragment extends DialogFragment{
         });
 
         mFileNameTextView.setText(item.getName());
-        mFileLengthTextView.setText(mLengthFormatter.format(item.getLength()));
+        mFileLengthTextView.setText(String.format("%02d:%02d", minutes,seconds));
 
         builder.setView(view);
 
@@ -267,7 +288,7 @@ public class PlaybackFragment extends DialogFragment{
         mSeekBar.setProgress(mSeekBar.getMax());
         isPlaying = !isPlaying;
 
-        mCurrentProgressTextView.setText(mLengthFormatter.format(item.getLength()));
+        mCurrentProgressTextView.setText(mFileLengthTextView.getText());
         mSeekBar.setProgress(mSeekBar.getMax());
 
         //allow the screen to turn off again once audio is finished playing
@@ -282,7 +303,12 @@ public class PlaybackFragment extends DialogFragment{
 
                 int mCurrentPosition = mMediaPlayer.getCurrentPosition();
                 mSeekBar.setProgress(mCurrentPosition);
-                mCurrentProgressTextView.setText(mLengthFormatter.format(mCurrentPosition));
+
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
+                        - TimeUnit.MINUTES.toSeconds(minutes);
+                mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
+
                 updateSeekBar();
             }
         }

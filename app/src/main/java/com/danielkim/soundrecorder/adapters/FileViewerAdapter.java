@@ -25,6 +25,7 @@ import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -37,7 +38,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     private DBHelper mDatabase;
     private static final SimpleDateFormat mDateAddedFormatter =
             new SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault());
-    private static final SimpleDateFormat mLengthFormatter = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
     RecordingItem item;
     Context mContext;
@@ -55,9 +55,14 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public void onBindViewHolder(final RecordingsViewHolder holder, int position) {
 
         item = getItem(position);
+        long itemDuration = item.getLength();
+
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
+                - TimeUnit.MINUTES.toSeconds(minutes);
 
         holder.vName.setText(item.getName());
-        holder.vLength.setText(mLengthFormatter.format(item.getLength()));
+        holder.vLength.setText(String.format("%02d:%02d", minutes,seconds));
         holder.vDateAdded.setText(mDateAddedFormatter.format(item.getTime()));
 
         // define an on click listener to open PlaybackFragment
@@ -67,6 +72,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 try {
                     PlaybackFragment playbackFragment =
                             new PlaybackFragment().newInstance(getItem(holder.getPosition()));
+
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
                             .getSupportFragmentManager()
                             .beginTransaction();
