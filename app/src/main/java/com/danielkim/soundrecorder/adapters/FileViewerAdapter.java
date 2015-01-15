@@ -62,7 +62,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 - TimeUnit.MINUTES.toSeconds(minutes);
 
         holder.vName.setText(item.getName());
-        holder.vLength.setText(String.format("%02d:%02d", minutes,seconds));
+        holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
         holder.vDateAdded.setText(mDateAddedFormatter.format(item.getTime()));
 
         // define an on click listener to open PlaybackFragment

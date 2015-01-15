@@ -307,7 +307,7 @@ public class PlaybackFragment extends DialogFragment{
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
                 long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
                         - TimeUnit.MINUTES.toSeconds(minutes);
-                mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
+                mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
 
                 updateSeekBar();
             }

@@ -37,7 +37,7 @@ public class RecordingService extends Service {
     private DBHelper mDatabase;
 
     private long mStartingTimeMillis = 0;
-    private int mElapsedMillis = 0;
+    private long mElapsedMillis = 0;
     private int mElapsedSeconds = 0;
     private OnTimerChangedListener onTimerChangedListener = null;
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
@@ -116,7 +116,7 @@ public class RecordingService extends Service {
 
     public void stopRecording() {
         mRecorder.stop();
-        mElapsedMillis = (int) (System.currentTimeMillis() - mStartingTimeMillis);
+        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
         Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
