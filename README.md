@@ -1,8 +1,9 @@
 Easy Sound Recorder
 =============
 
-A simple sound recording app implementing Material Design.
-Play Store: https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder
+<p>A simple sound recording app implementing Material Design.</p>
+
+<p>Play Store: https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder</p>
 
 Screenshots:
 
