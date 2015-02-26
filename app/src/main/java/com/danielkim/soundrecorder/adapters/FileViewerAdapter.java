@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.format.DateUtils;
 
 import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
@@ -23,9 +24,10 @@ import com.danielkim.soundrecorder.fragments.PlaybackFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -36,8 +38,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     private static final String LOG_TAG = "FileViewerAdapter";
 
     private DBHelper mDatabase;
-    private static final SimpleDateFormat mDateAddedFormatter =
-            new SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault());
 
     RecordingItem item;
     Context mContext;
@@ -63,7 +63,13 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         holder.vName.setText(item.getName());
         holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
-        holder.vDateAdded.setText(mDateAddedFormatter.format(item.getTime()));
+        holder.vDateAdded.setText(
+            DateUtils.formatDateTime(
+                mContext,
+                item.getTime(),
+                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR
+            )
+        );
 
         // define an on click listener to open PlaybackFragment
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +95,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public boolean onLongClick(View v) {
 
-                final CharSequence[] items = { "Rename File", "Delete File" };
+                ArrayList<String> entrys = new ArrayList<String>();
+                entrys.add(mContext.getString(R.string.dialog_file_rename));
+                entrys.add(mContext.getString(R.string.dialog_file_delete));
+
+                final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
 
 
                 // File delete confirm
@@ -105,7 +115,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     }
                 });
                 builder.setCancelable(true);
-                builder.setNegativeButton("Cancel",
+                builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -176,8 +186,14 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         File file = new File(getItem(position).getFilePath());
         file.delete();
 
-        Toast.makeText(mContext, getItem(position).getName() + " successfully deleted",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+            mContext,
+            String.format(
+                mContext.getString(R.string.toast_file_delete),
+                getItem(position).getName()
+            ),
+            Toast.LENGTH_SHORT
+        ).show();
 
         mDatabase.removeItemWithId(getItem(position).getId());
         notifyItemRemoved(position);
@@ -198,7 +214,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         if (f.exists() && !f.isDirectory()) {
             //file name is not unique, cannot rename file.
             Toast.makeText(mContext,
-                    "The file " + name + " already exists. Please choose a different file name",
+                    String.format(mContext.getString(R.string.toast_file_exists), name),
                     Toast.LENGTH_SHORT).show();
 
         } else {
@@ -221,7 +237,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         renameFileBuilder.setTitle(mContext.getString(R.string.dialog_title_rename));
         renameFileBuilder.setCancelable(true);
-        renameFileBuilder.setPositiveButton("OK",
+        renameFileBuilder.setPositiveButton(mContext.getString(R.string.dialog_action_ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
@@ -235,7 +251,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                         dialog.cancel();
                     }
                 });
-        renameFileBuilder.setNegativeButton("Cancel",
+        renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
@@ -253,7 +269,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         confirmDelete.setTitle(mContext.getString(R.string.dialog_title_delete));
         confirmDelete.setMessage(mContext.getString(R.string.dialog_text_delete));
         confirmDelete.setCancelable(true);
-        confirmDelete.setPositiveButton("Yes",
+        confirmDelete.setPositiveButton(mContext.getString(R.string.dialog_action_yes),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
@@ -267,7 +283,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                         dialog.cancel();
                     }
                 });
-        confirmDelete.setNegativeButton("No",
+        confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();

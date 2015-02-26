@@ -11,6 +11,8 @@
     <!-- Toasts -->
     <string name="toast_recording_start">Aufzeichnung gestartet</string>
     <string name="toast_recording_finish">Aufzeichnung gespeichert in</string>
+    <string name="toast_file_delete">%1$s erfolgreich gelöscht</string>
+    <string name="toast_file_exists">Die Datei %1$s existiert bereits. Bitte wähle einen anderen Dateinamen.</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Nehme auf...</string>
@@ -22,9 +24,16 @@
     <string name="dialog_title_rename">Datei umbenennen</string>
     <string name="dialog_title_options">Optionen</string>
 
+    <string name="dialog_file_rename">Datei umbennen</string>
+    <string name="dialog_file_delete">Datei löschen</string>
+    <string name="dialog_action_cancel">Abbrechen</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_yes">Ja</string>
+    <string name="dialog_action_no">Nein</string>
+
     <string name="no_saved_recordings_message">Keine gespeicherten Aufnahmen</string>
-    <string name="pause_recording_button">PAUSE</string>
-    <string name="resume_recording_button">FORFAHREN</string>
+    <string name="pause_recording_button">Pause</string>
+    <string name="resume_recording_button">Fortfahren</string>
     <string name="default_file_name">Meine Aufzeichnung</string>
     <string name="record_prompt">Berühre den Button, um die Aufzeichnung zu starten</string>
     <string name="record_in_progress">Nehme auf</string>

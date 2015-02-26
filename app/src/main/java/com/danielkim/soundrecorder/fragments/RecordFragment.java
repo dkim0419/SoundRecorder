@@ -169,14 +169,14 @@ public class RecordFragment extends Fragment {
             //pause recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText(getString(R.string.resume_recording_button));
+            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
             //resume recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText(getString(R.string.pause_recording_button));
+            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
         }
