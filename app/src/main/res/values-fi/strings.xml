@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Toolbar -->
+    <string name="app_name">Nauhuri</string>
+    <string name="action_licenses">Lisenssit</string>
+    <string name="action_settings">Asetukset</string>
+    <string name="tab_title_record">Äänitä</string>
+    <string name="tab_title_saved_recordings">Tallennetut äänitykset</string>
+
+    <!-- Toasts -->
+    <string name="toast_recording_start">Äänitys aloitettu</string>
+    <string name="toast_recording_finish">Äänitys tallennettu kohteeseen</string>
+    <string name="toast_file_delete">%1$s poistettiin onnistuneesti</string>
+    <string name="toast_file_exists">Tiedosto %1$s on jo olemassa. Valitse jokin toinen tiedostonimi.</string>
+
+    <!-- Notifications -->
+    <string name="notification_recording">Äänitetään...</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_delete">Vahvista poisto...</string>
+    <string name="dialog_text_delete">Haluatko varmasti poistaa tämän tiedoston?</string>
+    <string name="dialog_title_licenses">Avoimen lähdekoodin lisenssit</string>
+    <string name="dialog_title_rename">Nimeä tiedosto uudelleen</string>
+    <string name="dialog_title_options">Valinnat</string>
+
+    <string name="dialog_file_rename">Nimeä tiedosto uudelleen</string>
+    <string name="dialog_file_delete">Poista tiedosto</string>
+    <string name="dialog_action_cancel">Peruuta</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_yes">Kyllä</string>
+    <string name="dialog_action_no">Ei</string>
+
+    <string name="no_saved_recordings_message">Ei tallennettuja äänityksiä</string>
+    <string name="pause_recording_button">Tauko</string>
+    <string name="resume_recording_button">Jatka</string>
+    <string name="default_file_name">Äänitykseni</string>
+    <string name="record_prompt">Napauta painiketta aloittaaksesi äänittämisen</string>
+    <string name="record_in_progress">Äänitetään</string>
+
+</resources>
+
