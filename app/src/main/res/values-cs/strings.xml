@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Toolbar -->
+    <string name="app_name">Záznam zvuku</string>
+    <string name="action_licenses">Licence</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="tab_title_record">Záznam</string>
+    <string name="tab_title_saved_recordings">Uložené nahrávky</string>
+
+    <!-- Toasts -->
+    <string name="toast_recording_start">Probíhá nahrávání</string>
+    <string name="toast_recording_finish">Nahrávka uloženo do</string>
+    <string name="toast_file_delete">%1$s byla úspěšně smazána</string>
+    <string name="toast_file_exists">Soubor %1$s již existuje. Prosím, zvolte jiný název.</string>
+
+    <!-- Notifications -->
+    <string name="notification_recording">Nahrávání...</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_delete">Potvrdit smazání...</string>
+    <string name="dialog_text_delete">Jsi si jistí, že chcete smazat tento soubor?</string>
+    <string name="dialog_title_licenses">Open Source Licence</string>
+    <string name="dialog_title_rename">Přejmenovat soubor</string>
+    <string name="dialog_title_options">Možnosti</string>
+
+    <string name="dialog_file_rename">Přejmenovat soubor</string>
+    <string name="dialog_file_delete">Smazat soubor</string>
+    <string name="dialog_action_cancel">Zrušit</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_action_yes">Ano</string>
+    <string name="dialog_action_no">Ne</string>
+
+    <string name="no_saved_recordings_message">Žádné uložené nahrávky</string>
+    <string name="pause_recording_button">Pauza</string>
+    <string name="resume_recording_button">Pokračovat</string>
+    <string name="default_file_name">Můj záznam</string>
+    <string name="record_prompt">Klepněte na tlačítko pro spuštění nahrávání</string>
+    <string name="record_in_progress">Záznam</string>
+
+</resources>
