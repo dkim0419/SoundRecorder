@@ -24,7 +24,7 @@
     <string name="dialog_title_rename">Datei umbenennen</string>
     <string name="dialog_title_options">Optionen</string>
 
-    <string name="dialog_file_rename">Datei umbennen</string>
+    <string name="dialog_file_rename">Datei umbenennen</string>
     <string name="dialog_file_delete">Datei löschen</string>
     <string name="dialog_action_cancel">Abbrechen</string>
     <string name="dialog_action_ok">OK</string>
