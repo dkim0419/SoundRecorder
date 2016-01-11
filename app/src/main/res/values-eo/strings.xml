@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Toolbar -->
+    <string name="app_name">Sonregistrilo</string>
+    <string name="action_licenses">Permesiloj</string>
+    <string name="action_settings">Agordoj</string>
+    <string name="tab_title_record">Registri</string>
+    <string name="tab_title_saved_recordings">Konservataj registraĵoj</string>
+
+    <!-- Toasts -->
+    <string name="toast_recording_start">Registrado komencis</string>
+    <string name="toast_recording_finish">Registraĵo konservata en</string>
+    <string name="toast_file_delete">%1$s estis sukcese forigita</string>
+    <string name="toast_file_exists">La dosiero %1$s jam ekzistas. Bonvole elektu malsaman dosiernomon.</string>
+
+    <!-- Notifications -->
+    <string name="notification_recording">Registrado...</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_delete">Konfirmo por forigo</string>
+    <string name="dialog_text_delete">Ĉu vi certe volas forigi ĉi tiun dosieron?</string>
+    <string name="dialog_title_licenses">Malfermitkodaj permesiloj</string>
+    <string name="dialog_title_rename">Alinomigi dosieron</string>
+    <string name="dialog_title_options">Opcioj</string>
+
+    <string name="dialog_file_rename">Alinomigi dosieron</string>
+    <string name="dialog_file_delete">Forigi dosieron</string>
+    <string name="dialog_action_cancel">Forigi</string>
+    <string name="dialog_action_ok">Bone</string>
+    <string name="dialog_action_yes">Jes</string>
+    <string name="dialog_action_no">Ne</string>
+
+    <string name="no_saved_recordings_message">Neniu konservataj registraĵoj</string>
+    <string name="pause_recording_button">Paŭzigi</string>
+    <string name="resume_recording_button">Daŭrigi</string>
+    <string name="default_file_name">Miaj registraĵoj</string>
+    <string name="record_prompt">Premi la butonon por ekregistri</string>
+    <string name="record_in_progress">Registrado</string>
+
+</resources>
