@@ -1,15 +1,21 @@
 package com.danielkim.soundrecorder;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.media.MediaMetadataRetriever;
+import android.util.Log;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Daniel on 12/30/2014.
  */
-public class RecordingItem implements Parcelable {
+public class RecordingItem {
+    private static final String LOG_TAG = "RecordingItem";
     private String mName; // file name
     private String mFilePath; //file path
-    private int mId; //id in database
     private int mLength; // length of recording in seconds
     private long mTime; // date/time of the recording
 
@@ -17,12 +23,26 @@ public class RecordingItem implements Parcelable {
     {
     }
 
-    public RecordingItem(Parcel in) {
-        mName = in.readString();
-        mFilePath = in.readString();
-        mId = in.readInt();
-        mLength = in.readInt();
-        mTime = in.readLong();
+    public RecordingItem(String filePath) {
+        mFilePath = filePath;
+        MediaMetadataRetriever m = new MediaMetadataRetriever();
+        m.setDataSource(mFilePath);
+        mName = new File(mFilePath).getName();
+        mLength = Integer.parseInt(m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        String date_str = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE);
+        try {
+            Date date = DateFormat.getDateTimeInstance().parse(date_str);
+            mTime = date.getTime();
+        } catch (ParseException e) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss.SSS'Z'");
+            try {
+                sdf.parse(date_str);
+                mTime = sdf.getCalendar().getTimeInMillis();
+            } catch (ParseException _e) {
+                Log.e(LOG_TAG, "can't parse date: " + date_str);
+                mTime = 0;
+            }
+        }
     }
 
     public String getFilePath() {
@@ -31,61 +51,18 @@ public class RecordingItem implements Parcelable {
 
     public void setFilePath(String filePath) {
         mFilePath = filePath;
+        mName = new File(mFilePath).getName();
     }
 
     public int getLength() {
         return mLength;
     }
 
-    public void setLength(int length) {
-        mLength = length;
-    }
-
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
-    }
-
     public String getName() {
         return mName;
     }
 
-    public void setName(String name) {
-        mName = name;
-    }
-
     public long getTime() {
         return mTime;
-    }
-
-    public void setTime(long time) {
-        mTime = time;
-    }
-
-    public static final Parcelable.Creator<RecordingItem> CREATOR = new Parcelable.Creator<RecordingItem>() {
-        public RecordingItem createFromParcel(Parcel in) {
-            return new RecordingItem(in);
-        }
-
-        public RecordingItem[] newArray(int size) {
-            return new RecordingItem[size];
-        }
-    };
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mId);
-        dest.writeInt(mLength);
-        dest.writeLong(mTime);
-        dest.writeString(mFilePath);
-        dest.writeString(mName);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 }
