@@ -3,6 +3,8 @@ package com.danielkim.soundrecorder.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -95,6 +97,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             public boolean onLongClick(View v) {
 
                 ArrayList<String> entrys = new ArrayList<String>();
+                entrys.add(mContext.getString(R.string.dialog_file_share));
                 entrys.add(mContext.getString(R.string.dialog_file_rename));
                 entrys.add(mContext.getString(R.string.dialog_file_delete));
 
@@ -107,8 +110,10 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0) {
+                            shareFileDialog(holder.getPosition());
+                        } if (item == 1) {
                             renameFileDialog(holder.getPosition());
-                        } else if (item == 1) {
+                        } else if (item == 2) {
                             deleteFileDialog(holder.getPosition());
                         }
                     }
@@ -223,6 +228,14 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             mDatabase.renameItem(getItem(position), name);
             notifyItemChanged(position);
         }
+    }
+
+    public void shareFileDialog(int position) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(getItem(position).getFilePath())));
+        shareIntent.setType("audio/mp4");
+        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
     }
 
     public void renameFileDialog (final int position) {
