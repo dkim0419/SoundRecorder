@@ -107,14 +107,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return mContext;
     }
 
-    public class RecordingComparator implements Comparator<RecordingItem> {
-        public int compare(RecordingItem item1, RecordingItem item2) {
-            Long o1 = item1.getTime();
-            Long o2 = item2.getTime();
-            return o2.compareTo(o1);
-        }
-    }
-
     public long addRecording(String recordingName, String filePath, long length) {
 
         SQLiteDatabase db = getWritableDatabase();

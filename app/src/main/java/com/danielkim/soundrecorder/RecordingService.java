@@ -42,7 +42,6 @@ public class RecordingService extends Service {
     private long mElapsedMillis = 0;
     private int mElapsedSeconds = 0;
     private OnTimerChangedListener onTimerChangedListener = null;
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
@@ -159,6 +158,7 @@ public class RecordingService extends Service {
 
     //TODO:
     private Notification createNotification() {
+        SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_mic_white_36dp)
