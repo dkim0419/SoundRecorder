@@ -14,7 +14,9 @@
     <string name="toast_recording_start">Recording started</string>
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
+    <string name="toast_file_delete_failed">failed to delete %1$s</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
+    <string name="toast_file_rename_failed">failed to rename %1$s</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
