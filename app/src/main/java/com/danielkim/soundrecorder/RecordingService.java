@@ -84,6 +84,7 @@ public class RecordingService extends Service {
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setOutputFile(mFilePath);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mRecorder.setAudioChannels(1);
 
         try {
             mRecorder.prepare();
