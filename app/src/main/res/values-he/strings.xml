@@ -34,7 +34,6 @@
     <string name="no_saved_recordings_message">אין הקלטות שמורות</string>
     <string name="pause_recording_button">השהה</string>
     <string name="resume_recording_button">חזור</string>
-    <string name="default_file_name">הקלטה</string>
     <string name="record_prompt">הקש על הכפתור כדי להקליט</string>
     <string name="record_in_progress">כעת מקליט</string>
 

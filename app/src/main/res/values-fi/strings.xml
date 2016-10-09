@@ -34,7 +34,6 @@
     <string name="no_saved_recordings_message">Ei tallennettuja äänityksiä</string>
     <string name="pause_recording_button">Tauko</string>
     <string name="resume_recording_button">Jatka</string>
-    <string name="default_file_name">Äänitykseni</string>
     <string name="record_prompt">Napauta painiketta aloittaaksesi äänittämisen</string>
     <string name="record_in_progress">Äänitetään</string>
 
