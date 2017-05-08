@@ -41,7 +41,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-
     public static void setOnDatabaseChangedListener(OnDatabaseChangedListener listener) {
         mOnDatabaseChangedListener = listener;
     }
@@ -63,13 +62,13 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    public void removeItemWithId(int id) {
+    public void removeRecording(int id) {
         SQLiteDatabase db = getWritableDatabase();
         String[] whereArgs = {String.valueOf(id)};
         db.delete(TableSavedRecording.TABLE_NAME, "_ID=?", whereArgs);
     }
 
-    public RecordingItem getItemAt(int position) {
+    public RecordingItem getRecording(int position) {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {
                 TableSavedRecording._ID,
@@ -92,7 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public void renameItem(RecordingItem item, String recordingName, String filePath) {
+    public void updateRecording(RecordingItem item, String recordingName, String filePath) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TableSavedRecording.COLUMN_NAME_RECORDING_NAME, recordingName);
@@ -105,7 +104,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public int getCount() {
+    public int getSavedRecordingsCount() {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {TableSavedRecording._ID};
         Cursor c = db.query(TableSavedRecording.TABLE_NAME, projection, null, null, null, null, null);
