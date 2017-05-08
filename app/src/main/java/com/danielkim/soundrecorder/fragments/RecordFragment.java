@@ -1,10 +1,15 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +33,11 @@ import java.io.File;
  * create an instance of this fragment.
  */
 public class RecordFragment extends Fragment {
+    // Constants.
+    private static final int REQUEST_DANGEROUS_PERMISSION = 0;
+
+    private boolean marshmallow = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = RecordFragment.class.getSimpleName();
@@ -86,8 +96,11 @@ public class RecordFragment extends Fragment {
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRecord(mStartRecording);
-                mStartRecording = !mStartRecording;
+                if (!marshmallow || !mStartRecording) {
+                    record(mStartRecording);
+                } else {
+                    checkPermissions();
+                }
             }
         });
 
@@ -102,6 +115,32 @@ public class RecordFragment extends Fragment {
         });
 
         return recordView;
+    }
+
+    private void record(boolean startRecording) {
+        onRecord(startRecording);
+        mStartRecording = !startRecording;
+    }
+
+    // Check dangerous permissions for Android Marshmallow+.
+    private void checkPermissions() {
+        // Check permissions.
+        boolean writePerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean audioPerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        String[] arrPermissions;
+        if (!writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+        } else if (!writePerm && audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        } else if (writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        } else {
+            record(true);
+            return;
+        }
+
+        // Request permissions.
+        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSION);
     }
 
     // Recording Start/Stop
