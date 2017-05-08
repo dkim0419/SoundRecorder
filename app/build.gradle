@@ -20,6 +20,11 @@ android {
     lintOptions{
         disable 'MissingTranslation'
     }
+
+    // Timeout for installing the app on the device
+    adbOptions {
+        timeOutInMs = 30 * 1000
+    }
 }
 
 ext {
