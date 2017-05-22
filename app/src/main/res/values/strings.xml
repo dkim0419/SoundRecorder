@@ -41,5 +41,6 @@
     <string name="record_in_progress">Recording</string>
 
     <string name="send_to">Send to</string>
+    <string name="action_high_quality">High Quality</string>
 
 </resources>

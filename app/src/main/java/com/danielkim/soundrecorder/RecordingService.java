@@ -6,9 +6,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -77,6 +79,8 @@ public class RecordingService extends Service {
 
     public void startRecording() {
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -85,6 +89,10 @@ public class RecordingService extends Service {
         mRecorder.setOutputFile(mFilePath);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
+        if (preferences.getBoolean("high_quality", true)) {
+            mRecorder.setAudioSamplingRate(44100);
+            mRecorder.setAudioEncodingBitRate(192000);
+        }
 
         try {
             mRecorder.prepare();
@@ -107,7 +115,7 @@ public class RecordingService extends Service {
             count++;
 
             mFileName = getString(R.string.default_file_name)
-                    + " #" + (mDatabase.getCount() + count) + ".mp4";
+                    + " " + (mDatabase.getCount() + count) + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 

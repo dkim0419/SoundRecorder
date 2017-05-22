@@ -1,6 +1,8 @@
 package com.danielkim.soundrecorder.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -23,6 +25,8 @@ public class MainActivity extends ActionBarActivity{
 
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
+    public SharedPreferences sharedPref;
+    private Menu mOptionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +43,18 @@ public class MainActivity extends ActionBarActivity{
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mOptionsMenu = menu;
+
+        MenuItem high_quality = mOptionsMenu.findItem(R.id.action_high_quality);
+        high_quality.setChecked(sharedPref.getBoolean("high_quality", true));
         return true;
     }
 
@@ -58,9 +68,21 @@ public class MainActivity extends ActionBarActivity{
             case R.id.action_licenses:
                 openLicenses();
                 return true;
+            case R.id.action_high_quality:
+                toggleQuality();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void toggleQuality() {
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("high_quality", !sharedPref.getBoolean("high_quality", true));
+        editor.commit();
+
+        MenuItem high_quality = mOptionsMenu.findItem(R.id.action_high_quality);
+        high_quality.setChecked(sharedPref.getBoolean("high_quality", true));
     }
 
     public void openLicenses(){
