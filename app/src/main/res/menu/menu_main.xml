@@ -5,8 +5,14 @@
     tools:context=".MainActivity">
     <!-- View Open Source Licenses -->
     <item
-        android:id="@+id/action_licenses"
-        android:title="@string/action_licenses"
+        android:id="@+id/action_high_quality"
+        android:checkable="true"
+        android:checked="true"
+        android:enabled="true"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        android:title="@string/action_high_quality" />
+    <item
+        android:id="@+id/action_licenses"
+        android:orderInCategory="101"
+        android:title="@string/action_licenses" />
 </menu>
