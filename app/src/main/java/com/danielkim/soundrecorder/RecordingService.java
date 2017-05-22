@@ -78,9 +78,6 @@ public class RecordingService extends Service {
     }
 
     public void startRecording() {
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -89,7 +86,7 @@ public class RecordingService extends Service {
         mRecorder.setOutputFile(mFilePath);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
-        if (preferences.getBoolean("high_quality", true)) {
+        if (MySharedPreferences.getPrefHighQuality(this)) {
             mRecorder.setAudioSamplingRate(44100);
             mRecorder.setAudioEncodingBitRate(192000);
         }
@@ -115,7 +112,7 @@ public class RecordingService extends Service {
             count++;
 
             mFileName = getString(R.string.default_file_name)
-                    + " " + (mDatabase.getCount() + count) + ".mp4";
+                    + "_" + (mDatabase.getCount() + count) + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 

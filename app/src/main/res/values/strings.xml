@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- About -->
+    <string name="link">Website: github.com/dkim0419/SoundRecorder</string>
 
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
@@ -41,6 +43,13 @@
     <string name="record_in_progress">Recording</string>
 
     <string name="send_to">Send to</string>
-    <string name="action_high_quality">High Quality</string>
+
+    <!-- Preferences -->
+    <string name="pref_high_quality_key">pref_high_quality</string>
+    <string name="pref_high_quality_title">Enable High Quality Recording</string>
+    <string name="pref_high_quality_desc">Record in CD Quality</string>
+    <string name="pref_about_key">pref_about</string>
+    <string name="pref_about_title">About</string>
+    <string name="pref_about_desc">v%s</string>
 
 </resources>

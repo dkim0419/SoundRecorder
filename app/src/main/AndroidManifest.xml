@@ -20,6 +20,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/action_settings"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.danielkim.soundrecorder.activities.MainActivity" />
+        </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.danielkim.soundrecorder.fileprovider"
