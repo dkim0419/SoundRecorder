@@ -263,12 +263,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                         dialog.cancel();
                     }
                 });
-        renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+        renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel), new CancelDialogListener());
 
         renameFileBuilder.setView(view);
         AlertDialog alert = renameFileBuilder.create();
@@ -295,14 +290,16 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                         dialog.cancel();
                     }
                 });
-        confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+        confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no), new CancelDialogListener());
 
         AlertDialog alert = confirmDelete.create();
         alert.show();
+    }
+
+    static final class CancelDialogListener implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+        }
     }
 }

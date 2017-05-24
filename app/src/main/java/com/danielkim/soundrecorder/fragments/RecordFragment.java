@@ -19,6 +19,7 @@ import com.danielkim.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -169,14 +170,14 @@ public class RecordFragment extends Fragment {
             //pause recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
+            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase(Locale.getDefault()));
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
             //resume recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
+            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase(Locale.getDefault()));
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
         }
