@@ -39,6 +39,5 @@
     <string name="default_file_name">Meine Aufzeichnung</string>
     <string name="record_prompt">Berühre den Button, um die Aufzeichnung zu starten</string>
     <string name="record_in_progress">Nehme auf</string>
-    <string name="action_high_quality">Hohe Qualität</string>
 
 </resources>
