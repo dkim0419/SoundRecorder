@@ -188,7 +188,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         //delete file from storage
         File file = new File(getItem(position).getFilePath());
-        file.delete();
+        if (!file.delete()) {
+            Toast.makeText(mContext,
+                    String.format(mContext.getString(R.string.toast_file_delete_failed), getItem(position).getName()),
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Toast.makeText(
             mContext,
@@ -224,7 +229,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         } else {
             //file name is unique, rename file
             File oldFilePath = new File(getItem(position).getFilePath());
-            oldFilePath.renameTo(f);
+            if (!oldFilePath.renameTo(f)) {
+                Toast.makeText(mContext,
+                        String.format(mContext.getString(R.string.toast_file_rename_failed), name),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
             mDatabase.renameItem(getItem(position), name, mFilePath);
             notifyItemChanged(position);
         }
