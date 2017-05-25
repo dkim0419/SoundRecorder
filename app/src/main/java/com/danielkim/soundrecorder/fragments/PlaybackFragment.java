@@ -30,7 +30,7 @@ public class PlaybackFragment extends DialogFragment{
 
     private static final String LOG_TAG = "PlaybackFragment";
 
-    private static final String ARG_ITEM = "recording_item";
+    private static final String ARG_ITEM = "file_path";
     private RecordingItem item;
 
     private Handler mHandler = new Handler();
@@ -53,7 +53,7 @@ public class PlaybackFragment extends DialogFragment{
     public PlaybackFragment newInstance(RecordingItem item) {
         PlaybackFragment f = new PlaybackFragment();
         Bundle b = new Bundle();
-        b.putParcelable(ARG_ITEM, item);
+        b.putString(ARG_ITEM, item.getFilePath());
         f.setArguments(b);
 
         return f;
@@ -62,8 +62,8 @@ public class PlaybackFragment extends DialogFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        item = getArguments().getParcelable(ARG_ITEM);
-
+        String filePath = getArguments().getString(ARG_ITEM);
+        item = new RecordingItem(filePath);
         long itemDuration = item.getLength();
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
         seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)

@@ -4,13 +4,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,10 +38,7 @@ public class RecordingService extends Service {
 
     private MediaRecorder mRecorder = null;
 
-    private DBHelper mDatabase;
-
     private long mStartingTimeMillis = 0;
-    private long mElapsedMillis = 0;
     private int mElapsedSeconds = 0;
     private OnTimerChangedListener onTimerChangedListener = null;
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
@@ -59,7 +58,7 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mDatabase = new DBHelper(getApplicationContext());
+        mTimer = new Timer();
     }
 
     @Override
@@ -100,46 +99,75 @@ public class RecordingService extends Service {
             //startForeground(1, createNotification());
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "prepare() failed", e);
         }
     }
 
     public void setFileNameAndPath(){
         int count = 0;
-        File f;
+        String defaultName = getString(R.string.default_file_name);
+        File parent = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/" + getString(R.string.storage_dir));
 
-        do{
-            count++;
+        for (File file : parent.listFiles()) {
+            if (file.isDirectory()) {
+                continue;
+            }
+            String name = file.getName();
+            if (!name.startsWith(getString(R.string.default_file_name)) || !name.endsWith(".mp4")) {
+                continue;
+            }
+            String number = file.getName().substring((defaultName + "_").length(),
+                    name.length() - ".mp4".length());
+            try {
+                count = Math.max(count, Integer.parseInt(number));
+            } catch (NumberFormatException nfe) {
+                Log.d(LOG_TAG, "unexpected file name: " + name);
+                continue;
+            }
+        }
 
-            mFileName = getString(R.string.default_file_name)
-                    + "_" + (mDatabase.getCount() + count) + ".mp4";
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
-
-            f = new File(mFilePath);
-        }while (f.exists() && !f.isDirectory());
+        mFilePath = parent + "/" + defaultName + "_" + (count + 1) + ".mp4";
     }
 
     public void stopRecording() {
-        mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        mRecorder.release();
-        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
-
         //remove notification
         if (mIncrementTimerTask != null) {
             mIncrementTimerTask.cancel();
             mIncrementTimerTask = null;
+            mTimer.purge();
         }
 
-        mRecorder = null;
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.reset();
+            long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+            mRecorder.release();
+            mRecorder = null;
+            Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
-        try {
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
+            String mimeType = "audio/mp4";
 
-        } catch (Exception e){
-            Log.e(LOG_TAG, "exception", e);
+            File outFile = new File(mFilePath);
+            long fileSize = outFile.length();
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DATA, mFilePath);
+            values.put(MediaStore.MediaColumns.TITLE, mFileName);
+            values.put(MediaStore.MediaColumns.SIZE, fileSize);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            values.put(MediaStore.MediaColumns.DATE_ADDED, System.currentTimeMillis() / 1000);
+            values.put(MediaStore.Audio.Media.ARTIST, getString(R.string.app_name));
+            values.put(MediaStore.Audio.Media.DURATION, mElapsedMillis);
+
+            Uri uri = MediaStore.Audio.Media.getContentUriForPath(mFilePath);
+            getContentResolver().insert(uri, values);
+
+        } else {
+            Log.e(LOG_TAG, "MediaRecorder not initialized");
         }
+
+        stopForeground(true);
     }
 
     private void startTimer() {

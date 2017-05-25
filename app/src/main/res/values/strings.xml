@@ -41,6 +41,7 @@
     <string name="default_file_name">My Recording</string>
     <string name="record_prompt">Tap the button to start recording</string>
     <string name="record_in_progress">Recording</string>
+    <string name="storage_dir">SoundRecorder</string>
 
     <string name="send_to">Send to</string>
 
