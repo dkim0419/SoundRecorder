@@ -8,22 +8,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.danielkim.soundrecorder.RecordingItem;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
+import com.danielkim.soundrecorder.listeners.ScheduledRecordingItem;
 
 import java.util.Comparator;
 
 import static com.danielkim.soundrecorder.database.RecordingsContract.TableSavedRecording;
+import static com.danielkim.soundrecorder.database.RecordingsContract.TableScheduledRecording;
 import static com.danielkim.soundrecorder.database.SQLStrings.CREATE_TABLE_SAVED_RECORDINGS;
+import static com.danielkim.soundrecorder.database.SQLStrings.CREATE_TABLE_SCHEDULED_RECORDINGS;
 
 /**
  * Created by Daniel on 12/29/2014.
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private Context mContext;
+    private final Context mContext;
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
 
     private static final String LOG_TAG = "DBHelper";
-    public static final String DATABASE_NAME = "saved_recordings.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "saved_recordings.db";
+    private static final int DATABASE_VERSION = 2;
 
 
     public DBHelper(Context context) {
@@ -38,13 +41,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL(CREATE_TABLE_SCHEDULED_RECORDINGS);
     }
 
     public static void setOnDatabaseChangedListener(OnDatabaseChangedListener listener) {
         mOnDatabaseChangedListener = listener;
     }
 
+    // Tabel "saved_recordings".
     public long addRecording(String recordingName, String filePath, long length) {
 
         SQLiteDatabase db = getWritableDatabase();
@@ -138,5 +142,70 @@ public class DBHelper extends SQLiteOpenHelper {
             //mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
         }
         return rowId;
+    }
+
+    // Table "scheduled_recordings".
+    public long addScheduledRecording(long start, long length) {
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(TableScheduledRecording.COLUMN_NAME_START, start);
+        cv.put(TableScheduledRecording.COLUMN_NAME_LENGTH, length);
+        long rowId = db.insert(TableScheduledRecording.TABLE_NAME, null, cv);
+
+        if (mOnDatabaseChangedListener != null) {
+            mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
+        }
+
+        return rowId;
+    }
+
+    public void removeScheduledRecording(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String[] whereArgs = {String.valueOf(id)};
+        db.delete(TableScheduledRecording.TABLE_NAME, "_ID=?", whereArgs);
+    }
+
+    public void updateScheduledRecording(long id, long start, long length) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(TableScheduledRecording.COLUMN_NAME_START, start);
+        cv.put(TableScheduledRecording.COLUMN_NAME_LENGTH, length);
+        db.update(TableScheduledRecording.TABLE_NAME, cv,
+                TableSavedRecording._ID + "=" + id, null);
+
+        if (mOnDatabaseChangedListener != null) {
+            mOnDatabaseChangedListener.onDatabaseEntryRenamed();
+        }
+    }
+
+    public ScheduledRecordingItem getScheduledRecording(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                TableScheduledRecording._ID,
+                TableScheduledRecording.COLUMN_NAME_START,
+                TableScheduledRecording.COLUMN_NAME_LENGTH
+        };
+        String[] whereArgs = {String.valueOf(id)};
+
+        Cursor c = db.query(TableSavedRecording.TABLE_NAME, projection, "_ID=?", whereArgs, null, null, null);
+        if (c.moveToFirst()) {
+            ScheduledRecordingItem item = new ScheduledRecordingItem();
+            item.setmId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
+            item.setmStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
+            item.setmLength(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_LENGTH)));
+            c.close();
+            return item;
+        }
+        return null;
+    }
+
+    public int getScheduledRecordingsCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {TableScheduledRecording._ID};
+        Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, null, null, null, null, null);
+        int count = c.getCount();
+        c.close();
+        return count;
     }
 }
