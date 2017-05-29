@@ -37,4 +37,12 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$libraryVersion"
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+
+    androidTestCompile('com.android.support.test:runner:0.5') {
+        exclude module: 'support-annotations'
+    }
+    // Use JUnit 4 rules for this dependency.
+    androidTestCompile('com.android.support.test:rules:0.5') {
+        exclude module: 'support-annotations'
+    }
 }
