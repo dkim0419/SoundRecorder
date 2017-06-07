@@ -4,47 +4,47 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * POJO representin a scheduled recording, mapping scheduled recordings in the table
+ * POJO representing a scheduled recording, mapping scheduled recordings in the table
  * "scheduled_recordings" of the database.
  */
 
 public class ScheduledRecordingItem implements Parcelable {
 
-    private long mId;
-    private long mStart;
-    private long mLength;
+    private long id;
+    private long start;
+    private long length;
 
     public ScheduledRecordingItem() {
     }
 
-    public ScheduledRecordingItem(long mId, long mStart, long mLength) {
-        this.mId = mId;
-        this.mStart = mStart;
-        this.mLength = mLength;
+    public ScheduledRecordingItem(long id, long start, long length) {
+        this.id = id;
+        this.start = start;
+        this.length = length;
     }
 
-    public long getmId() {
-        return mId;
+    public long getId() {
+        return id;
     }
 
-    public long getmStart() {
-        return mStart;
+    public long getStart() {
+        return start;
     }
 
-    public long getmLength() {
-        return mLength;
+    public long getLength() {
+        return length;
     }
 
-    public void setmId(long mId) {
-        this.mId = mId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setmStart(long mStart) {
-        this.mStart = mStart;
+    public void setStart(long start) {
+        this.start = start;
     }
 
-    public void setmLength(long mLength) {
-        this.mLength = mLength;
+    public void setLength(long length) {
+        this.length = length;
     }
 
     // Implementation of Parcelable interface.
@@ -59,9 +59,9 @@ public class ScheduledRecordingItem implements Parcelable {
     };
 
     public ScheduledRecordingItem(Parcel in) {
-        mId = in.readLong();
-        mStart = in.readLong();
-        mLength = in.readLong();
+        id = in.readLong();
+        start = in.readLong();
+        length = in.readLong();
     }
 
     @Override
@@ -71,8 +71,8 @@ public class ScheduledRecordingItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(mId);
-        parcel.writeLong(mStart);
-        parcel.writeLong(mLength);
+        parcel.writeLong(id);
+        parcel.writeLong(start);
+        parcel.writeLong(length);
     }
 }

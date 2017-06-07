@@ -8,7 +8,7 @@ public interface SQLStrings {
     // Utility.
     String TEXT_TYPE = " TEXT";
     String INTEGER_TYPE = " INTEGER";
-    String COMMA_SEP = " , ";
+    String COMMA_SEP = ", ";
 
     // Table "saved_recordings": create and delete.
     String CREATE_TABLE_SAVED_RECORDINGS =
