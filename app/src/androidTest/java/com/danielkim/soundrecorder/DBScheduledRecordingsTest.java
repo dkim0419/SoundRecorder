@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Tests for "scheduled_recordings" table in the database.
@@ -24,6 +25,7 @@ import static junit.framework.Assert.assertNotNull;
 public class DBScheduledRecordingsTest {
 
     private DBHelper dbHelper;
+    private long rec1, rec2, rec3;
 
     @Before
     public void setUp() {
@@ -56,10 +58,7 @@ public class DBScheduledRecordingsTest {
     @Test
     public void testGet() throws Exception {
         // First add 3 records.
-        dbHelper.restoreDatabase();
-        long rec1 = dbHelper.addScheduledRecording(0, 100);
-        long rec2 = dbHelper.addScheduledRecording(100, 500);
-        long rec3 = dbHelper.addScheduledRecording(200, 600);
+        addRecords();
 
         ScheduledRecordingItem item = dbHelper.getScheduledRecording(rec1);
         assertNotNull("1st item is null", item);
@@ -80,10 +79,7 @@ public class DBScheduledRecordingsTest {
     @Test
     public void testUpdate() throws Exception {
         // First add 3 records.
-        dbHelper.restoreDatabase();
-        long rec1 = dbHelper.addScheduledRecording(0, 100);
-        long rec2 = dbHelper.addScheduledRecording(100, 500);
-        long rec3 = dbHelper.addScheduledRecording(200, 600);
+        addRecords();
 
         dbHelper.updateScheduledRecording(rec2, 455, 315);
         ScheduledRecordingItem item = dbHelper.getScheduledRecording(rec2);
@@ -92,4 +88,38 @@ public class DBScheduledRecordingsTest {
         assertEquals("Length of updated item is not 315", 315, item.getLength());
     }
 
+    @Test
+    public void testDelete() throws Exception {
+        addRecords();
+
+        // Delete record 1.
+        dbHelper.removeScheduledRecording(rec1);
+        ScheduledRecordingItem item = dbHelper.getScheduledRecording(rec1);
+        assertNull("Record 1 not deleted", item);
+        int count = dbHelper.getScheduledRecordingsCount();
+        assertEquals("Records are not 2 after deleting 1 item", 2, count);
+
+        // Delete record 2.
+        dbHelper.removeScheduledRecording(rec2);
+        item = dbHelper.getScheduledRecording(rec2);
+        assertNull("Record 2 not deleted", item);
+        count = dbHelper.getScheduledRecordingsCount();
+        assertEquals("Records are not 1 after deleting 2 items", 1, count);
+
+        // Delete record 3.
+        dbHelper.removeScheduledRecording(rec3);
+        item = dbHelper.getScheduledRecording(rec3);
+        assertNull("Record 3 not deleted", item);
+        count = dbHelper.getScheduledRecordingsCount();
+        assertEquals("Records are not 0 after deleting 3 items", 0, count);
+
+    }
+
+    // Add 3 records to the database.
+    private void addRecords() {
+        dbHelper.restoreDatabase();
+        rec1 = dbHelper.addScheduledRecording(0, 100);
+        rec2 = dbHelper.addScheduledRecording(100, 500);
+        rec3 = dbHelper.addScheduledRecording(200, 600);
+    }
 }
