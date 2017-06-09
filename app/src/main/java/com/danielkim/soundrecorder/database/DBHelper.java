@@ -11,6 +11,7 @@ import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 import com.danielkim.soundrecorder.listeners.ScheduledRecordingItem;
 
 import java.util.Comparator;
+import java.util.List;
 
 import static com.danielkim.soundrecorder.database.RecordingsContract.TableSavedRecording;
 import static com.danielkim.soundrecorder.database.RecordingsContract.TableScheduledRecording;
@@ -220,6 +221,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    // Returns all scheduled recordings whose field start is between start and end.
+    public List<ScheduledRecordingItem> getScheduledRecordingsBetween(long start, long end) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                TableScheduledRecording._ID,
+                TableScheduledRecording.COLUMN_NAME_START,
+                TableScheduledRecording.COLUMN_NAME_END
+        };
+        String where = TableScheduledRecording.COLUMN_NAME_START + " >= ? AND " + TableScheduledRecording.COLUMN_NAME_START + " <= ?";
+        String[] whereArgs = {String.valueOf(start), String.valueOf(end)};
+
+        Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, where, whereArgs, null, null, null);
+
+        if (c.moveToFirst()) {
+            ScheduledRecordingItem item = new ScheduledRecordingItem();
+            item.setId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
+            item.setStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
+            item.setEnd(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_END)));
+            c.close();
+            return item;
+        }
+        return null;
+    }
+
     public int getScheduledRecordingsCount() {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {TableScheduledRecording._ID};
@@ -227,5 +252,18 @@ public class DBHelper extends SQLiteOpenHelper {
         int count = c.getCount();
         c.close();
         return count;
+    }
+
+    // Given a time, returns true if other recordings have already been scheduled for that time.
+    public boolean alreadyScheduled(long time) {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {TableScheduledRecording._ID};
+        String where = "? >= " + TableScheduledRecording.COLUMN_NAME_START + " AND ? <= " + TableScheduledRecording.COLUMN_NAME_END;
+        String[] whereArgs = {String.valueOf(time), String.valueOf(time)};
+        Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, where, whereArgs, null, null, null);
+        int count = c.getCount();
+        c.close();
+
+        return count > 0;
     }
 }

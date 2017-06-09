@@ -134,6 +134,23 @@ public class DBScheduledRecordingsTest {
         assertEquals("Non-existent record deleted", 0, deleted);
     }
 
+    @Test
+    public void testAlreadyScheduled() throws Exception {
+        addRecords();
+
+        // Recordings already scheduled.
+        boolean scheduled = dbHelper.alreadyScheduled(50);
+        assertEquals("A recording is already scheduled for time 50", true, scheduled);
+        scheduled = dbHelper.alreadyScheduled(100);
+        assertEquals("A recording is already scheduled for time 100", true, scheduled);
+        scheduled = dbHelper.alreadyScheduled(550);
+        assertEquals("A recording is already scheduled for time 550", true, scheduled);
+
+        // No recordings scheduled.
+        scheduled = dbHelper.alreadyScheduled(700);
+        assertEquals("No recording is scheduled for time 700", false, scheduled);
+    }
+
     // Add 3 records to the database.
     private void addRecords() {
         dbHelper.restoreDatabase();
