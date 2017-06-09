@@ -27,7 +27,7 @@ public interface SQLStrings {
             "CREATE TABLE " + RecordingsContract.TableScheduledRecording.TABLE_NAME + " (" +
                     RecordingsContract.TableScheduledRecording._ID + " INTEGER PRIMARY KEY AUTOINCREMENT" + COMMA_SEP +
                     RecordingsContract.TableScheduledRecording.COLUMN_NAME_START + INTEGER_TYPE + COMMA_SEP +
-                    RecordingsContract.TableScheduledRecording.COLUMN_NAME_LENGTH + INTEGER_TYPE + ")";
+                    RecordingsContract.TableScheduledRecording.COLUMN_NAME_END + INTEGER_TYPE + ")";
 
     @SuppressWarnings("unused")
     String DELETE_TABLE_SCHEDULED_RECORDINGS = "DROP TABLE IF EXISTS " + RecordingsContract.TableScheduledRecording.TABLE_NAME;

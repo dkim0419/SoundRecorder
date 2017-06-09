@@ -161,11 +161,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Table "scheduled_recordings".
-    public long addScheduledRecording(long start, long length) {
+    public long addScheduledRecording(long start, long end) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TableScheduledRecording.COLUMN_NAME_START, start);
-        cv.put(TableScheduledRecording.COLUMN_NAME_LENGTH, length);
+        cv.put(TableScheduledRecording.COLUMN_NAME_END, end);
         long rowId = db.insert(TableScheduledRecording.TABLE_NAME, null, cv);
 
         if (mOnDatabaseChangedListener != null) {
@@ -181,13 +181,13 @@ public class DBHelper extends SQLiteOpenHelper {
         return db.delete(TableScheduledRecording.TABLE_NAME, "_ID=?", whereArgs);
     }
 
-    public int updateScheduledRecording(long id, long start, long length) {
+    public int updateScheduledRecording(long id, long start, long end) {
         int updated = 0;
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TableScheduledRecording.COLUMN_NAME_START, start);
-        cv.put(TableScheduledRecording.COLUMN_NAME_LENGTH, length);
+        cv.put(TableScheduledRecording.COLUMN_NAME_END, end);
         String[] whereArgs = {String.valueOf(id)};
         updated = db.update(TableScheduledRecording.TABLE_NAME, cv,
                 TableScheduledRecording._ID + "= ?", whereArgs);
@@ -204,7 +204,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] projection = {
                 TableScheduledRecording._ID,
                 TableScheduledRecording.COLUMN_NAME_START,
-                TableScheduledRecording.COLUMN_NAME_LENGTH
+                TableScheduledRecording.COLUMN_NAME_END
         };
         String[] whereArgs = {String.valueOf(id)};
 
@@ -213,7 +213,7 @@ public class DBHelper extends SQLiteOpenHelper {
             ScheduledRecordingItem item = new ScheduledRecordingItem();
             item.setId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
             item.setStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
-            item.setLength(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_LENGTH)));
+            item.setEnd(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_END)));
             c.close();
             return item;
         }

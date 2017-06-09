@@ -64,17 +64,17 @@ public class DBScheduledRecordingsTest {
         ScheduledRecordingItem item = dbHelper.getScheduledRecording(rec1);
         assertNotNull("1st item is null", item);
         assertEquals("Start of 1st item is not 0", 0, item.getStart());
-        assertEquals("Length of 1st item is not 100", 100, item.getLength());
+        assertEquals("End of 1st item is not 100", 100, item.getEnd());
 
         item = dbHelper.getScheduledRecording(rec2);
         assertNotNull("2nd item is null", item);
         assertEquals("Start of 2nd item is not 100", 100, item.getStart());
-        assertEquals("Length of 2nd item is not 500", 500, item.getLength());
+        assertEquals("End of 2nd item is not 500", 500, item.getEnd());
 
         item = dbHelper.getScheduledRecording(rec3);
         assertNotNull("Item is null", item);
         assertEquals("Start of 3rd item is not 200", 200, item.getStart());
-        assertEquals("Length of 3rd item is not 600", 600, item.getLength());
+        assertEquals("End of 3rd item is not 600", 600, item.getEnd());
 
         // Get non-existent record.
         item = dbHelper.getScheduledRecording(-7);
@@ -93,7 +93,7 @@ public class DBScheduledRecordingsTest {
         ScheduledRecordingItem item = dbHelper.getScheduledRecording(rec2);
         assertNotNull("Updated item is null", item);
         assertEquals("Start of updated item is not 455", 455, item.getStart());
-        assertEquals("Length of updated item is not 315", 315, item.getLength());
+        assertEquals("End of updated item is not 315", 315, item.getEnd());
 
         // Update non-existent record.
         updated = dbHelper.updateScheduledRecording(-7, 455, 315);

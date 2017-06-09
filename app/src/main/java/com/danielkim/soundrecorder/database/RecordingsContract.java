@@ -23,7 +23,7 @@ public class RecordingsContract {
         public static final String TABLE_NAME = "scheduled_recordings";
 
         public static final String COLUMN_NAME_START = "start"; // start of the recording in ms from epoch
-        public static final String COLUMN_NAME_LENGTH = "length"; // length of the recording in ms
+        public static final String COLUMN_NAME_END = "end"; // length of the recording in ms
     }
 
 

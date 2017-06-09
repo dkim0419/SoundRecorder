@@ -12,15 +12,15 @@ public class ScheduledRecordingItem implements Parcelable {
 
     private long id;
     private long start;
-    private long length;
+    private long end;
 
     public ScheduledRecordingItem() {
     }
 
-    public ScheduledRecordingItem(long id, long start, long length) {
+    public ScheduledRecordingItem(long id, long start, long end) {
         this.id = id;
         this.start = start;
-        this.length = length;
+        this.end = end;
     }
 
     public long getId() {
@@ -31,8 +31,8 @@ public class ScheduledRecordingItem implements Parcelable {
         return start;
     }
 
-    public long getLength() {
-        return length;
+    public long getEnd() {
+        return end;
     }
 
     public void setId(long id) {
@@ -43,8 +43,8 @@ public class ScheduledRecordingItem implements Parcelable {
         this.start = start;
     }
 
-    public void setLength(long length) {
-        this.length = length;
+    public void setEnd(long end) {
+        this.end = end;
     }
 
     // Implementation of Parcelable interface.
@@ -61,7 +61,7 @@ public class ScheduledRecordingItem implements Parcelable {
     public ScheduledRecordingItem(Parcel in) {
         id = in.readLong();
         start = in.readLong();
-        length = in.readLong();
+        end = in.readLong();
     }
 
     @Override
@@ -73,6 +73,6 @@ public class ScheduledRecordingItem implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeLong(id);
         parcel.writeLong(start);
-        parcel.writeLong(length);
+        parcel.writeLong(end);
     }
 }
