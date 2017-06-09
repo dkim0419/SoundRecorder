@@ -175,24 +175,28 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    public void removeScheduledRecording(long id) {
+    public int removeScheduledRecording(long id) {
         SQLiteDatabase db = getWritableDatabase();
         String[] whereArgs = {String.valueOf(id)};
-        db.delete(TableScheduledRecording.TABLE_NAME, "_ID=?", whereArgs);
+        return db.delete(TableScheduledRecording.TABLE_NAME, "_ID=?", whereArgs);
     }
 
-    public void updateScheduledRecording(long id, long start, long length) {
+    public int updateScheduledRecording(long id, long start, long length) {
+        int updated = 0;
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(TableScheduledRecording.COLUMN_NAME_START, start);
         cv.put(TableScheduledRecording.COLUMN_NAME_LENGTH, length);
         String[] whereArgs = {String.valueOf(id)};
-        db.update(TableScheduledRecording.TABLE_NAME, cv,
+        updated = db.update(TableScheduledRecording.TABLE_NAME, cv,
                 TableScheduledRecording._ID + "= ?", whereArgs);
 
         if (mOnDatabaseChangedListener != null) {
             mOnDatabaseChangedListener.onDatabaseEntryRenamed();
         }
+
+        return updated;
     }
 
     public ScheduledRecordingItem getScheduledRecording(long id) {
