@@ -173,6 +173,24 @@ public class DBScheduledRecordingsTest {
         assertEquals("2nd item's end should be 500", 500, item.getEnd());
     }
 
+    @Test
+    public void testGetAllScheduledRecordings() throws Exception {
+        addRecords();
+
+        List<ScheduledRecordingItem> list;
+
+        // Should return 3 items.
+        list = dbHelper.getAllScheduledRecordings();
+        assertEquals("List should contain 3 items", 3, list.size());
+        // Get 2 items and check their properties.
+        ScheduledRecordingItem item = list.get(0);
+        assertEquals("1st item's start should be 0", 0, item.getStart());
+        assertEquals("1st item's end should be 0", 100, item.getEnd());
+        item = list.get(1);
+        assertEquals("2nd item's start should be 100", 100, item.getStart());
+        assertEquals("2nd item's end should be 500", 500, item.getEnd());
+    }
+
     // Add 3 records to the database.
     private void addRecords() {
         dbHelper.restoreDatabase();

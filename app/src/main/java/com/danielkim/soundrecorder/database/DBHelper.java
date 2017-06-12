@@ -224,6 +224,29 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Returns all scheduled recordings whose field start is between start and end.
+    public List<ScheduledRecordingItem> getAllScheduledRecordings() {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                TableScheduledRecording._ID,
+                TableScheduledRecording.COLUMN_NAME_START,
+                TableScheduledRecording.COLUMN_NAME_END
+        };
+
+        Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, null, null, null, null, null);
+        List<ScheduledRecordingItem> list = new ArrayList<>();
+        while (c.moveToNext()) {
+            ScheduledRecordingItem item = new ScheduledRecordingItem();
+            item.setId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
+            item.setStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
+            item.setEnd(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_END)));
+            list.add(item);
+        }
+        c.close();
+
+        return list;
+    }
+
+    // Returns all scheduled recordings whose field start is between start and end.
     public List<ScheduledRecordingItem> getScheduledRecordingsBetween(long start, long end) {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {
