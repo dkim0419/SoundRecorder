@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.List;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -149,6 +151,27 @@ public class DBScheduledRecordingsTest {
         // No recordings scheduled.
         scheduled = dbHelper.alreadyScheduled(700);
         assertEquals("No recording is scheduled for time 700", false, scheduled);
+    }
+
+    @Test
+    public void testGetScheduledRecordingsBetween() throws Exception {
+        addRecords();
+
+        List<ScheduledRecordingItem> list;
+        // Should return empty list.
+        list = dbHelper.getScheduledRecordingsBetween(700, 900);
+        assertEquals("List should be empty", true, list.isEmpty());
+
+        // Should return 2 items.
+        list = dbHelper.getScheduledRecordingsBetween(0, 150);
+        assertEquals("List should contain 2 items", 2, list.size());
+        // Get the 2 items and check their properties.
+        ScheduledRecordingItem item = list.get(0);
+        assertEquals("1st item's start should be 0", 0, item.getStart());
+        assertEquals("1st item's end should be 0", 100, item.getEnd());
+        item = list.get(1);
+        assertEquals("2nd item's start should be 100", 100, item.getStart());
+        assertEquals("2nd item's end should be 500", 500, item.getEnd());
     }
 
     // Add 3 records to the database.

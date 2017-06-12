@@ -10,6 +10,7 @@ import com.danielkim.soundrecorder.RecordingItem;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 import com.danielkim.soundrecorder.listeners.ScheduledRecordingItem;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import static com.danielkim.soundrecorder.database.SQLStrings.DELETE_TABLE_SCHED
 
 /**
  * Created by Daniel on 12/29/2014.
+ * Updated by iClaude on 6/12/2017.
  */
 public class DBHelper extends SQLiteOpenHelper {
     private final Context mContext;
@@ -45,7 +47,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 1) { // tabel scheduled_recordings was added with version 2
+        if (oldVersion == 1) { // table scheduled_recordings was added with version 2
             db.execSQL(CREATE_TABLE_SCHEDULED_RECORDINGS);
         }
     }
@@ -155,9 +157,9 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(TableSavedRecording.COLUMN_NAME_TIME_ADDED, item.getTime());
         cv.put(TableSavedRecording._ID, item.getId());
         long rowId = db.insert(TableSavedRecording.TABLE_NAME, null, cv);
-        if (mOnDatabaseChangedListener != null) {
+/*        if (mOnDatabaseChangedListener != null) {
             //mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
-        }
+        }*/
         return rowId;
     }
 
@@ -183,7 +185,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public int updateScheduledRecording(long id, long start, long end) {
-        int updated = 0;
+        int updated;
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -233,16 +235,17 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] whereArgs = {String.valueOf(start), String.valueOf(end)};
 
         Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, where, whereArgs, null, null, null);
-
-        if (c.moveToFirst()) {
+        List<ScheduledRecordingItem> list = new ArrayList<>();
+        while (c.moveToNext()) {
             ScheduledRecordingItem item = new ScheduledRecordingItem();
             item.setId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
             item.setStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
             item.setEnd(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_END)));
-            c.close();
-            return item;
+            list.add(item);
         }
-        return null;
+        c.close();
+
+        return list;
     }
 
     public int getScheduledRecordingsCount() {
