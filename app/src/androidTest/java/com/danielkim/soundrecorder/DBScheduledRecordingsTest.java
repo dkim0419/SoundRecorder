@@ -5,7 +5,6 @@ import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.danielkim.soundrecorder.database.DBHelper;
-import com.danielkim.soundrecorder.listeners.ScheduledRecordingItem;
 
 import org.junit.After;
 import org.junit.Before;

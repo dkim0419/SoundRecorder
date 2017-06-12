@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder.listeners;
+package com.danielkim.soundrecorder;
 
 import android.os.Parcel;
 import android.os.Parcelable;

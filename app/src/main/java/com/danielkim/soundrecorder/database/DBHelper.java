@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.danielkim.soundrecorder.RecordingItem;
+import com.danielkim.soundrecorder.ScheduledRecordingItem;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
-import com.danielkim.soundrecorder.listeners.ScheduledRecordingItem;
 
 import java.util.ArrayList;
 import java.util.Comparator;
