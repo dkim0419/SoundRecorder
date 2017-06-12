@@ -1,2 +1,4 @@
 TODO:
 - check dangerous permissions when inserting a scheduled recorder
+- RecordingService: what if a scheduled recording is ongoing and the user presses the record
+  button?

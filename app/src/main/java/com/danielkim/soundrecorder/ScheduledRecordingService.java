@@ -1,6 +1,7 @@
 package com.danielkim.soundrecorder;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
+
+import com.danielkim.soundrecorder.database.DBHelper;
+
+import java.util.List;
 
 public class ScheduledRecordingService extends Service implements Handler.Callback {
 
@@ -63,6 +68,12 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
 
     // Get scheduled recordings from database and set the AlarmManager.
     private void scheduleRecordings() {
+        DBHelper database = new DBHelper(this);
+        List<ScheduledRecordingItem> list = database.getAllScheduledRecordings();
+        for (ScheduledRecordingItem item : list) {
+            Intent intent = new Intent(this, RecordingService.class);
+            PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        }
 
     }
 }
