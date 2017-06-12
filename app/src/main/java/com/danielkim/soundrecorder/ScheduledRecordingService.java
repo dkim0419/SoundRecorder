@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -41,6 +42,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     public void onDestroy() {
         super.onDestroy();
 
+        // Stop background thread.
         mHandler.getLooper().quit();
     }
 
@@ -54,7 +56,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         Message message = mHandler.obtainMessage(SCHEDULE_RECORDINGS);
         mHandler.sendMessage(message);
 
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
@@ -71,8 +73,15 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         DBHelper database = new DBHelper(this);
         List<ScheduledRecordingItem> list = database.getAllScheduledRecordings();
         for (ScheduledRecordingItem item : list) {
-            Intent intent = new Intent(this, RecordingService.class);
+            Intent intent = RecordingService.makeIntent(this, item);
             PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
+
+            } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22
+
+            } else { // API 23+
+
+            }
         }
 
     }

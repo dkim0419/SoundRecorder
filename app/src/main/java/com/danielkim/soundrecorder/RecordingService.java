@@ -29,6 +29,7 @@ import java.util.TimerTask;
 public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
+    private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.ITEM";
 
     private String mFileName = null;
     private String mFilePath = null;
@@ -45,6 +46,17 @@ public class RecordingService extends Service {
 
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
+
+
+    /*
+        Static factory method used to create an Intent to start this Service for
+        a scheduled recording.
+     */
+    public static Intent makeIntent(Context context, ScheduledRecordingItem item) {
+        Intent intent = new Intent(context, RecordingService.class);
+        intent.putExtra(EXTRA_ITEM, item);
+        return intent;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -63,7 +75,10 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startRecording();
+        ScheduledRecordingItem item = intent.getParcelableExtra(EXTRA_ITEM);
+        int duration = item == null ? 0 : (int) (item.getEnd() - item.getStart()); // is this a scheduled recording?
+        startRecording(duration);
+
         return START_STICKY;
     }
 
@@ -76,7 +91,7 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-    public void startRecording() {
+    public void startRecording(int duration) {
 
         setFileNameAndPath();
 
@@ -84,6 +99,7 @@ public class RecordingService extends Service {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setOutputFile(mFilePath);
+        mRecorder.setMaxDuration(duration); // if this is a scheduled recording, set the max duration, after which the Service is stopped
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
 
