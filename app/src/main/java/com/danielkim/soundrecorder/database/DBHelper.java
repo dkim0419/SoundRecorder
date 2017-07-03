@@ -223,7 +223,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    // Returns all scheduled recordings whose field start is between start and end.
+    // Returns a List of all scheduled recordings.
     public List<ScheduledRecordingItem> getAllScheduledRecordings() {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {
