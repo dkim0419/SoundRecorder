@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -22,6 +23,18 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     private AlarmManager alarmManager;
     private Handler mHandler;
 
+    // Just for testing.
+    public static int onCreateCalls, onDestroyCalls, onStartCommandCalls;
+    private LocalBinder localBinder = new LocalBinder();
+
+    /*
+        Static factory method used to create an Intent to start this Service.
+    */
+    public static Intent makeIntent(Context context) {
+        Intent intent = new Intent(context, ScheduledRecordingService.class);
+        return intent;
+    }
+
     public ScheduledRecordingService() {
 
     }
@@ -29,6 +42,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @Override
     public void onCreate() {
         super.onCreate();
+        onCreateCalls++; // just for testing
 
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
@@ -41,18 +55,16 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @Override
     public void onDestroy() {
         super.onDestroy();
+        onDestroyCalls++; // just for testing
 
         // Stop background thread.
         mHandler.getLooper().quit();
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        onStartCommandCalls++; // just for testing
+
         Message message = mHandler.obtainMessage(SCHEDULE_RECORDINGS);
         mHandler.sendMessage(message);
 
@@ -83,6 +95,19 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
 
             }
         }
+    }
 
+    /*
+        Implementation of local binder pattern for testing purposes.
+    */
+    public class LocalBinder extends Binder {
+        public ScheduledRecordingService getService() {
+            return ScheduledRecordingService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return localBinder;
     }
 }
