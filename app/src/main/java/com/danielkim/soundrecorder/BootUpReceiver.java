@@ -4,19 +4,19 @@
 
 package com.danielkim.soundrecorder;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.WakefulBroadcastReceiver;
 
 /**
  * When the device is rebooted alarms set with the AlarmManager are cancelled.
  * So we need to use a BroadcastReceiver that gets triggered at bootup in order to start
  * the ScheduledRecordingService and reset all the scheduled recordings present in the database.
  */
-public class BootUpReceiver extends BroadcastReceiver {
+public class BootUpReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        context.startService(ScheduledRecordingService.makeIntent(context));
+        startWakefulService(context, ScheduledRecordingService.makeIntent(context, true));
     }
 }

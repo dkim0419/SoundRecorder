@@ -26,9 +26,12 @@ import java.util.List;
 public class ScheduledRecordingService extends Service implements Handler.Callback {
 
     private final int SCHEDULE_RECORDINGS = 1;
+    private static final String EXTRA_WAKEFUL = "com.danielkim.soundrecorder.WAKEFUL";
 
     private AlarmManager alarmManager;
     private Handler mHandler;
+    private boolean wakeful;
+    private Intent startIntent;
 
     // Just for testing.
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -39,8 +42,9 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     /*
         Static factory method used to create an Intent to start this Service.
     */
-    public static Intent makeIntent(Context context) {
+    public static Intent makeIntent(Context context, boolean wakeful) {
         Intent intent = new Intent(context, ScheduledRecordingService.class);
+        intent.putExtra(EXTRA_WAKEFUL, wakeful);
         return intent;
     }
 
@@ -74,6 +78,10 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     public int onStartCommand(Intent intent, int flags, int startId) {
         onStartCommandCalls++; // just for testing
 
+        // Is this a wakeful Service? In this case we have to release the wake-lock at the end.
+        wakeful = intent.getBooleanExtra(EXTRA_WAKEFUL, false);
+        startIntent = intent;
+
         Message message = mHandler.obtainMessage(SCHEDULE_RECORDINGS);
         mHandler.sendMessage(message);
 
@@ -85,6 +93,9 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         if (message.what == SCHEDULE_RECORDINGS) {
             resetAlarmManager(); // cancel all pending alarms
             scheduleRecordings();
+            if (wakeful) {
+                BootUpReceiver.completeWakefulIntent(startIntent);
+            }
         }
 
         return true;
@@ -128,5 +139,10 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @Override
     public IBinder onBind(Intent intent) {
         return localBinder;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isWakeful() {
+        return wakeful;
     }
 }

@@ -25,12 +25,14 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class ScheduledRecordingServiceTest implements ServiceConnection {
 
+    private ScheduledRecordingService service;
+
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
 
     @Test
     public void testLifecycleMethods() throws TimeoutException {
-        Intent intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext());
+        Intent intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), false);
         // Call startService 3 times.
         mServiceRule.startService(intent);
         mServiceRule.startService(intent);
@@ -38,6 +40,19 @@ public class ScheduledRecordingServiceTest implements ServiceConnection {
 
         assertEquals("onCreate called multiple times", 1, ScheduledRecordingService.onCreateCalls);
         assertEquals("onStartCommand not called 3 times as expected", 3, ScheduledRecordingService.onStartCommandCalls);
+    }
+
+    @Test
+    public void testWakeful() throws TimeoutException {
+        // Launch a non-wakeful Service.
+        Intent intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), false);
+        mServiceRule.startService(intent);
+        assertEquals("Service should be not wakeful", false, service.isWakeful());
+
+        // Launch a wakeful Service.
+        intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), true);
+        mServiceRule.startService(intent);
+        assertEquals("Service should be wakeful", true, service.isWakeful());
     }
 
 /*    @Test
@@ -74,12 +89,12 @@ public class ScheduledRecordingServiceTest implements ServiceConnection {
     }*/
 
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-
+    public void onServiceConnected(ComponentName name, IBinder iBinder) {
+        service = ((ScheduledRecordingService.LocalBinder) iBinder).getService();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-
+        service = null;
     }
 }
