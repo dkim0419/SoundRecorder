@@ -11,11 +11,18 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.VisibleForTesting;
 
 import com.danielkim.soundrecorder.database.DBHelper;
 
 import java.util.List;
 
+/**
+ * This Service gets triggered at boot time and sets all scheduled recordings using an
+ * AlarmManager. Scheduled recordings are retrieved from the database and loaded in a separate
+ * thread.
+ * This class (started Service) also implements the Local Binder pattern just for testing purposes.
+ */
 public class ScheduledRecordingService extends Service implements Handler.Callback {
 
     private final int SCHEDULE_RECORDINGS = 1;
@@ -24,7 +31,9 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     private Handler mHandler;
 
     // Just for testing.
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static int onCreateCalls, onDestroyCalls, onStartCommandCalls;
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private LocalBinder localBinder = new LocalBinder();
 
     /*
@@ -74,10 +83,18 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @Override
     public boolean handleMessage(Message message) {
         if (message.what == SCHEDULE_RECORDINGS) {
+            resetAlarmManager(); // cancel all pending alarms
             scheduleRecordings();
         }
 
         return true;
+    }
+
+    // Cancels all pending alarms already set in the AlarmManager.
+    private void resetAlarmManager() {
+        Intent intent = RecordingService.makeIntent(this, null);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
     }
 
     // Get scheduled recordings from database and set the AlarmManager.
@@ -88,11 +105,11 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
             Intent intent = RecordingService.makeIntent(this, item);
             PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
-
+                alarmManager.set(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22
-
-            } else { // API 23+
-
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
+            } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) { // API 23+
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             }
         }
     }
@@ -100,12 +117,14 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     /*
         Implementation of local binder pattern for testing purposes.
     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public class LocalBinder extends Binder {
         public ScheduledRecordingService getService() {
             return ScheduledRecordingService.this;
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     @Override
     public IBinder onBind(Intent intent) {
         return localBinder;

@@ -40,6 +40,38 @@ public class ScheduledRecordingServiceTest implements ServiceConnection {
         assertEquals("onStartCommand not called 3 times as expected", 3, ScheduledRecordingService.onStartCommandCalls);
     }
 
+/*    @Test
+    public void testAlarmManager() throws TimeoutException {
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        // Test with empty database: the AlarmManager should be empty.
+        DBHelper dbHelper = new DBHelper(context);
+        dbHelper.restoreDatabase();
+        Intent srsIntent = ScheduledRecordingService.makeIntent(context);
+        mServiceRule.startService(srsIntent);
+
+        // Check results.
+        boolean alarmUp = PendingIntent.getService(context, 0,
+                RecordingService.makeIntent(context, null),
+                PendingIntent.FLAG_NO_CREATE) != null;
+        assertEquals("AlarmManager should be empty", false, alarmUp);
+
+
+        // Add some scheduled recordings to the database and test the AlarmManager.
+        dbHelper.restoreDatabase();
+        dbHelper.addScheduledRecording(0, 100);
+        dbHelper.addScheduledRecording(100, 500);
+        dbHelper.addScheduledRecording(200, 600);
+
+        // Start the Service and set the AlarmManager with the scheduled recordings.
+        mServiceRule.startService(srsIntent);
+
+        // Check results.
+        alarmUp = PendingIntent.getService(context, 0,
+                RecordingService.makeIntent(context, null),
+                PendingIntent.FLAG_NO_CREATE) != null;
+        assertEquals("AlarmManager is empty", true, alarmUp);
+    }*/
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
