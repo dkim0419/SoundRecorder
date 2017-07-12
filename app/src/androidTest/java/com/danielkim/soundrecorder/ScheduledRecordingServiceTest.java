@@ -43,26 +43,27 @@ public class ScheduledRecordingServiceTest implements ServiceConnection {
     }
 
     @Test
-    public void testWakeful() throws TimeoutException {
+    public void testWakeful() throws TimeoutException, InterruptedException {
         // Launch a non-wakeful Service.
         Intent intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), false);
         mServiceRule.startService(intent);
-        assertEquals("Service should be not wakeful", false, service.isWakeful());
+        assertEquals("Service should be not wakeful", false, ScheduledRecordingService.wakeful);
 
         // Launch a wakeful Service.
         intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), true);
         mServiceRule.startService(intent);
-        assertEquals("Service should be wakeful", true, service.isWakeful());
+        assertEquals("Service should be wakeful", true, ScheduledRecordingService.wakeful);
     }
 
 /*    @Test
-    public void testAlarmManager() throws TimeoutException {
+    public void testAlarmManager() throws TimeoutException, InterruptedException {
         Context context = InstrumentationRegistry.getTargetContext();
+        resetAlarmManager(context);
 
         // Test with empty database: the AlarmManager should be empty.
         DBHelper dbHelper = new DBHelper(context);
         dbHelper.restoreDatabase();
-        Intent srsIntent = ScheduledRecordingService.makeIntent(context);
+        Intent srsIntent = ScheduledRecordingService.makeIntent(context, false);
         mServiceRule.startService(srsIntent);
 
         // Check results.
@@ -86,6 +87,14 @@ public class ScheduledRecordingServiceTest implements ServiceConnection {
                 RecordingService.makeIntent(context, null),
                 PendingIntent.FLAG_NO_CREATE) != null;
         assertEquals("AlarmManager is empty", true, alarmUp);
+    }
+
+    // Cancels all pending alarms already set in the AlarmManager.
+    private void resetAlarmManager(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = RecordingService.makeIntent(context, null);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
     }*/
 
     @Override

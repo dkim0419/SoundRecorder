@@ -49,4 +49,6 @@ dependencies {
     androidTestCompile('com.android.support.test:rules:0.5') {
         exclude module: 'support-annotations'
     }
+    compile 'org.robolectric:robolectric:3.0'
+    compile 'junit:junit:4.12'
 }

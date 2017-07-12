@@ -30,12 +30,13 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
 
     private AlarmManager alarmManager;
     private Handler mHandler;
-    private boolean wakeful;
     private Intent startIntent;
 
     // Just for testing.
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static int onCreateCalls, onDestroyCalls, onStartCommandCalls;
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static boolean wakeful;
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private LocalBinder localBinder = new LocalBinder();
 
@@ -141,8 +142,4 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         return localBinder;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public boolean isWakeful() {
-        return wakeful;
-    }
 }
