@@ -12,6 +12,11 @@ android {
         versionName "1.4"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Added for Robolectric compatibility.
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
@@ -26,6 +31,12 @@ android {
     // Timeout for installing the app on the device
     adbOptions {
         timeOutInMs = 30 * 1000
+    }
+
+    // Added for Robolectric compatibility.
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -49,6 +60,6 @@ dependencies {
     androidTestCompile('com.android.support.test:rules:0.5') {
         exclude module: 'support-annotations'
     }
-    compile 'org.robolectric:robolectric:3.0'
     compile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.3.2"
 }

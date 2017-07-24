@@ -2,6 +2,7 @@
  * Copyright (c) 2017. Software developed by iClaude. All rights reserved.
  */
 
+/*
 package com.danielkim.soundrecorder;
 
 import android.app.AlarmManager;
@@ -16,9 +17,11 @@ import org.robolectric.shadows.ShadowAlarmManager;
 
 import static org.robolectric.Shadows.shadowOf;
 
+*/
 /**
  * Created by Claudio on 12/07/2017.
- */
+ *//*
+
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -35,3 +38,4 @@ public class AlarmManagerTest {
         shadowAlarmManager = shadowOf(alarmManager);
     }
 }
+*/
