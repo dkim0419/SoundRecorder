@@ -6,9 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -24,6 +27,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "saved_recordings.db";
     private static final int DATABASE_VERSION = 1;
 
+
+
+
     public static abstract class DBHelperItem implements BaseColumns {
         public static final String TABLE_NAME = "saved_recordings";
 
@@ -31,6 +37,11 @@ public class DBHelper extends SQLiteOpenHelper {
         public static final String COLUMN_NAME_RECORDING_FILE_PATH = "file_path";
         public static final String COLUMN_NAME_RECORDING_LENGTH = "length";
         public static final String COLUMN_NAME_TIME_ADDED = "time_added";
+    }
+
+    public static abstract class DBHelperItem2 implements BaseColumns {
+        public static final String TABLE_NAME = "saved_paused_recordings";
+
     }
 
     private static final String TEXT_TYPE = " TEXT";
@@ -43,17 +54,29 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBHelperItem.COLUMN_NAME_RECORDING_LENGTH + " INTEGER " + COMMA_SEP +
                     DBHelperItem.COLUMN_NAME_TIME_ADDED + " INTEGER " + ")";
 
+    private static final String SQL_CREATE_ENTRIES2 =
+            "CREATE TABLE " + DBHelperItem2.TABLE_NAME + " (" +
+                    DBHelperItem2._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
+                    DBHelperItem.COLUMN_NAME_RECORDING_NAME + TEXT_TYPE + COMMA_SEP +
+                    DBHelperItem.COLUMN_NAME_RECORDING_FILE_PATH + TEXT_TYPE + COMMA_SEP +
+                    DBHelperItem.COLUMN_NAME_RECORDING_LENGTH + " INTEGER " + COMMA_SEP +
+                    DBHelperItem.COLUMN_NAME_TIME_ADDED + " INTEGER " + ")";
+
+
     @SuppressWarnings("unused")
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + DBHelperItem.TABLE_NAME;
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_ENTRIES2);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("DROP TABLE IF IT EXISTS "+ DBHelperItem.TABLE_NAME);
+        db.execSQL("DROP TABLE IF IT EXISTS "+ DBHelperItem2.TABLE_NAME);
+        onCreate(db);
     }
 
     public DBHelper(Context context) {
@@ -103,6 +126,17 @@ public class DBHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    public int getCount2() {
+        int count=0;
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = { DBHelperItem._ID };
+        Cursor c = db.query(DBHelperItem2.TABLE_NAME, projection, null, null, null, null, null);
+        if(c.getCount()!=0)
+         count = c.getCount();
+        c.close();
+        return count;
+    }
+
     public Context getContext() {
         return mContext;
     }
@@ -129,7 +163,66 @@ public class DBHelper extends SQLiteOpenHelper {
             mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
         }
 
+        db.close();
+
+        deleteFilesFromTable2();
+
         return rowId;
+    }
+
+    private void deleteFilesFromTable2() {
+        ArrayList<String> myList = getAllAppendingFiles();
+
+        for(int i=0;i<myList.size();i++)
+        {
+
+            File f0 = new File( String.valueOf(myList.get(i)));
+            f0.delete();
+
+        }
+        clearTable2();
+    }
+
+
+
+    public long addRecording2(String recordingName, String filePath, long length) {
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DBHelperItem.COLUMN_NAME_RECORDING_NAME, recordingName);
+        cv.put(DBHelperItem.COLUMN_NAME_RECORDING_FILE_PATH, filePath);
+        cv.put(DBHelperItem.COLUMN_NAME_RECORDING_LENGTH, length);
+        cv.put(DBHelperItem.COLUMN_NAME_TIME_ADDED, System.currentTimeMillis());
+        long rowId = db.insert(DBHelperItem2.TABLE_NAME, null, cv);
+
+        db.close();
+
+        return rowId;
+    }
+
+    public ArrayList<String> getAllAppendingFiles()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ArrayList<String> myList = new ArrayList<>();
+
+        Cursor cursor = db.query(DBHelperItem2.TABLE_NAME,new String[]{DBHelperItem.COLUMN_NAME_RECORDING_FILE_PATH
+                        },
+                null,null,null,null,null);
+
+        if(cursor.moveToFirst())
+        {
+            do{
+                myList.add(cursor.getString(cursor.getColumnIndex(DBHelperItem.COLUMN_NAME_RECORDING_FILE_PATH)));
+
+            }while(cursor.moveToNext());
+        }
+
+        db.close();
+
+        return  myList;
+
+
     }
 
     public void renameItem(RecordingItem item, String recordingName, String filePath) {
@@ -158,5 +251,34 @@ public class DBHelper extends SQLiteOpenHelper {
             //mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
         }
         return rowId;
+    }
+
+    public void clearTable2() {
+        SQLiteDatabase db = getWritableDatabase();
+        int countOfRowsdeleted = db.delete(DBHelperItem2.TABLE_NAME, "1", null);
+        Log.d("count",String.valueOf(countOfRowsdeleted));
+        db.close();
+    }
+
+    public long getTotalTime() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+       long time=0;
+
+        Cursor cursor = db.query(DBHelperItem2.TABLE_NAME,new String[]{DBHelperItem.COLUMN_NAME_RECORDING_LENGTH
+                },
+                null,null,null,null,null);
+
+        Cursor cur = db.rawQuery("SELECT SUM(length) FROM "+DBHelperItem2.TABLE_NAME, null);
+        if(cur.moveToFirst())
+        {
+            time= cur.getLong(0);
+        }
+
+
+        db.close();
+
+        return time;
+
     }
 }
