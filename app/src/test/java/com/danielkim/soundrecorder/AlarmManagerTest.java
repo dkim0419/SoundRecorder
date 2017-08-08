@@ -27,22 +27,29 @@ import static org.robolectric.Shadows.shadowOf;
 public class AlarmManagerTest {
 
     private Context context;
+    private AlarmManager alarmManager;
     private ShadowAlarmManager shadowAlarmManager;
 
     @Before
     public void setUp() throws Exception {
         context = RuntimeEnvironment.application.getApplicationContext();
-        AlarmManager alarmManager = (AlarmManager) RuntimeEnvironment.application.getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) RuntimeEnvironment.application.getSystemService(Context.ALARM_SERVICE);
         shadowAlarmManager = shadowOf(alarmManager);
     }
 
     // Test with empty database: the AlarmManager should be empty.
     @Test
     public void testEmptyDatabase() throws Exception {
+        // Clear the database.
         DBHelper dbHelper = new DBHelper(context);
         dbHelper.restoreDatabase();
-        Intent srsIntent = ScheduledRecordingService.makeIntent(context, false);
-        context.startService(srsIntent);
+
+        // Start the service.
+        MockScheduledRecordingService mockService = new MockScheduledRecordingService(context, alarmManager);
+        mockService.onCreate();
+        Intent intent = ScheduledRecordingService.makeIntent(context, false);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onDestroy();
 
         assertNull(shadowAlarmManager.getNextScheduledAlarm());
     }
@@ -53,14 +60,22 @@ public class AlarmManagerTest {
         DBHelper dbHelper = new DBHelper(context);
         dbHelper.restoreDatabase();
         dbHelper.addScheduledRecording(0, 100);
-        dbHelper.addScheduledRecording(100, 500);
-        dbHelper.addScheduledRecording(200, 600);
+        dbHelper.addScheduledRecording(200, 300);
+        dbHelper.addScheduledRecording(500, 600);
 
-        // Start the service to schedule the alarms.
-        Intent srsIntent = ScheduledRecordingService.makeIntent(context, false);
-        context.startService(srsIntent);
+        // Test the service to schedule the alarms.
+        MockScheduledRecordingService mockService = new MockScheduledRecordingService(context, alarmManager);
+        mockService.onCreate();
+        Intent intent = ScheduledRecordingService.makeIntent(context, false);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onDestroy();
 
         // Checks.
         assertEquals(3, shadowAlarmManager.getScheduledAlarms().size());
+
+/*        // Test the type and times of the alarms.
+        ShadowAlarmManager.ScheduledAlarm scheduledAlarm = shadowAlarmManager.getNextScheduledAlarm();
+        assertEquals(AlarmManager.RTC_WAKEUP, scheduledAlarm.type);
+        assertEquals(500, scheduledAlarm.triggerAtTime);*/
     }
 }

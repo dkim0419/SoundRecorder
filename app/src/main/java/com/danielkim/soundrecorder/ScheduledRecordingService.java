@@ -26,11 +26,12 @@ import java.util.List;
 public class ScheduledRecordingService extends Service implements Handler.Callback {
 
     private final int SCHEDULE_RECORDINGS = 1;
-    private static final String EXTRA_WAKEFUL = "com.danielkim.soundrecorder.WAKEFUL";
+    protected static final String EXTRA_WAKEFUL = "com.danielkim.soundrecorder.WAKEFUL";
 
-    private AlarmManager alarmManager;
+    protected AlarmManager alarmManager;
+    protected Context context;
     private Handler mHandler;
-    private Intent startIntent;
+    protected Intent startIntent;
 
     // Just for testing.
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -50,7 +51,6 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     }
 
     public ScheduledRecordingService() {
-
     }
 
     @Override
@@ -58,7 +58,10 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         super.onCreate();
         onCreateCalls++; // just for testing
 
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager == null)
+            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (context == null) context = this;
 
         // Start background thread with a Looper.
         HandlerThread handlerThread = new HandlerThread("BackgroundThread");
@@ -103,19 +106,20 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     }
 
     // Cancels all pending alarms already set in the AlarmManager.
-    private void resetAlarmManager() {
-        Intent intent = RecordingService.makeIntent(this, null);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+    protected void resetAlarmManager() {
+        Intent intent = RecordingService.makeIntent(context, null);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
         alarmManager.cancel(pendingIntent);
     }
 
     // Get scheduled recordings from database and set the AlarmManager.
-    private void scheduleRecordings() {
-        DBHelper database = new DBHelper(this);
+    protected void scheduleRecordings() {
+        DBHelper database = new DBHelper(context);
         List<ScheduledRecordingItem> list = database.getAllScheduledRecordings();
+        int i = 0;
         for (ScheduledRecordingItem item : list) {
-            Intent intent = RecordingService.makeIntent(this, item);
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+            Intent intent = RecordingService.makeIntent(context, item);
+            PendingIntent pendingIntent = PendingIntent.getService(context, i++, intent, 0);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
                 alarmManager.set(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22
