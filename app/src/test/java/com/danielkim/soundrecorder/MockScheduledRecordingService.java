@@ -33,7 +33,7 @@ public class MockScheduledRecordingService extends ScheduledRecordingService {
         startIntent = intent;
 
         resetAlarmManager(); // cancel all pending alarms
-        scheduleRecordings();
+        scheduleNextRecording();
 
         return START_REDELIVER_INTENT;
     }

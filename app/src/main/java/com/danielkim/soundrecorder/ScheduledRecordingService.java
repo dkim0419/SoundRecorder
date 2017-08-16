@@ -15,8 +15,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.danielkim.soundrecorder.database.DBHelper;
 
-import java.util.List;
-
 /**
  * This Service gets triggered at boot time and sets the next scheduled recording using an
  * AlarmManager. Scheduled recordings are retrieved from the database and loaded in a separate
@@ -115,11 +113,10 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     // Get scheduled recordings from database and set the AlarmManager.
     protected void scheduleNextRecording() {
         DBHelper database = new DBHelper(context);
-        List<ScheduledRecordingItem> list = database.getAllScheduledRecordings();
-        int i = 0;
-        for (ScheduledRecordingItem item : list) {
+        ScheduledRecordingItem item = database.getNextScheduledRecording();
+        if (item != null) {
             Intent intent = RecordingService.makeIntent(context, item);
-            PendingIntent pendingIntent = PendingIntent.getService(context, i++, intent, 0);
+            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
                 alarmManager.set(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22

@@ -68,14 +68,33 @@ public class AlarmManagerTest {
         mockService.onCreate();
         Intent intent = ScheduledRecordingService.makeIntent(context, false);
         mockService.onStartCommand(intent, 0, 0);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onStartCommand(intent, 0, 0);
         mockService.onDestroy();
 
         // Checks.
-        assertEquals(3, shadowAlarmManager.getScheduledAlarms().size());
+        assertEquals(1, shadowAlarmManager.getScheduledAlarms().size());
 
-/*        // Test the type and times of the alarms.
+        // Test the type and times of the alarms.
         ShadowAlarmManager.ScheduledAlarm scheduledAlarm = shadowAlarmManager.getNextScheduledAlarm();
         assertEquals(AlarmManager.RTC_WAKEUP, scheduledAlarm.type);
-        assertEquals(500, scheduledAlarm.triggerAtTime);*/
+        assertEquals(0, scheduledAlarm.triggerAtTime);
+
+        // Test with other settings.
+        dbHelper.restoreDatabase();
+        dbHelper.addScheduledRecording(500, 600);
+        intent = ScheduledRecordingService.makeIntent(context, false);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onStartCommand(intent, 0, 0);
+        mockService.onDestroy();
+
+        // Checks.
+        assertEquals(1, shadowAlarmManager.getScheduledAlarms().size());
+
+        // Test the type and times of the alarms.
+        scheduledAlarm = shadowAlarmManager.getNextScheduledAlarm();
+        assertEquals(AlarmManager.RTC_WAKEUP, scheduledAlarm.type);
+        assertEquals(500, scheduledAlarm.triggerAtTime);
     }
 }
