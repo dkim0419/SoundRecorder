@@ -18,7 +18,7 @@ import com.danielkim.soundrecorder.database.DBHelper;
 import java.util.List;
 
 /**
- * This Service gets triggered at boot time and sets all scheduled recordings using an
+ * This Service gets triggered at boot time and sets the next scheduled recording using an
  * AlarmManager. Scheduled recordings are retrieved from the database and loaded in a separate
  * thread.
  * This class (started Service) also implements the Local Binder pattern just for testing purposes.
@@ -96,7 +96,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     public boolean handleMessage(Message message) {
         if (message.what == SCHEDULE_RECORDINGS) {
             resetAlarmManager(); // cancel all pending alarms
-            scheduleRecordings();
+            scheduleNextRecording();
             if (wakeful) {
                 BootUpReceiver.completeWakefulIntent(startIntent);
             }
@@ -113,7 +113,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     }
 
     // Get scheduled recordings from database and set the AlarmManager.
-    protected void scheduleRecordings() {
+    protected void scheduleNextRecording() {
         DBHelper database = new DBHelper(context);
         List<ScheduledRecordingItem> list = database.getAllScheduledRecordings();
         int i = 0;

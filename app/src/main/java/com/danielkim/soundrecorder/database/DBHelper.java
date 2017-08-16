@@ -271,6 +271,28 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    // Returns the first scheduled recording according to the starting time.
+    public ScheduledRecordingItem getNextScheduledRecording() {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                TableScheduledRecording._ID,
+                TableScheduledRecording.COLUMN_NAME_START,
+                TableScheduledRecording.COLUMN_NAME_END
+        };
+
+        Cursor c = db.query(TableScheduledRecording.TABLE_NAME, projection, null, null, null, null, TableScheduledRecording.COLUMN_NAME_START, "1");
+        ScheduledRecordingItem item = null;
+        if (c.moveToFirst()) {
+            item = new ScheduledRecordingItem();
+            item.setId(c.getLong(c.getColumnIndex(TableScheduledRecording._ID)));
+            item.setStart(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_START)));
+            item.setEnd(c.getLong(c.getColumnIndex(TableScheduledRecording.COLUMN_NAME_END)));
+        }
+        c.close();
+
+        return item;
+    }
+
     public int getScheduledRecordingsCount() {
         SQLiteDatabase db = getReadableDatabase();
         String[] projection = {TableScheduledRecording._ID};

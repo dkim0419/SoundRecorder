@@ -191,6 +191,41 @@ public class DBScheduledRecordingsTest {
         assertEquals("2nd item's end should be 500", 500, item.getEnd());
     }
 
+    @Test
+    public void testGetNextScheduledRecording() throws Exception {
+        // Empty database.
+        dbHelper.restoreDatabase();
+        ScheduledRecordingItem item = dbHelper.getNextScheduledRecording();
+        assertEquals("Item should be null", null, item);
+
+        // Add 3 records.
+        item = null;
+        addRecords();
+        item = dbHelper.getNextScheduledRecording();
+        assertNotNull("Item should be not null", item);
+        assertEquals("Start time should be 0", 0, item.getStart());
+
+        // Delete first scheduled recording.
+        item = null;
+        dbHelper.removeScheduledRecording(rec1);
+        item = dbHelper.getNextScheduledRecording();
+        assertNotNull("Item should be not null", item);
+        assertEquals("Start time should be 100", 100, item.getStart());
+
+        // Delete second scheduled recording.
+        item = null;
+        dbHelper.removeScheduledRecording(rec2);
+        item = dbHelper.getNextScheduledRecording();
+        assertNotNull("Item should be not null", item);
+        assertEquals("Start time should be 200", 200, item.getStart());
+
+        // Delete last scheduled recording.
+        item = null;
+        dbHelper.removeScheduledRecording(rec3);
+        item = dbHelper.getNextScheduledRecording();
+        assertEquals("Item should be null", null, item);
+    }
+
     // Add 3 records to the database.
     private void addRecords() {
         dbHelper.restoreDatabase();
