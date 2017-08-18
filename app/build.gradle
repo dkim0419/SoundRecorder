@@ -51,6 +51,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
 
     // Testing.
     compile 'com.android.support:support-annotations:24.2.0'
