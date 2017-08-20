@@ -39,6 +39,9 @@ public class DBHelper extends SQLiteOpenHelper {
         public static final String COLUMN_NAME_TIME_ADDED = "time_added";
     }
 
+    /**
+     * The class contains the info of table two.
+     */
     public static abstract class DBHelperItem2 implements BaseColumns {
         public static final String TABLE_NAME = "saved_paused_recordings";
 
@@ -54,6 +57,9 @@ public class DBHelper extends SQLiteOpenHelper {
                     DBHelperItem.COLUMN_NAME_RECORDING_LENGTH + " INTEGER " + COMMA_SEP +
                     DBHelperItem.COLUMN_NAME_TIME_ADDED + " INTEGER " + ")";
 
+    /**
+     * Table two SQL -create string
+     */
     private static final String SQL_CREATE_ENTRIES2 =
             "CREATE TABLE " + DBHelperItem2.TABLE_NAME + " (" +
                     DBHelperItem2._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
@@ -126,6 +132,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    /**
+     * The method returns the count of the files created in table 2 when the paused button is used by the user.
+     * @return
+     */
+
     public int getCount2() {
         int count=0;
         SQLiteDatabase db = getReadableDatabase();
@@ -149,6 +160,16 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * This method stores your audio recoding in the database with following information like - recording name,
+     * file path and length of your audio. After saving your file info in table one. It calls deleteFilesFromTable2() to
+     * delete all the entries from table2.
+     * @param recordingName
+     * @param filePath
+     * @param length
+     * @return
+     */
+
     public long addRecording(String recordingName, String filePath, long length) {
 
         SQLiteDatabase db = getWritableDatabase();
@@ -170,6 +191,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
+
+    /**
+     * Deletes all the entries from the table2 and also delete all the files created
+     * when recording audio using their absolute paths.
+     */
     private void deleteFilesFromTable2() {
         ArrayList<String> myList = getAllAppendingFiles();
 
@@ -184,6 +210,13 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+    /**
+     * Stores the info of all the files created when recording the audio in table2.
+     * @param recordingName
+     * @param filePath
+     * @param length
+     * @return
+     */
 
     public long addRecording2(String recordingName, String filePath, long length) {
 
@@ -199,6 +232,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return rowId;
     }
+
+    /**
+     * Returns the absolute paths of all the files stored in table2.
+     * @return
+     */
 
     public ArrayList<String> getAllAppendingFiles()
     {
@@ -253,6 +291,10 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
+    /**
+     * Clears table2.
+     */
+
     public void clearTable2() {
         SQLiteDatabase db = getWritableDatabase();
         int countOfRowsdeleted = db.delete(DBHelperItem2.TABLE_NAME, "1", null);
@@ -260,14 +302,20 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+
+    /**
+     * Returns the total length of your audio recorded file by adding the time of all the files in table2.
+     * @return
+     */
+
     public long getTotalTime() {
         SQLiteDatabase db = this.getWritableDatabase();
 
        long time=0;
 
-        Cursor cursor = db.query(DBHelperItem2.TABLE_NAME,new String[]{DBHelperItem.COLUMN_NAME_RECORDING_LENGTH
+        /*Cursor cursor = db.query(DBHelperItem2.TABLE_NAME,new String[]{DBHelperItem.COLUMN_NAME_RECORDING_LENGTH
                 },
-                null,null,null,null,null);
+                null,null,null,null,null);*/
 
         Cursor cur = db.rawQuery("SELECT SUM(length) FROM "+DBHelperItem2.TABLE_NAME, null);
         if(cur.moveToFirst())

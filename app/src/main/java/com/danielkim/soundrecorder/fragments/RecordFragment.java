@@ -170,12 +170,13 @@ public class RecordFragment extends Fragment {
 
             if(mPauseRecording)
             {
-
+                //if paused button is used first save the audio file to table2 and then start appending those audio file
+                // from table2.
                 recordingService.stopRecordingForPause();
-                recordingService.startAppendingAudio(true);
+                recordingService.startAppendingAudio();
             }else
             {
-                recordingService.startAppendingAudio(true);
+                recordingService.startAppendingAudio();
                 mPauseRecording=true;
 
             }

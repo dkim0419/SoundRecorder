@@ -62,6 +62,11 @@ public class RecordingService extends Service {
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
 
+
+    /**
+     * Binding this service with the RecordingService fragment for calling the methods of this service from the fragment.
+     */
+
     IBinder mBinder = new LocalBinder();
 
     @Override
@@ -69,6 +74,9 @@ public class RecordingService extends Service {
         return mBinder;
     }
 
+    /**
+     * This class returns an instance of this service class.
+     */
     public class LocalBinder extends Binder {
         public RecordingService getServerInstance() {
             return RecordingService.this;
@@ -97,19 +105,29 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-    public void startAppendingAudio(boolean isAudio)
+
+
+    /**
+     * This methods takes as input all the files which are created when the user used the paused button
+     * and append those files into one file. This method even works when the paused button is not used and only one audio file
+     * is created in table2.
+     *
+     * Refer to this library for better understanding the below method - https://github.com/sannies/mp4parser
+     */
+    public void startAppendingAudio()
     {
-
-
-
         try {
-            String mediaKey = isAudio ? "soun" : "vide";
+
+
+            String mediaKey = "soun" ;
             List<Movie> listMovies = new ArrayList<>();
+
+            // Getting the absolute paths of all the files from table two and saving them in this list;
             ArrayList<String> myList = mDatabase.getAllAppendingFiles();
 
             for(int i=0;i<myList.size();i++)
             {
-               // Log.d("check i ",String.valueOf(i) + String.valueOf(myList.get(i)));
+                Log.d("check i ",String.valueOf(i) + String.valueOf(myList.get(i)));
                 listMovies.add(MovieCreator.build(String.valueOf(myList.get(i))));
             }
 
@@ -157,7 +175,6 @@ public class RecordingService extends Service {
 
 
 
-
     public void startRecording() {
 
         setFileNameAndPath();
@@ -193,7 +210,7 @@ public class RecordingService extends Service {
         do{
             count++;
 
-            mFileName = "hello_recording"
+            mFileName = "paused_recording"
                     + "_" + (mDatabase.getCount2() + count) + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
@@ -202,6 +219,13 @@ public class RecordingService extends Service {
         }while (f.exists() && !f.isDirectory());
     }
 
+
+    /**
+     * After appending audio files from table2 this method stores the newly created audio file in table1.
+     * @param fileName
+     * @param filePath
+     * @param elapsedMilis
+     */
 
     public void stopRecording(String fileName,String filePath, long elapsedMilis) {
 
@@ -230,6 +254,10 @@ public class RecordingService extends Service {
         }
     }
 
+
+    /**
+     * This method stores the files to table2 when the recording stops (or paused) for the purpose of appending them later.
+     */
     public void stopRecordingForPause()
     {
         if(mRecorder!=null)
