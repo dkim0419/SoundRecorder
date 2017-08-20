@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    compile 'com.googlecode.mp4parser:isoparser:1.0.2'
 }

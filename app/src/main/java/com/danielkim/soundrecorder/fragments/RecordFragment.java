@@ -1,10 +1,14 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +18,14 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
+
+import static android.content.Context.BIND_AUTO_CREATE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,6 +41,8 @@ public class RecordFragment extends Fragment {
 
     private int position;
 
+    private DBHelper mDatabase;
+
     //Recording controls
     private FloatingActionButton mRecordButton = null;
     private Button mPauseButton = null;
@@ -43,6 +52,9 @@ public class RecordFragment extends Fragment {
 
     private boolean mStartRecording = true;
     private boolean mPauseRecording = true;
+
+    private boolean mBounded;
+    private RecordingService recordingService;
 
     private Chronometer mChronometer = null;
     long timeWhenPaused = 0; //stores time when user clicks pause button
@@ -69,6 +81,9 @@ public class RecordFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         position = getArguments().getInt(ARG_POSITION);
+        recordingService = new RecordingService();
+
+        mDatabase = new DBHelper(getActivity());
     }
 
     @Override
@@ -113,7 +128,7 @@ public class RecordFragment extends Fragment {
         if (start) {
             // start recording
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            //mPauseButton.setVisibility(View.VISIBLE);
+            mPauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {
@@ -142,6 +157,8 @@ public class RecordFragment extends Fragment {
 
             //start RecordingService
             getActivity().startService(intent);
+            recordingService.startRecording();
+
             //keep screen on while recording
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -150,15 +167,28 @@ public class RecordFragment extends Fragment {
 
         } else {
             //stop recording
-            mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-            //mPauseButton.setVisibility(View.GONE);
+
+            if(mPauseRecording)
+            {
+                //if paused button is used first save the audio file to table2 and then start appending those audio file
+                // from table2.
+                recordingService.stopRecordingForPause();
+                recordingService.startAppendingAudio();
+            }else
+            {
+                recordingService.startAppendingAudio();
+                mPauseRecording=true;
+
+            }
+           mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
+            mPauseButton.setVisibility(View.GONE);
             mChronometer.stop();
             mChronometer.setBase(SystemClock.elapsedRealtime());
             timeWhenPaused = 0;
             mRecordingPrompt.setText(getString(R.string.record_prompt));
 
             getActivity().stopService(intent);
-            //allow the screen to turn off again once recording is finished
+
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
@@ -166,12 +196,19 @@ public class RecordFragment extends Fragment {
     //TODO: implement pause recording
     private void onPauseRecord(boolean pause) {
         if (pause) {
-            //pause recording
+
+            mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
+
+            mRecordingPrompt.setText(getString(R.string.record_prompt));
+
+            recordingService.stopRecordingForPause();
+
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
+            mRecordingPrompt.setText("Resume or stop recording");
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
+
         } else {
             //resume recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
@@ -179,6 +216,43 @@ public class RecordFragment extends Fragment {
             mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
+            recordingService.startRecording();
+
+
         }
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent mIntent = new Intent(getActivity(),RecordingService.class);
+        getActivity().bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+
+    }
+
+    ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceDisconnected(ComponentName name) {
+            mBounded = false;
+            recordingService = null;
+        }
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mBounded = true;
+            RecordingService.LocalBinder mLocalBinder = (RecordingService.LocalBinder)service;
+            recordingService = mLocalBinder.getServerInstance();
+        }
+    };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mBounded) {
+            getActivity().unbindService(mConnection);
+            mBounded = false;
+        }
+    }
+
+
+
 }

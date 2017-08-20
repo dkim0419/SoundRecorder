@@ -1,8 +1,11 @@
 package com.danielkim.soundrecorder.activities;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +18,7 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.danielkim.soundrecorder.R;
+import com.danielkim.soundrecorder.RecordingService;
 import com.danielkim.soundrecorder.fragments.FileViewerFragment;
 import com.danielkim.soundrecorder.fragments.LicensesFragment;
 import com.danielkim.soundrecorder.fragments.RecordFragment;
@@ -27,6 +31,8 @@ public class MainActivity extends ActionBarActivity{
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +42,8 @@ public class MainActivity extends ActionBarActivity{
         pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
@@ -98,6 +106,8 @@ public class MainActivity extends ActionBarActivity{
             return titles[position];
         }
     }
+
+
 
     public MainActivity() {
     }
