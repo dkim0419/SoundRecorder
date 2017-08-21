@@ -4,6 +4,7 @@
 
 package com.danielkim.soundrecorder.fragments;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,7 +46,7 @@ public class ScheduledRecordingsFragment extends Fragment {
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
-    private TextView tvMsg;
+    private TextView tvDate;
 
     private RecyclerView.Adapter adapter;
     private List<ScheduledRecordingItem> scheduledRecordings;
@@ -79,7 +80,7 @@ public class ScheduledRecordingsFragment extends Fragment {
         adapter = new ItemAdapter(scheduledRecordings);
         recyclerView.setAdapter(adapter);
         // Msg.
-        tvMsg = (TextView) v.findViewById(R.id.tvMsg);
+        tvDate = (TextView) v.findViewById(R.id.tvDate);
 
         new GetScheduledRecordingsTask().execute();
 
@@ -113,8 +114,7 @@ public class ScheduledRecordingsFragment extends Fragment {
         ((ItemAdapter) adapter).setItems(scheduledRecordings);
         adapter.notifyDataSetChanged();
 
-        String msg = scheduledRecordings.size() > 0 ? getString(R.string.frag_sched_details) : getString(R.string.frag_sched_no_recordings);
-        tvMsg.setText(msg);
+        tvDate.setText(new SimpleDateFormat("EEEE, d", Locale.getDefault()).format(date));
     }
 
     // Retrieve all scheduled recordings in a separate thread.
@@ -145,18 +145,21 @@ public class ScheduledRecordingsFragment extends Fragment {
 
         // ViewHolder.
         public class ItemViewHolder extends RecyclerView.ViewHolder {
-            private final TextView tvTime;
-            private final TextView tvDate;
+            private final TextView tvStart;
+            private final TextView tvEnd;
+            private final TextView tvColor;
 
             public ItemViewHolder(View v) {
                 super(v);
-                tvTime = (TextView) v.findViewById(R.id.tvTime);
-                tvDate = (TextView) v.findViewById(R.id.tvDate);
+                tvStart = (TextView) v.findViewById(R.id.tvStart);
+                tvEnd = (TextView) v.findViewById(R.id.tvEnd);
+                tvColor = (TextView) v.findViewById(R.id.tvColor);
             }
         }
 
         // Adapter.
         private List<ScheduledRecordingItem> items;
+        private int[] colors = {Color.argb()};
 
         public ItemAdapter(List<ScheduledRecordingItem> items) {
             this.items = items;
@@ -185,8 +188,8 @@ public class ScheduledRecordingsFragment extends Fragment {
             ScheduledRecordingItem item = items.get(position);
             if (item == null) return;
             DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            holder.tvTime.setText(dateFormat.format(new Date(item.getStart())) + " - " + dateFormat.format(new Date(item.getEnd())));
-            holder.tvDate.setText(new SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(new Date(item.getStart())));
+            holder.tvStart.setText(dateFormat.format(new Date(item.getStart())));
+            holder.tvEnd.setText(dateFormat.format(new Date(item.getEnd())));
         }
     }
 }
