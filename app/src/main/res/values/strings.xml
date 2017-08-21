@@ -45,5 +45,8 @@
 
     <!-- Fragments -->
     <string name="frag_sched_title">Scheduled recordings</string>
+    <string name="frag_sched_scheduled_recording">scheduled recording</string>
+    <string name="frag_sched_no_recordings">no scheduled recordings</string>
+    <string name="frag_sched_details">Details</string>
 
 </resources>

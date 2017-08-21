@@ -2,13 +2,14 @@ package com.danielkim.soundrecorder;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 /**
  * POJO representing a scheduled recording, mapping scheduled recordings in the table
  * "scheduled_recordings" of the database.
  */
 
-public class ScheduledRecordingItem implements Parcelable {
+public class ScheduledRecordingItem implements Parcelable, Comparable<ScheduledRecordingItem> {
 
     private long id;
     private long start;
@@ -74,5 +75,12 @@ public class ScheduledRecordingItem implements Parcelable {
         parcel.writeLong(id);
         parcel.writeLong(start);
         parcel.writeLong(end);
+    }
+
+    // Implementation of Comparable interface.
+
+    @Override
+    public int compareTo(@NonNull ScheduledRecordingItem scheduledRecordingItem) {
+        return (int) (getStart() - scheduledRecordingItem.getStart());
     }
 }
