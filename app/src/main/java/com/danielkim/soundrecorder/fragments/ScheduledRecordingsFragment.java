@@ -4,6 +4,8 @@
 
 package com.danielkim.soundrecorder.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,11 @@ import android.widget.TextView;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.ScheduledRecordingItem;
+import com.danielkim.soundrecorder.activities.AddScheduledRecordingActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +45,7 @@ import java.util.Locale;
 public class ScheduledRecordingsFragment extends Fragment {
 
     private static final String ARG_POSITION = "position";
-    private static final String TAG = "CalendarFragment";
+    private static final int ADD_SCHEDULED_RECORDING = 0;
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
@@ -50,6 +53,7 @@ public class ScheduledRecordingsFragment extends Fragment {
 
     private RecyclerView.Adapter adapter;
     private List<ScheduledRecordingItem> scheduledRecordings;
+    private Date selectedDate;
 
     public static ScheduledRecordingsFragment newInstance(int position) {
         ScheduledRecordingsFragment f = new ScheduledRecordingsFragment();
@@ -79,8 +83,13 @@ public class ScheduledRecordingsFragment extends Fragment {
         scheduledRecordings = new ArrayList<>();
         adapter = new ItemAdapter(scheduledRecordings);
         recyclerView.setAdapter(adapter);
-        // Msg.
+        // Selected day.
         tvDate = (TextView) v.findViewById(R.id.tvDate);
+        // Add new scheduled recording button.
+        FloatingActionButton mRecordButton = (FloatingActionButton) v.findViewById(R.id.fab_add);
+        mRecordButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.primary));
+        mRecordButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.primary_dark));
+        mRecordButton.setOnClickListener(addScheduledRecordingListener);
 
         new GetScheduledRecordingsTask().execute();
 
@@ -91,6 +100,7 @@ public class ScheduledRecordingsFragment extends Fragment {
     private final CompactCalendarView.CompactCalendarViewListener myCalendarViewListener = new CompactCalendarView.CompactCalendarViewListener() {
         @Override
         public void onDayClick(Date date) {
+            selectedDate = date;
             displayScheduledRecordings(date);
         }
 
@@ -125,13 +135,12 @@ public class ScheduledRecordingsFragment extends Fragment {
         }
 
         protected List<ScheduledRecordingItem> doInBackground(Void... params) {
-
             return dbHelper.getAllScheduledRecordings();
         }
 
         protected void onPostExecute(List<ScheduledRecordingItem> scheduledRecordings) {
+            calendarView.removeAllEvents();
             for (ScheduledRecordingItem item : scheduledRecordings) {
-                Log.d(TAG, item.toString());
                 Event event = new Event(ContextCompat.getColor(getActivity(), R.color.accent), item.getStart(), item);
                 calendarView.addEvent(event, false);
             }
@@ -196,6 +205,26 @@ public class ScheduledRecordingsFragment extends Fragment {
 
             int posCol = position % (colors.length);
             holder.tvColor.setBackgroundColor(colors[posCol]);
+        }
+    }
+
+    // Click listener of the button to add a new scheduled recording.
+    private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(getActivity(), AddScheduledRecordingActivity.class);
+            intent.putExtra(AddScheduledRecordingActivity.EXTRA_DATE_LONG, selectedDate.getTime());
+            startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
+        }
+    };
+
+    // After a new scheduled recording has been added, get all the recordings and refresh the layout.
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ADD_SCHEDULED_RECORDING && resultCode == Activity.RESULT_OK) {
+            new GetScheduledRecordingsTask().execute();
         }
     }
 }

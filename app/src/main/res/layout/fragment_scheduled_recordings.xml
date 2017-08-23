@@ -76,4 +76,18 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/compactcalendar_view" />
 
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_add_white_24dp"
+        app:fab_colorNormal="@color/primary"
+        app:fab_colorPressed="@color/primary"
+        app:fab_shadow="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

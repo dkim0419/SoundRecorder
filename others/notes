@@ -1,3 +1,8 @@
+what's next:
+- create minimal interface for adding a scheduled recording
+- test the app
+- improve the UI
+
 TODO:
 - check dangerous permissions when inserting a scheduled recorder
 - RecordingService: what if a scheduled recording is ongoing and the user presses the record
