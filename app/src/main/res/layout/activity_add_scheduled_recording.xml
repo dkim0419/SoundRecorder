@@ -22,30 +22,40 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/act_addsched_schedule_recording"
-        app:layout_constraintLeft_toRightOf="@+id/imageView2"
+        android:layout_marginBottom="0dp"
         android:layout_marginLeft="16dp"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
         android:layout_marginTop="0dp"
+        android:text="@string/act_addsched_schedule_recording"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        android:layout_marginBottom="0dp" />
+        app:layout_constraintLeft_toRightOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
     <TextView
         android:id="@+id/tvDateStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
-        android:layout_marginTop="16dp"
-        tools:text="Mer 23 Ago 2017"
+        android:layout_marginTop="32dp"
+        android:background="?android:attr/selectableItemBackground "
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:text="Mer 23 Ago 2017" />
 
     <TextView
         android:id="@+id/tvDateEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackground "
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/tvDateStart"
         tools:text="Mer 23 Ago 2017" />
@@ -55,16 +65,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        tools:text="10:00"
+        android:background="?android:attr/selectableItemBackground "
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateStart"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateStart" />
+        tools:text="10:00" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/tvTimeEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        tools:text="11:00"
+        android:background="?android:attr/selectableItemBackground "
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateEnd"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateEnd" />
+        tools:text="11:00" />
 </android.support.constraint.ConstraintLayout>

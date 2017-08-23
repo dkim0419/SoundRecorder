@@ -11,9 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:fab_colorNormal="@color/primary"
-        android:src="@drawable/ic_mic_white_36dp"
-        android:layout_alignBottom="@+id/btnPause"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_mic_white_36dp" />
 
     <Chronometer
         android:layout_width="wrap_content"
