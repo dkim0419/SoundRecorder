@@ -114,7 +114,7 @@ public class ScheduledRecordingsFragment extends Fragment {
         ((ItemAdapter) adapter).setItems(scheduledRecordings);
         adapter.notifyDataSetChanged();
 
-        tvDate.setText(new SimpleDateFormat("EEEE, d", Locale.getDefault()).format(date));
+        tvDate.setText(new SimpleDateFormat("EEEE d", Locale.getDefault()).format(date));
     }
 
     // Retrieve all scheduled recordings in a separate thread.
@@ -159,7 +159,10 @@ public class ScheduledRecordingsFragment extends Fragment {
 
         // Adapter.
         private List<ScheduledRecordingItem> items;
-        private int[] colors = {Color.argb()};
+        private final int[] colors = {Color.argb(255, 255, 193, 7),
+                Color.argb(255, 244, 67, 54), Color.argb(255, 99, 233, 112),
+                Color.argb(255, 7, 168, 255), Color.argb(255, 255, 7, 251),
+                Color.argb(255, 255, 61, 7), Color.argb(255, 205, 7, 255)};
 
         public ItemAdapter(List<ScheduledRecordingItem> items) {
             this.items = items;
@@ -190,6 +193,9 @@ public class ScheduledRecordingsFragment extends Fragment {
             DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
             holder.tvStart.setText(dateFormat.format(new Date(item.getStart())));
             holder.tvEnd.setText(dateFormat.format(new Date(item.getEnd())));
+
+            int posCol = position % (colors.length);
+            holder.tvColor.setBackgroundColor(colors[posCol]);
         }
     }
 }
