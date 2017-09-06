@@ -73,6 +73,7 @@
         android:textSize="16sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvDateStart"
         app:layout_constraintRight_toRightOf="parent"
+        android:onClick="showTimePickerDialog"
         tools:text="10:00" />
 
     <TextView
@@ -86,5 +87,6 @@
         android:textSize="16sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvDateEnd"
         app:layout_constraintRight_toRightOf="parent"
+        android:onClick="showTimePickerDialog"
         tools:text="11:00" />
 </android.support.constraint.ConstraintLayout>
