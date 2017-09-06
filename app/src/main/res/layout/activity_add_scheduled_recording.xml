@@ -38,12 +38,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="32dp"
-        android:background="?android:attr/selectableItemBackground "
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:textColor="@color/primary_text"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:onClick="showDatePickerDialog"
         tools:text="Mer 23 Ago 2017" />
 
     <TextView
@@ -52,12 +53,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="16dp"
-        android:background="?android:attr/selectableItemBackground "
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:textColor="@color/primary_text"
         android:textSize="16sp"
         app:layout_constraintLeft_toLeftOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/tvDateStart"
+        android:onClick="showDatePickerDialog"
         tools:text="Mer 23 Ago 2017" />
 
     <TextView
@@ -65,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        android:background="?android:attr/selectableItemBackground "
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:textColor="@color/primary_text"
         android:textSize="16sp"
@@ -78,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        android:background="?android:attr/selectableItemBackground "
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:textColor="@color/primary_text"
         android:textSize="16sp"
