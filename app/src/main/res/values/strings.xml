@@ -5,6 +5,7 @@
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">Licenses</string>
     <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
     <string name="tab_title_record">Record</string>
     <string name="tab_title_saved_recordings">Saved Recordings</string>
     <string name="tab_title_scheduled_recordings">Scheduled Recordings</string>
@@ -14,6 +15,9 @@
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
+    <string name="toast_time_uncorrect">The start time of the recording must be before the end time!</string>
+    <string name="toast_scheduledrecording_added">The scheduled recording was set</string>
+    <string name="toast_scheduledrecording_added_error">An error occured while adding the scheduled recording!</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>

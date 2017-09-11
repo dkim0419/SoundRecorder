@@ -5,6 +5,7 @@
     <string name="app_name">Registratore suoni</string>
     <string name="action_licenses">Licenze</string>
     <string name="action_settings">Impostazioni</string>
+    <string name="action_save">Salva</string>
     <string name="tab_title_record">Registra</string>
     <string name="tab_title_saved_recordings">Registrazioni salvate</string>
 
@@ -13,6 +14,9 @@
     <string name="toast_recording_finish">Registazione salvata in</string>
     <string name="toast_file_delete">%1$s eliminato con successo</string>
     <string name="toast_file_exists">Il file %1$s già esiste. Scegliere un nome del file differente.</string>
+    <string name="toast_time_uncorrect">L\'ora iniziale della registrazione deve essere precedente all\'ora finale!</string>
+    <string name="toast_scheduledrecording_added">La registrazione è stata pianificata</string>
+    <string name="toast_scheduledrecording_added_error">Errore nell\'inserimento  della registrazione pianificata!</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Registrazione...</string>

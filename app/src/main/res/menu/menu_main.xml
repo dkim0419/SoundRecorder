@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
     <!-- View Open Source Licenses -->
     <item
-        android:id="@+id/action_licenses"
+        android:id="@+id/action_save"
         android:title="@string/action_licenses"
         android:orderInCategory="100"
         app:showAsAction="never" />

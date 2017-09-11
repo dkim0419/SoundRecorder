@@ -1,19 +1,18 @@
 package com.danielkim.soundrecorder.fragments;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.widget.DatePicker;
+import android.text.format.DateFormat;
+import android.widget.TimePicker;
 
 import java.util.Calendar;
 
 /**
  * Shows a dialog to pick a time (hour and minute).
- * Communicates the date selected through an interface.
+ * Communicates the time selected through an interface.
  * This class stores and communicates the id of the view that needs the time, so it can be used
  * for different views within the same Activity/Fragment.
  */
@@ -21,11 +20,10 @@ import java.util.Calendar;
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     private static final String VIEW_ID = "view_id";
 
-    private long viewId;
-    private DatePickerFragment.MyOnDateSetListener listener;
+    private MyOnTimeSetListener listener;
 
-    public static DatePickerFragment newInstance(long viewId) {
-        DatePickerFragment f = new DatePickerFragment();
+    public static TimePickerFragment newInstance(long viewId) {
+        TimePickerFragment f = new TimePickerFragment();
         Bundle bundle = new Bundle();
         bundle.putLong(VIEW_ID, viewId);
         f.setArguments(bundle);
@@ -33,18 +31,13 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         return f;
     }
 
-    public long getViewId() {
-        return getArguments().getLong(VIEW_ID, 0);
-    }
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
 
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
     }
 
     @Override
@@ -52,22 +45,22 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         super.onAttach(context);
 
         try {
-            listener = (DatePickerFragment.MyOnDateSetListener) context;
+            listener = (TimePickerFragment.MyOnTimeSetListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(((Activity) context).toString() + "must implement DatePickerFragment.MyOnDateSetListener");
+            throw new ClassCastException(context.toString() + "must implement TimePickerFragment.MyOnTimeSetListener");
         }
     }
 
     @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
         if (listener != null) {
-            listener.onDateSet(getArguments().getLong(VIEW_ID, 0), year, month, day);
+            listener.onTimeSet(getArguments().getLong(VIEW_ID, 0), hourOfDay, minute);
         }
     }
 
     // Interface form communication with the Activity.
-    public interface MyOnDateSetListener {
-        void onDateSet(long viewId, int year, int month, int day);
+    public interface MyOnTimeSetListener {
+        void onTimeSet(long viewId, int hour, int minute);
     }
 
 }
