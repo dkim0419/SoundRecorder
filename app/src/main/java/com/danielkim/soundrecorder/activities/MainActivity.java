@@ -31,29 +31,6 @@ public class MainActivity extends ActionBarActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Test: TODO delete
-
-/*
-        DBHelper dbHelper = new DBHelper(this);
-        dbHelper.restoreDatabase();
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 23, 23, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 23, 23, 30).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 23, 20, 15).getTimeInMillis(), new GregorianCalendar(2017, 7, 23, 20, 30).getTimeInMillis());
-
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 25, 13, 30).getTimeInMillis(), new GregorianCalendar(2017, 7, 25, 13, 45).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 25, 10, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 25, 11, 00).getTimeInMillis());
-
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 15, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 16, 30).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 7, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 8, 00).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 21, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 21, 30).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 10, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 10, 30).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 11, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 11, 15).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 06, 00).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 06, 30).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 11, 45).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 12, 15).getTimeInMillis());
-        dbHelper.addScheduledRecording(new GregorianCalendar(2017, 7, 28, 12, 25).getTimeInMillis(), new GregorianCalendar(2017, 7, 28, 12, 35).getTimeInMillis());
-*/
-
-        // end test
-
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -80,7 +57,7 @@ public class MainActivity extends ActionBarActivity{
         // as you specify a parent activity in AndroidManifest.xml.
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_licenses:
+            case R.id.action_save:
                 openLicenses();
                 return true;
             default:

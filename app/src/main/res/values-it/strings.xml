@@ -14,9 +14,11 @@
     <string name="toast_recording_finish">Registazione salvata in</string>
     <string name="toast_file_delete">%1$s eliminato con successo</string>
     <string name="toast_file_exists">Il file %1$s già esiste. Scegliere un nome del file differente.</string>
-    <string name="toast_time_uncorrect">L\'ora iniziale della registrazione deve essere precedente all\'ora finale!</string>
+    <string name="toast_scheduledrecording_time_uncorrect">L\'ora iniziale della registrazione deve essere precedente all\'ora finale!</string>
     <string name="toast_scheduledrecording_added">La registrazione è stata pianificata</string>
     <string name="toast_scheduledrecording_added_error">Errore nell\'inserimento  della registrazione pianificata!</string>
+    <string name="toast_scheduledrecording_deleted_error">Errore nell\'eliminazione  della registrazione pianificata!</string>
+    <string name="toast_scheduledrecording_deleted">Elemento cancellato con successo</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Registrazione...</string>
@@ -24,13 +26,16 @@
     <!-- Dialogs -->
     <string name="dialog_title_delete">Conferma cancellazione</string>
     <string name="dialog_text_delete">Sei sicuro di voler cancellare questo file?</string>
+    <string name="dialog_text_delete_generic">Sei sicuro di voler cancellare questo elemento?</string>
     <string name="dialog_title_licenses">Licenze open source</string>
     <string name="dialog_title_rename">Rinomina file</string>
     <string name="dialog_title_options">Opzioni</string>
 
     <string name="dialog_file_rename">Rinomina file</string>
     <string name="dialog_file_delete">Elimina file</string>
-    <string name="dialog_action_cancel">Elimina</string>
+    <string name="dialog_file_edit">Modifica</string>
+    <string name="dialog_item_delete">Elimina elemento</string>
+    <string name="dialog_action_cancel">Annulla</string>
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Sì</string>
     <string name="dialog_action_no">No</string>

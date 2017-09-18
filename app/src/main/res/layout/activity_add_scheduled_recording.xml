@@ -15,9 +15,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:background="?attr/colorPrimary"
+        android:background="@color/primary"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:theme="@style/ToolbarWhiteArrow"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 

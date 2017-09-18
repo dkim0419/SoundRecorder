@@ -15,9 +15,12 @@
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
-    <string name="toast_time_uncorrect">The start time of the recording must be before the end time!</string>
+    <string name="toast_scheduledrecording_time_uncorrect">The start time of the recording must be before the end time!</string>
     <string name="toast_scheduledrecording_added">The scheduled recording was set</string>
     <string name="toast_scheduledrecording_added_error">An error occured while adding the scheduled recording!</string>
+    <string name="toast_scheduledrecording_deleted_error">An error occured while deleting the scheduled recording!</string>
+    <string name="toast_scheduledrecording_deleted">Item successfully deleted</string>
+
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
@@ -25,6 +28,7 @@
     <!-- Dialogs -->
     <string name="dialog_title_delete">Confirm Delete...</string>
     <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
+    <string name="dialog_text_delete_generic">Are you sure you would like to delete the selected item?</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_share">Share File</string>
     <string name="dialog_title_rename">Rename File</string>
@@ -33,6 +37,8 @@
     <string name="dialog_file_share">Share File</string>
     <string name="dialog_file_rename">Rename File</string>
     <string name="dialog_file_delete">Delete File</string>
+    <string name="dialog_file_edit">Edit</string>
+    <string name="dialog_item_delete">Delete Item</string>
     <string name="dialog_action_cancel">Cancel</string>
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>

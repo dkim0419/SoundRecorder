@@ -5,10 +5,13 @@
 package com.danielkim.soundrecorder.activities;
 
 import android.app.DialogFragment;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
+import com.danielkim.soundrecorder.ScheduledRecordingItem;
 import com.danielkim.soundrecorder.database.DBHelper;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment.MyOnDateSetListener;
@@ -37,6 +41,7 @@ import java.util.Locale;
 
 public class AddScheduledRecordingActivity extends AppCompatActivity implements MyOnDateSetListener, MyOnTimeSetListener {
     public static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
+    public static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
 
     private TextView tvDateStart;
     private TextView tvDateEnd;
@@ -49,12 +54,28 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private boolean timesCorrect = true;
 
 
+    public static Intent makeIntent(Context context, long selectedDate) {
+        Intent intent = new Intent(context, AddScheduledRecordingActivity.class);
+        intent.putExtra(EXTRA_DATE_LONG, selectedDate);
+        return intent;
+    }
+
+    public static Intent makeIntent(Context context, ScheduledRecordingItem item) {
+        Intent intent = new Intent(context, AddScheduledRecordingActivity.class);
+        intent.putExtra(EXTRA_ITEM, item);
+        return intent;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_scheduled_recording);
+        // Action bar (Toolbar).
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayShowTitleEnabled(false); // hide the title
+        ab.setDisplayHomeAsUpEnabled(true);
 
 
         tvDateStart = (TextView) findViewById(R.id.tvDateStart);
@@ -171,7 +192,7 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         if (timesCorrect) {
             new AddScheduledRecordingsTask().execute();
         } else {
-            Toast.makeText(this, getString(R.string.toast_time_uncorrect), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.toast_scheduledrecording_time_uncorrect), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -187,6 +208,8 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         protected void onPostExecute(Long rowId) {
             String msg = rowId == -1 ? getString(R.string.toast_scheduledrecording_added_error) : getString(R.string.toast_scheduledrecording_added);
             Toast.makeText(AddScheduledRecordingActivity.this, msg, Toast.LENGTH_SHORT).show();
+            if (rowId != -1)
+                setResult(RESULT_OK);
             finish();
         }
     }

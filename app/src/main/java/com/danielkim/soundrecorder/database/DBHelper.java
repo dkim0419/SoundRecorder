@@ -171,10 +171,6 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put(TableScheduledRecording.COLUMN_NAME_END, end);
         long rowId = db.insert(TableScheduledRecording.TABLE_NAME, null, cv);
 
-        if (mOnDatabaseChangedListener != null) {
-            mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
-        }
-
         return rowId;
     }
 
@@ -194,10 +190,6 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] whereArgs = {String.valueOf(id)};
         updated = db.update(TableScheduledRecording.TABLE_NAME, cv,
                 TableScheduledRecording._ID + "= ?", whereArgs);
-
-        if (mOnDatabaseChangedListener != null) {
-            mOnDatabaseChangedListener.onDatabaseEntryRenamed();
-        }
 
         return updated;
     }

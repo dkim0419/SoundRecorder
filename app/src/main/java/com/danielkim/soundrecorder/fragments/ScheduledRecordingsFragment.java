@@ -5,8 +5,9 @@
 package com.danielkim.soundrecorder.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.ScheduledRecordingItem;
@@ -42,10 +44,12 @@ import java.util.Locale;
  * Created by iClaude on 16/08/2017.
  */
 
-public class ScheduledRecordingsFragment extends Fragment {
+public class ScheduledRecordingsFragment extends Fragment implements ScheduledRecordingsFragmentItemAdapter.MyOnItemClickListener {
 
     private static final String ARG_POSITION = "position";
     private static final int ADD_SCHEDULED_RECORDING = 0;
+    private static final int EDIT_SCHEDULED_RECORDING = 1;
+    private static final String TAG = "SRFragment";
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
@@ -53,7 +57,7 @@ public class ScheduledRecordingsFragment extends Fragment {
 
     private RecyclerView.Adapter adapter;
     private List<ScheduledRecordingItem> scheduledRecordings;
-    private Date selectedDate;
+    private Date selectedDate = new Date(System.currentTimeMillis());
 
     public static ScheduledRecordingsFragment newInstance(int position) {
         ScheduledRecordingsFragment f = new ScheduledRecordingsFragment();
@@ -81,7 +85,7 @@ public class ScheduledRecordingsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         scheduledRecordings = new ArrayList<>();
-        adapter = new ItemAdapter(scheduledRecordings);
+        adapter = new ScheduledRecordingsFragmentItemAdapter(scheduledRecordings, this, recyclerView);
         recyclerView.setAdapter(adapter);
         // Selected day.
         tvDate = (TextView) v.findViewById(R.id.tvDate);
@@ -121,7 +125,7 @@ public class ScheduledRecordingsFragment extends Fragment {
             scheduledRecordings.add((ScheduledRecordingItem) event.getData());
         }
         Collections.sort(scheduledRecordings);
-        ((ItemAdapter) adapter).setItems(scheduledRecordings);
+        ((ScheduledRecordingsFragmentItemAdapter) adapter).setItems(scheduledRecordings);
         adapter.notifyDataSetChanged();
 
         tvDate.setText(new SimpleDateFormat("EEEE d", Locale.getDefault()).format(date));
@@ -145,66 +149,58 @@ public class ScheduledRecordingsFragment extends Fragment {
                 calendarView.addEvent(event, false);
             }
             calendarView.invalidate(); // refresh the calendar view
-            myCalendarViewListener.onDayClick(new Date(System.currentTimeMillis())); // click to show current day
+            myCalendarViewListener.onDayClick(selectedDate); // click to show current day
         }
     }
 
-    // Adapter of the RecyclerView.
-    public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder> {
+    // Click listener for the elements of the RecyclerView (for editing scheduled recordings).
+    @Override
+    public void onItemClick(ScheduledRecordingItem item) {
+        Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), item);
+        startActivityForResult(intent, EDIT_SCHEDULED_RECORDING);
+    }
 
-        // ViewHolder.
-        public class ItemViewHolder extends RecyclerView.ViewHolder {
-            private final TextView tvStart;
-            private final TextView tvEnd;
-            private final TextView tvColor;
+    // Long click listener for the elements of the RecyclerView (for deleting or renaming scheduled recordings).
+    @Override
+    public void onItemLongClick(ScheduledRecordingItem item) {
+        // Item delete confirm
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.dialog_title_delete));
+        builder.setMessage(R.string.dialog_text_delete_generic);
+        builder.setPositiveButton(R.string.dialog_action_ok,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        new DeleteItemTask().execute(item.getId());
+                    }
+                });
+        builder.setCancelable(true);
+        builder.setNegativeButton(getString(R.string.dialog_action_cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
 
-            public ItemViewHolder(View v) {
-                super(v);
-                tvStart = (TextView) v.findViewById(R.id.tvStart);
-                tvEnd = (TextView) v.findViewById(R.id.tvEnd);
-                tvColor = (TextView) v.findViewById(R.id.tvColor);
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    // Retrieve all scheduled recordings in a separate thread.
+    private class DeleteItemTask extends AsyncTask<Long, Void, Integer> {
+        private final DBHelper dbHelper = new DBHelper(getActivity());
+
+        protected Integer doInBackground(Long... params) {
+            return dbHelper.removeScheduledRecording(params[0]);
+        }
+
+        protected void onPostExecute(Integer result) {
+            if (result > 0) {
+                Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted), Toast.LENGTH_SHORT).show();
+                new GetScheduledRecordingsTask().execute();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted_error), Toast.LENGTH_SHORT).show();
             }
-        }
-
-        // Adapter.
-        private List<ScheduledRecordingItem> items;
-        private final int[] colors = {Color.argb(255, 255, 193, 7),
-                Color.argb(255, 244, 67, 54), Color.argb(255, 99, 233, 112),
-                Color.argb(255, 7, 168, 255), Color.argb(255, 255, 7, 251),
-                Color.argb(255, 255, 61, 7), Color.argb(255, 205, 7, 255)};
-
-        public ItemAdapter(List<ScheduledRecordingItem> items) {
-            this.items = items;
-        }
-
-        public void setItems(List<ScheduledRecordingItem> items) {
-            this.items = items;
-        }
-
-        @Override
-        public int getItemCount() {
-            return items.size();
-        }
-
-        @Override
-        public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View view = LayoutInflater
-                    .from(viewGroup.getContext())
-                    .inflate(R.layout.fragment_scheduled_recordings_item, viewGroup, false);
-
-            return new ItemViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ItemViewHolder holder, int position) {
-            ScheduledRecordingItem item = items.get(position);
-            if (item == null) return;
-            DateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            holder.tvStart.setText(dateFormat.format(new Date(item.getStart())));
-            holder.tvEnd.setText(dateFormat.format(new Date(item.getEnd())));
-
-            int posCol = position % (colors.length);
-            holder.tvColor.setBackgroundColor(colors[posCol]);
         }
     }
 
@@ -212,8 +208,7 @@ public class ScheduledRecordingsFragment extends Fragment {
     private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(getActivity(), AddScheduledRecordingActivity.class);
-            intent.putExtra(AddScheduledRecordingActivity.EXTRA_DATE_LONG, selectedDate.getTime());
+            Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
             startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
         }
     };
