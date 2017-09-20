@@ -26,6 +26,9 @@ public class RecordingsContract {
         public static final String COLUMN_NAME_END = "end"; // length of the recording in ms
     }
 
+    // Requirements.
+    public static final int MIN_DURATION = 1000 * 60 * 5; // 5 minutes
+    public static final int MAX_DURATION = 1000 * 60 * 60 * 3; // 3 hours
 
     private RecordingsContract() {
     }

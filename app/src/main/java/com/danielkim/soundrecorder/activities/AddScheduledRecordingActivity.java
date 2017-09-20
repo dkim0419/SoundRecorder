@@ -35,6 +35,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import static com.danielkim.soundrecorder.database.RecordingsContract.MAX_DURATION;
+import static com.danielkim.soundrecorder.database.RecordingsContract.MIN_DURATION;
+
 /**
  * Activity used to add a new scheduled recording.
  */
@@ -42,6 +45,9 @@ import java.util.Locale;
 public class AddScheduledRecordingActivity extends AppCompatActivity implements MyOnDateSetListener, MyOnTimeSetListener {
     public static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
     public static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
+    private static final int ERROR_NO_ERROR = -1;
+    private static final int ERROR_START_AFTER_END = 0;
+    private static final int ERROR_TIME_PAST = 1;
 
     private TextView tvDateStart;
     private TextView tvDateEnd;
@@ -51,7 +57,8 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private int yearStart, monthStart, dayStart, hourStart, minuteStart;
     private int yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd;
-    private boolean timesCorrect = true;
+    private int timeErrorCode = ERROR_NO_ERROR;
+    private final int[] errorMsgs = {R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past};
 
 
     public static Intent makeIntent(Context context, long selectedDate) {
@@ -85,7 +92,9 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
 
         long selectedDateLong = getIntent().getLongExtra(EXTRA_DATE_LONG, System.currentTimeMillis());
         initVariables(selectedDateLong);
+        checkDatesAndTimes();
         displayDatesAndTimes();
+
     }
 
     // Initialize starting and ending days and times.
@@ -151,23 +160,28 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     }
 
     private void checkDatesAndTimes() {
-        if (!datesTimesCorrect()) {
-            timesCorrect = false;
+        timeErrorCode = getTimeErrorCode();
+        if (timeErrorCode != ERROR_NO_ERROR) {
             tvDateStart.setTextColor(ContextCompat.getColor(this, R.color.primary_dark));
             tvTimeStart.setTextColor(ContextCompat.getColor(this, R.color.primary_dark));
-
         } else {
-            timesCorrect = true;
             tvDateStart.setTextColor(ContextCompat.getColor(this, R.color.primary_text));
             tvTimeStart.setTextColor(ContextCompat.getColor(this, R.color.primary_text));
         }
     }
 
-    // Dates and times are correct?
-    private boolean datesTimesCorrect() {
+    // Dates and times are correct? What kind of error there is?
+    private int getTimeErrorCode() {
         Calendar start = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart);
         Calendar end = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd);
-        return end.after(start);
+
+        if (System.currentTimeMillis() > start.getTimeInMillis()) {
+            return ERROR_TIME_PAST;
+        } else if (end.before(start)) {
+            return ERROR_START_AFTER_END;
+        } else {
+            return ERROR_NO_ERROR;
+        }
     }
 
     @Override
@@ -189,10 +203,10 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     }
 
     private void addScheduledRecording() {
-        if (timesCorrect) {
+        if (timeErrorCode == ERROR_NO_ERROR) {
             new AddScheduledRecordingsTask().execute();
         } else {
-            Toast.makeText(this, getString(R.string.toast_scheduledrecording_time_uncorrect), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(errorMsgs[timeErrorCode]), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -202,6 +216,11 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         protected Long doInBackground(Void... params) {
             long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
             long endLong = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).getTimeInMillis();
+            if (endLong - startLong < MIN_DURATION) {
+                endLong = startLong + MIN_DURATION; // a scheduled recording must be at least 5 minutes
+            } else if (endLong - startLong > MAX_DURATION) {
+                endLong = startLong + MAX_DURATION; // a scheduled recording must be at most 3 hours
+            }
             return dbHelper.addScheduledRecording(startLong, endLong);
         }
 

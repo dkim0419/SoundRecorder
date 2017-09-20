@@ -14,7 +14,8 @@
     <string name="toast_recording_finish">Registazione salvata in</string>
     <string name="toast_file_delete">%1$s eliminato con successo</string>
     <string name="toast_file_exists">Il file %1$s già esiste. Scegliere un nome del file differente.</string>
-    <string name="toast_scheduledrecording_time_uncorrect">L\'ora iniziale della registrazione deve essere precedente all\'ora finale!</string>
+    <string name="toast_scheduledrecording_timeerror_start_after_end">L\'ora iniziale della registrazione deve essere precedente all\'ora finale!</string>
+    <string name="toast_scheduledrecording_timeerror_past">Non è possibile pianificare una registrazione nel passato!</string>
     <string name="toast_scheduledrecording_added">La registrazione è stata pianificata</string>
     <string name="toast_scheduledrecording_added_error">Errore nell\'inserimento  della registrazione pianificata!</string>
     <string name="toast_scheduledrecording_deleted_error">Errore nell\'eliminazione  della registrazione pianificata!</string>

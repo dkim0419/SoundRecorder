@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity{
         // as you specify a parent activity in AndroidManifest.xml.
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_save:
+            case R.id.action_licenses:
                 openLicenses();
                 return true;
             default:
