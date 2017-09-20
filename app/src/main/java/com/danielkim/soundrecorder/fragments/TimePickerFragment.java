@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import java.util.Calendar;
-
 /**
  * Shows a dialog to pick a time (hour and minute).
  * Communicates the time selected through an interface.
@@ -18,14 +16,19 @@ import java.util.Calendar;
  */
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-    private static final String VIEW_ID = "view_id";
+    private static final String ARG_VIEW_ID = "ARG_VIEW_ID";
+    private static final String ARG_HOUR = "ARG_HOUR";
+    private static final String ARG_MINUTE = "ARG_MINUTE";
+
 
     private MyOnTimeSetListener listener;
 
-    public static TimePickerFragment newInstance(long viewId) {
+    public static TimePickerFragment newInstance(long viewId, int hour, int minute) {
         TimePickerFragment f = new TimePickerFragment();
         Bundle bundle = new Bundle();
-        bundle.putLong(VIEW_ID, viewId);
+        bundle.putLong(ARG_VIEW_ID, viewId);
+        bundle.putInt(ARG_HOUR, hour);
+        bundle.putInt(ARG_MINUTE, minute);
         f.setArguments(bundle);
 
         return f;
@@ -33,9 +36,8 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
+        int hour = getArguments().getInt(ARG_HOUR);
+        int minute = getArguments().getInt(ARG_MINUTE);
 
         return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
     }
@@ -54,7 +56,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     @Override
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
         if (listener != null) {
-            listener.onTimeSet(getArguments().getLong(VIEW_ID, 0), hourOfDay, minute);
+            listener.onTimeSet(getArguments().getLong(ARG_VIEW_ID, 0), hourOfDay, minute);
         }
     }
 

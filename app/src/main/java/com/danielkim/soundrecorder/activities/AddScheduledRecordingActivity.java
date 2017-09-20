@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -43,22 +44,35 @@ import static com.danielkim.soundrecorder.database.RecordingsContract.MIN_DURATI
  */
 
 public class AddScheduledRecordingActivity extends AppCompatActivity implements MyOnDateSetListener, MyOnTimeSetListener {
-    public static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
-    public static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
-    private static final int ERROR_NO_ERROR = -1;
-    private static final int ERROR_START_AFTER_END = 0;
-    private static final int ERROR_TIME_PAST = 1;
+    private enum Operation {ADD, EDIT}
+
+    ;
+
+    private interface StatusCodes {
+        int NO_ERROR = 0;
+        int ERROR_START_AFTER_END = 1;
+        int ERROR_TIME_PAST = 2;
+        int ERROR_ALREADY_SCHEDULED = 3;
+        int ERROR_SAVING = 4;
+    }
+
+    private static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
+    private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
 
     private TextView tvDateStart;
     private TextView tvDateEnd;
     private TextView tvTimeStart;
     private TextView tvTimeEnd;
 
+    private Operation operation;
+    private ScheduledRecordingItem item = null;
     private final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private int yearStart, monthStart, dayStart, hourStart, minuteStart;
     private int yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd;
-    private int timeErrorCode = ERROR_NO_ERROR;
-    private final int[] errorMsgs = {R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past};
+    private int statusCode = StatusCodes.NO_ERROR;
+    private final int[] errorMsgs = {R.string.toast_scheduledrecording_saved,
+            R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past,
+            R.string.toast_scheduledrecording_timeerror_already_scheduled, R.string.toast_scheduledrecording_saved_error};
 
 
     public static Intent makeIntent(Context context, long selectedDate) {
@@ -81,8 +95,10 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayShowTitleEnabled(false); // hide the title
-        ab.setDisplayHomeAsUpEnabled(true);
+        if (ab != null) {
+            ab.setDisplayShowTitleEnabled(false); // hide the title
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
 
         tvDateStart = (TextView) findViewById(R.id.tvDateStart);
@@ -91,14 +107,21 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         tvTimeEnd = (TextView) findViewById(R.id.tvTimeEnd);
 
         long selectedDateLong = getIntent().getLongExtra(EXTRA_DATE_LONG, System.currentTimeMillis());
-        initVariables(selectedDateLong);
+        item = getIntent().getParcelableExtra(EXTRA_ITEM);
+        if (item == null) {
+            initVariables(selectedDateLong);
+        } else {
+            initVariables(item);
+        }
         checkDatesAndTimes();
         displayDatesAndTimes();
 
     }
 
-    // Initialize starting and ending days and times.
+    // Initialize starting and ending days and times (operation = add).
     private void initVariables(long selectedDateLong) {
+        operation = Operation.ADD;
+
         Calendar cal = new GregorianCalendar();
         cal.setTimeInMillis(selectedDateLong);
         yearStart = yearEnd = cal.get(Calendar.YEAR);
@@ -108,6 +131,26 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         minuteStart = 0;
         hourEnd = 1;
         minuteEnd = 0;
+    }
+
+    // Initialize starting and ending days and times (operation = edit).
+    private void initVariables(@NonNull ScheduledRecordingItem item) {
+        operation = Operation.EDIT;
+
+        Calendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(item.getStart());
+        yearStart = cal.get(Calendar.YEAR);
+        monthStart = cal.get(Calendar.MONTH);
+        dayStart = cal.get(Calendar.DAY_OF_MONTH);
+        hourStart = cal.get(Calendar.HOUR_OF_DAY);
+        minuteStart = cal.get(Calendar.MINUTE);
+
+        cal.setTimeInMillis(item.getEnd());
+        yearEnd = cal.get(Calendar.YEAR);
+        monthEnd = cal.get(Calendar.MONTH);
+        dayEnd = cal.get(Calendar.DAY_OF_MONTH);
+        hourEnd = cal.get(Calendar.HOUR_OF_DAY);
+        minuteEnd = cal.get(Calendar.MINUTE);
     }
 
     // When dates and times change, display them again.
@@ -124,7 +167,17 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     }
 
     public void showTimePickerDialog(View view) {
-        DialogFragment timePicker = TimePickerFragment.newInstance(view.getId());
+        int hour = 0;
+        int minute = 0;
+        if (view.getId() == R.id.tvTimeStart) {
+            hour = hourStart;
+            minute = minuteStart;
+        } else if (view.getId() == R.id.tvTimeEnd) {
+            hour = hourEnd;
+            minute = minuteEnd;
+        }
+
+        DialogFragment timePicker = TimePickerFragment.newInstance(view.getId(), hour, minute);
         timePicker.show(getFragmentManager(), "timePicker");
     }
 
@@ -160,8 +213,8 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     }
 
     private void checkDatesAndTimes() {
-        timeErrorCode = getTimeErrorCode();
-        if (timeErrorCode != ERROR_NO_ERROR) {
+        statusCode = getTimeErrorCode();
+        if (statusCode != StatusCodes.NO_ERROR) {
             tvDateStart.setTextColor(ContextCompat.getColor(this, R.color.primary_dark));
             tvTimeStart.setTextColor(ContextCompat.getColor(this, R.color.primary_dark));
         } else {
@@ -176,11 +229,11 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         Calendar end = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd);
 
         if (System.currentTimeMillis() > start.getTimeInMillis()) {
-            return ERROR_TIME_PAST;
+            return StatusCodes.ERROR_TIME_PAST;
         } else if (end.before(start)) {
-            return ERROR_START_AFTER_END;
+            return StatusCodes.ERROR_START_AFTER_END;
         } else {
-            return ERROR_NO_ERROR;
+            return StatusCodes.NO_ERROR;
         }
     }
 
@@ -195,25 +248,29 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                addScheduledRecording();
+                saveScheduledRecording();
+                return true;
+            case android.R.id.home:
+                super.onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void addScheduledRecording() {
-        if (timeErrorCode == ERROR_NO_ERROR) {
-            new AddScheduledRecordingsTask().execute();
+    private void saveScheduledRecording() {
+        if (statusCode == StatusCodes.NO_ERROR) {
+            new SaveScheduledRecordingsTask().execute();
         } else {
-            Toast.makeText(this, getString(errorMsgs[timeErrorCode]), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(errorMsgs[statusCode]), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class AddScheduledRecordingsTask extends AsyncTask<Void, Void, Long> {
+    private class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Void> {
         private final DBHelper dbHelper = new DBHelper(AddScheduledRecordingActivity.this);
 
-        protected Long doInBackground(Void... params) {
+        protected Integer doInBackground(Void... params) {
+            int result = statusCode;
             long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
             long endLong = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).getTimeInMillis();
             if (endLong - startLong < MIN_DURATION) {
@@ -221,16 +278,32 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
             } else if (endLong - startLong > MAX_DURATION) {
                 endLong = startLong + MAX_DURATION; // a scheduled recording must be at most 3 hours
             }
-            return dbHelper.addScheduledRecording(startLong, endLong);
+
+            if (dbHelper.alreadyScheduled(startLong)) {
+                statusCode = StatusCodes.ERROR_ALREADY_SCHEDULED;
+                return statusCode;
+            }
+
+            if (operation == Operation.ADD) {
+                long id = dbHelper.addScheduledRecording(startLong, endLong);
+                if (id == -1) {
+                    statusCode = StatusCodes.ERROR_SAVING;
+                    return statusCode;
+                }
+            } else {
+                int updated = dbHelper.updateScheduledRecording(item.getId(), startLong, endLong);
+                if (updated == 0) {
+                    statusCode
+                }
+            }
         }
 
         protected void onPostExecute(Long rowId) {
-            String msg = rowId == -1 ? getString(R.string.toast_scheduledrecording_added_error) : getString(R.string.toast_scheduledrecording_added);
+            String msg = rowId == -1 ? getString(R.string.toast_scheduledrecording_saved_error) : getString(R.string.toast_scheduledrecording_saved);
             Toast.makeText(AddScheduledRecordingActivity.this, msg, Toast.LENGTH_SHORT).show();
             if (rowId != -1)
                 setResult(RESULT_OK);
             finish();
         }
     }
-
 }

@@ -218,7 +218,7 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ADD_SCHEDULED_RECORDING && resultCode == Activity.RESULT_OK) {
+        if ((requestCode == ADD_SCHEDULED_RECORDING || requestCode == EDIT_SCHEDULED_RECORDING) && resultCode == Activity.RESULT_OK) {
             new GetScheduledRecordingsTask().execute();
         }
     }
