@@ -45,25 +45,19 @@ public class ScheduledRecordingsFragmentItemAdapter extends RecyclerView.Adapter
             tvEnd = (TextView) v.findViewById(R.id.tvEnd);
             tvColor = (TextView) v.findViewById(R.id.tvColor);
 
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int pos = recyclerView.getChildAdapterPosition(view);
-                    if (pos >= 0 && pos < getItemCount()) {
-                        listener.onItemClick(items.get(pos));
-                    }
+            v.setOnClickListener(view -> {
+                int pos = recyclerView.getChildAdapterPosition(view);
+                if (pos >= 0 && pos < getItemCount()) {
+                    listener.onItemClick(items.get(pos));
                 }
             });
 
-            v.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    int pos = recyclerView.getChildAdapterPosition(view);
-                    if (pos >= 0 && pos < getItemCount()) {
-                        listener.onItemLongClick(items.get(pos));
-                    }
-                    return true;
+            v.setOnLongClickListener(view -> {
+                int pos = recyclerView.getChildAdapterPosition(view);
+                if (pos >= 0 && pos < getItemCount()) {
+                    listener.onItemLongClick(items.get(pos));
                 }
+                return true;
             });
         }
     }
@@ -71,7 +65,7 @@ public class ScheduledRecordingsFragmentItemAdapter extends RecyclerView.Adapter
     // Adapter.
     private List<ScheduledRecordingItem> items;
     private final MyOnItemClickListener listener;
-    private RecyclerView recyclerView;
+    private final RecyclerView recyclerView;
     private final int[] colors = {Color.argb(255, 255, 193, 7),
             Color.argb(255, 244, 67, 54), Color.argb(255, 99, 233, 112),
             Color.argb(255, 7, 168, 255), Color.argb(255, 255, 7, 251),

@@ -6,7 +6,6 @@ package com.danielkim.soundrecorder.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,7 +48,6 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     private static final String ARG_POSITION = "position";
     private static final int ADD_SCHEDULED_RECORDING = 0;
     private static final int EDIT_SCHEDULED_RECORDING = 1;
-    private static final String TAG = "SRFragment";
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
@@ -168,19 +166,10 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         builder.setTitle(getString(R.string.dialog_title_delete));
         builder.setMessage(R.string.dialog_text_delete_generic);
         builder.setPositiveButton(R.string.dialog_action_ok,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        new DeleteItemTask().execute(item.getId());
-                    }
-                });
+                (dialogInterface, i) -> new DeleteItemTask().execute(item.getId()));
         builder.setCancelable(true);
         builder.setNegativeButton(getString(R.string.dialog_action_cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                (dialog, id) -> dialog.cancel());
 
         AlertDialog alert = builder.create();
         alert.show();
@@ -205,12 +194,9 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     }
 
     // Click listener of the button to add a new scheduled recording.
-    private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
-            startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
-        }
+    private final View.OnClickListener addScheduledRecordingListener = view -> {
+        Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
+        startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
     };
 
     // After a new scheduled recording has been added, get all the recordings and refresh the layout.

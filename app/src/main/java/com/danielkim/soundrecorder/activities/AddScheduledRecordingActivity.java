@@ -46,8 +46,6 @@ import static com.danielkim.soundrecorder.database.RecordingsContract.MIN_DURATI
 public class AddScheduledRecordingActivity extends AppCompatActivity implements MyOnDateSetListener, MyOnTimeSetListener {
     private enum Operation {ADD, EDIT}
 
-    ;
-
     private interface StatusCodes {
         int NO_ERROR = 0;
         int ERROR_START_AFTER_END = 1;
@@ -70,7 +68,7 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private int yearStart, monthStart, dayStart, hourStart, minuteStart;
     private int yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd;
     private int statusCode = StatusCodes.NO_ERROR;
-    private final int[] errorMsgs = {R.string.toast_scheduledrecording_saved,
+    private final int[] toastMsgs = {R.string.toast_scheduledrecording_saved,
             R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past,
             R.string.toast_scheduledrecording_timeerror_already_scheduled, R.string.toast_scheduledrecording_saved_error};
 
@@ -262,15 +260,14 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         if (statusCode == StatusCodes.NO_ERROR) {
             new SaveScheduledRecordingsTask().execute();
         } else {
-            Toast.makeText(this, getString(errorMsgs[statusCode]), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(toastMsgs[statusCode]), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Void> {
+    private class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Integer> {
         private final DBHelper dbHelper = new DBHelper(AddScheduledRecordingActivity.this);
 
         protected Integer doInBackground(Void... params) {
-            int result = statusCode;
             long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
             long endLong = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).getTimeInMillis();
             if (endLong - startLong < MIN_DURATION) {
@@ -279,31 +276,32 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
                 endLong = startLong + MAX_DURATION; // a scheduled recording must be at most 3 hours
             }
 
-            if (dbHelper.alreadyScheduled(startLong)) {
-                statusCode = StatusCodes.ERROR_ALREADY_SCHEDULED;
-                return statusCode;
-            }
-
             if (operation == Operation.ADD) {
+                if (dbHelper.alreadyScheduled(startLong)) {
+                    statusCode = StatusCodes.ERROR_ALREADY_SCHEDULED;
+                    return statusCode;
+                }
+
                 long id = dbHelper.addScheduledRecording(startLong, endLong);
                 if (id == -1) {
                     statusCode = StatusCodes.ERROR_SAVING;
-                    return statusCode;
                 }
             } else {
                 int updated = dbHelper.updateScheduledRecording(item.getId(), startLong, endLong);
                 if (updated == 0) {
-                    statusCode
+                    statusCode = StatusCodes.ERROR_SAVING;
                 }
             }
+
+            return statusCode;
         }
 
-        protected void onPostExecute(Long rowId) {
-            String msg = rowId == -1 ? getString(R.string.toast_scheduledrecording_saved_error) : getString(R.string.toast_scheduledrecording_saved);
-            Toast.makeText(AddScheduledRecordingActivity.this, msg, Toast.LENGTH_SHORT).show();
-            if (rowId != -1)
+        protected void onPostExecute(Integer result) {
+            Toast.makeText(AddScheduledRecordingActivity.this, toastMsgs[result], Toast.LENGTH_SHORT).show();
+            if (result == StatusCodes.NO_ERROR) {
                 setResult(RESULT_OK);
-            finish();
+                finish();
+            }
         }
     }
 }
