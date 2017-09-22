@@ -6,6 +6,7 @@ package com.danielkim.soundrecorder.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.ScheduledRecordingItem;
+import com.danielkim.soundrecorder.ScheduledRecordingService;
 import com.danielkim.soundrecorder.activities.AddScheduledRecordingActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -48,6 +50,7 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     private static final String ARG_POSITION = "position";
     private static final int ADD_SCHEDULED_RECORDING = 0;
     private static final int EDIT_SCHEDULED_RECORDING = 1;
+    private static final String TAG = "SRFragment";
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
@@ -166,10 +169,19 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         builder.setTitle(getString(R.string.dialog_title_delete));
         builder.setMessage(R.string.dialog_text_delete_generic);
         builder.setPositiveButton(R.string.dialog_action_ok,
-                (dialogInterface, i) -> new DeleteItemTask().execute(item.getId()));
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        new DeleteItemTask().execute(item.getId());
+                    }
+                });
         builder.setCancelable(true);
         builder.setNegativeButton(getString(R.string.dialog_action_cancel),
-                (dialog, id) -> dialog.cancel());
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
 
         AlertDialog alert = builder.create();
         alert.show();
@@ -187,6 +199,8 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
             if (result > 0) {
                 Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted), Toast.LENGTH_SHORT).show();
                 new GetScheduledRecordingsTask().execute();
+                getActivity().startService(ScheduledRecordingService.makeIntent(getActivity(), false));
+
             } else {
                 Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted_error), Toast.LENGTH_SHORT).show();
             }
@@ -194,9 +208,12 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     }
 
     // Click listener of the button to add a new scheduled recording.
-    private final View.OnClickListener addScheduledRecordingListener = view -> {
-        Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
-        startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
+    private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
+            startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
+        }
     };
 
     // After a new scheduled recording has been added, get all the recordings and refresh the layout.

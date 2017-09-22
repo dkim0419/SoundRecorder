@@ -33,6 +33,7 @@ public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
     private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.ITEM";
+    private static final int ONGOING_NOTIFICATION = 1;
 
     private String mFileName = null;
     private String mFilePath = null;
@@ -80,8 +81,18 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        startForeground(ONGOING_NOTIFICATION, createNotification());
+
         item = intent.getParcelableExtra(EXTRA_ITEM);
-        int duration = item == null ? 0 : (int) (item.getEnd() - item.getStart()); // is this a scheduled recording?
+        int duration; // is this a scheduled recording?
+        if (item == null) {
+            duration = 0;
+        } else {
+            duration = (int) (item.getEnd() - item.getStart());
+            // Schedule next recording.
+            startService(ScheduledRecordingService.makeIntent(this, false));
+        }
+
         startRecording(duration);
 
         return START_STICKY;
@@ -123,7 +134,6 @@ public class RecordingService extends Service {
             mStartingTimeMillis = System.currentTimeMillis();
 
             //startTimer();
-            startForeground(1, createNotification());
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
@@ -174,11 +184,7 @@ public class RecordingService extends Service {
     // Specific to scheduled recordings.
     private void stopScheduledRecording() {
         // Remove scheduled recording from database.
-        DBHelper dbHelper = new DBHelper(this);
-        dbHelper.removeScheduledRecording(item.getId());
-
-        // Schedule next recording.
-        startService(ScheduledRecordingService.makeIntent(this, false));
+        mDatabase.removeScheduledRecording(item.getId());
 
         // Save recording file to database.
         stopRecording();

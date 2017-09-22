@@ -37,7 +37,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public static boolean wakeful;
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private LocalBinder localBinder = new LocalBinder();
+    private final LocalBinder localBinder = new LocalBinder();
 
     /*
         Static factory method used to create an Intent to start this Service.
