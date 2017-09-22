@@ -23,8 +23,11 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
+
 /**
  * Created by Daniel on 12/28/2014.
+ * Edited by iClaude.
  */
 public class RecordingService extends Service {
 
@@ -46,6 +49,8 @@ public class RecordingService extends Service {
 
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
+
+    private ScheduledRecordingItem item = null;
 
 
     /*
@@ -75,7 +80,7 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ScheduledRecordingItem item = intent.getParcelableExtra(EXTRA_ITEM);
+        item = intent.getParcelableExtra(EXTRA_ITEM);
         int duration = item == null ? 0 : (int) (item.getEnd() - item.getStart()); // is this a scheduled recording?
         startRecording(duration);
 
@@ -102,6 +107,15 @@ public class RecordingService extends Service {
         mRecorder.setMaxDuration(duration); // if this is a scheduled recording, set the max duration, after which the Service is stopped
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
+        mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            // Called only if a max duration has been set (scheduled recordings).
+            public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
+                if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    stopScheduledRecording();
+                }
+            }
+        });
 
         try {
             mRecorder.prepare();
@@ -109,7 +123,7 @@ public class RecordingService extends Service {
             mStartingTimeMillis = System.currentTimeMillis();
 
             //startTimer();
-            //startForeground(1, createNotification());
+            startForeground(1, createNotification());
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "prepare() failed");
@@ -152,6 +166,22 @@ public class RecordingService extends Service {
         } catch (Exception e){
             Log.e(LOG_TAG, "exception", e);
         }
+
+        stopForeground(true);
+        stopSelf();
+    }
+
+    // Specific to scheduled recordings.
+    private void stopScheduledRecording() {
+        // Remove scheduled recording from database.
+        DBHelper dbHelper = new DBHelper(this);
+        dbHelper.removeScheduledRecording(item.getId());
+
+        // Schedule next recording.
+        startService(ScheduledRecordingService.makeIntent(this, false));
+
+        // Save recording file to database.
+        stopRecording();
     }
 
     private void startTimer() {
@@ -169,13 +199,12 @@ public class RecordingService extends Service {
         mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
     }
 
-    //TODO:
     private Notification createNotification() {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_mic_white_36dp)
                         .setContentTitle(getString(R.string.notification_recording))
-                        .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
+                        .setContentText(getString(R.string.notification_recording_text))
                         .setOngoing(true);
 
         mBuilder.setContentIntent(PendingIntent.getActivities(getApplicationContext(), 0,

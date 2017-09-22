@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.ScheduledRecordingItem;
+import com.danielkim.soundrecorder.ScheduledRecordingService;
 import com.danielkim.soundrecorder.database.DBHelper;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment.MyOnDateSetListener;
@@ -300,6 +301,7 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
             Toast.makeText(AddScheduledRecordingActivity.this, toastMsgs[result], Toast.LENGTH_SHORT).show();
             if (result == StatusCodes.NO_ERROR) {
                 setResult(RESULT_OK);
+                startService(ScheduledRecordingService.makeIntent(AddScheduledRecordingActivity.this, false));
                 finish();
             }
         }
