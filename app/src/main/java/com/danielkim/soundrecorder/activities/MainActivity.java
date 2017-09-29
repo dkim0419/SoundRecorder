@@ -23,34 +23,29 @@ import com.danielkim.soundrecorder.fragments.RecordFragment;
 import com.danielkim.soundrecorder.fragments.ScheduledRecordingsFragment;
 
 
-public class MainActivity extends ActionBarActivity implements RecordingService2.OnTimerChangedListener, RecordFragment.ServiceOperationsListener {
+public class MainActivity extends ActionBarActivity implements RecordingService2.OnTimerChangedListener, RecordFragment.ServiceOperations {
 
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
 
-    private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
     private RecordFragment recordFragment = null;
 
     private RecordingService2 recordingService;
     private boolean serviceConnected = false;
 
 
-    //@RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
-        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -75,13 +70,13 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
         }
     }
 
-    public void openLicenses(){
+    private void openLicenses() {
         LicensesFragment licensesFragment = new LicensesFragment();
         licensesFragment.show(getSupportFragmentManager().beginTransaction(), "dialog_licenses");
     }
 
     public class MyAdapter extends FragmentPagerAdapter {
-        private String[] titles = { getString(R.string.tab_title_record),
+        private final String[] titles = {getString(R.string.tab_title_record),
                 getString(R.string.tab_title_saved_recordings),
                 getString(R.string.tab_title_scheduled_recordings)};
 
@@ -142,37 +137,37 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
             recordingService = null;
             serviceConnected = false;
             if (recordFragment != null) {
-                recordFragment.serviceConnection(serviceConnected);
+                recordFragment.serviceConnection(false);
             }
         }
     }
 
     /*
-        Implementation of RecordFragment.ServiceOperationsListener.
+        Implementation of RecordFragment.ServiceOperations.
         RecordFragment uses this interface to communicate with this Activity in order to interact
         with RecordingService (the connection with the Service is managed by this Activity).
      */
     @Override
-    public void onStartRecord() {
+    public void requestStartRecording() {
         if (recordingService != null && !isRecording()) {
             recordingService.startRecording(0);
         }
     }
 
     @Override
-    public void onStopRecord() {
+    public void requestStopRecording() {
         if (recordingService != null) {
             recordingService.stopRecording();
         }
     }
 
     @Override
-    public boolean isConnected() {
+    public boolean isServiceConnected() {
         return serviceConnected;
     }
 
     @Override
-    public boolean serviceIsRecording() {
+    public boolean isServiceRecording() {
         return isRecording();
     }
 
@@ -180,32 +175,35 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
         Implementation of ServiceConnection interface.
         The interaction with the Service is managed by this Activity.
     */
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "MainActivity - Service connected");
             recordingService = ((RecordingService2.LocalBinder) iBinder).getService();
             serviceConnected = true;
             if (recordFragment != null) {
-                recordFragment.serviceConnection(serviceConnected);
+                recordFragment.serviceConnection(true);
             }
             recordingService.setOnTimerChangedListener(MainActivity.this);
+            recordingService.setOnScheduledRecordingListener(onScheduledRecordingListener);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d(TAG, "MainActivity - Service disconnected");
+            recordingService.setOnTimerChangedListener(null);
+            recordingService.setOnScheduledRecordingListener(null);
             recordingService = null;
             serviceConnected = false;
             if (recordFragment != null) {
-                recordFragment.serviceConnection(serviceConnected);
+                recordFragment.serviceConnection(false);
             }
-            recordingService.setOnTimerChangedListener(null);
         }
     };
 
     // Is the connected Service currently recording?
-    public boolean isRecording() {
+    private boolean isRecording() {
+        //noinspection SimplifiableIfStatement
         if (recordingService != null) {
             return recordingService.isRecording();
         }
@@ -215,7 +213,7 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
     /*
         Implementation of RecordingService2.OnTimerChangedListener interface.
         The Service uses this interface to communicate the progress of the recording in seconds.
-        The caller of this method is on a separate thread.
+        The caller of this method runs on a separate thread.
     */
     @Override
     public void onTimerChanged(int seconds) {
@@ -228,4 +226,23 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
             });
         }
     }
+
+    /*
+        Implementation of RecordingService2.OnScheduledRecordingListener interface.
+        The Service uses this interface to communicate to the connected Activity that a
+        scheduled recording has started/stopped, so that the UI can be updated accordingly.
+    */
+    private final RecordingService2.OnScheduledRecordingListener onScheduledRecordingListener = new RecordingService2.OnScheduledRecordingListener() {
+        @Override
+        public void onScheduledRecordingStart() {
+            if (recordFragment != null)
+                recordFragment.scheduledRecordingStarted();
+        }
+
+        @Override
+        public void onScheduledRecordingStop() {
+            if (recordFragment != null)
+                recordFragment.scheduledRecordingStopped();
+        }
+    };
 }

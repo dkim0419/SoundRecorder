@@ -37,15 +37,13 @@ public class RecordFragment extends Fragment {
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
     private static final int REQUEST_DANGEROUS_PERMISSION = 0;
 
-    private boolean marshmallow = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    private final boolean marshmallow = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
-    private int position;
 
     //Recording controls
     private FloatingActionButton mRecordButton = null;
-    private Button mPauseButton = null;
     private TextView mRecordingPrompt;
 
     private boolean isRecording = false;
@@ -54,20 +52,20 @@ public class RecordFragment extends Fragment {
     private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
     private TextView tvChronometer;
 
-    private ServiceOperationsListener serviceOperationsListener;
+    private ServiceOperations serviceOperations;
 
 
     /*
         Interface used to communicate with the Activity with regard to the connected Service.
      */
-    public interface ServiceOperationsListener {
-        void onStartRecord();
+    public interface ServiceOperations {
+        void requestStartRecording();
 
-        void onStopRecord();
+        void requestStopRecording();
 
-        boolean isConnected();
+        boolean isServiceConnected();
 
-        boolean serviceIsRecording();
+        boolean isServiceRecording();
     }
 
     @Override
@@ -75,9 +73,9 @@ public class RecordFragment extends Fragment {
         super.onAttach(context);
 
         try {
-            serviceOperationsListener = (ServiceOperationsListener) context;
+            serviceOperations = (ServiceOperations) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement ServiceOperationsListener");
+            throw new ClassCastException(context.toString() + " must implement ServiceOperations");
         }
     }
 
@@ -102,7 +100,7 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        position = getArguments().getInt(ARG_POSITION);
+        int position = getArguments().getInt(ARG_POSITION);
     }
 
     @Override
@@ -118,7 +116,7 @@ public class RecordFragment extends Fragment {
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
         mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
         mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
-        mRecordButton.setEnabled(serviceOperationsListener.isConnected());
+        mRecordButton.setEnabled(serviceOperations.isServiceConnected());
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +128,7 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
+        Button mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,7 +138,10 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        // Are we already recording? Check necessary if Service is connected to the Activity before the Fragment is created.
+        /*  Are we already recording? Check necessary if Service is connected to the Activity
+            before the Fragment is created: in this case the method serviceConnection(boolean
+            isConnected of this Fragment is not called).
+         */
         checkRecording();
 
         return recordView;
@@ -183,8 +184,8 @@ public class RecordFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
 
             // Start RecordingService: send request to main Activity.
-            if (serviceOperationsListener != null) {
-                serviceOperationsListener.onStartRecord();
+            if (serviceOperations != null) {
+                serviceOperations.requestStartRecording();
             }
 
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //keep screen on while recording
@@ -196,8 +197,8 @@ public class RecordFragment extends Fragment {
             mRecordingPrompt.setText(getString(R.string.record_prompt));
 
             // Stop RecordingService: send request to main Activity.
-            if (serviceOperationsListener != null) {
-                serviceOperationsListener.onStopRecord();
+            if (serviceOperations != null) {
+                serviceOperations.requestStopRecording();
             }
 
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //allow the screen to turn off again once recording is finished
@@ -210,6 +211,10 @@ public class RecordFragment extends Fragment {
 
     }
 
+    /*
+        When the Activity establishes the connection with the Service, it informs this Fragment
+        so that the record button can be enabled.
+     */
     public void serviceConnection(boolean isConnected) {
         mRecordButton.setEnabled(isConnected);
 
@@ -217,10 +222,14 @@ public class RecordFragment extends Fragment {
         checkRecording();
     }
 
+    /*
+        If the Service is currently recording update the UI accordingly and update the value
+        of isRecording.
+     */
     private void checkRecording() {
-        if (serviceOperationsListener == null) return;
+        if (serviceOperations == null) return;
 
-        if (serviceOperationsListener.isConnected() && serviceOperationsListener.serviceIsRecording()) {
+        if (serviceOperations.isServiceConnected() && serviceOperations.isServiceRecording()) {
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
             isRecording = true;
@@ -231,15 +240,23 @@ public class RecordFragment extends Fragment {
         tvChronometer.setText(mTimerFormat.format(new Date(seconds * 1000L)));
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void scheduledRecordingStarted() {
+        mRecordButton.setImageResource(R.drawable.ic_media_stop);
+        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+        isRecording = true;
+    }
+
+    public void scheduledRecordingStopped() {
+        mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
+        tvChronometer.setText("00:00");
+        mRecordingPrompt.setText(getString(R.string.record_prompt));
+        isRecording = false;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
 
-        if (serviceOperationsListener != null) serviceOperationsListener = null;
+        if (serviceOperations != null) serviceOperations = null;
     }
 }
