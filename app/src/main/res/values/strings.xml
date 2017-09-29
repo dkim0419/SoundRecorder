@@ -26,7 +26,7 @@
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
-    <string name="notification_recording_text">SoundRecorder is currently recording</string>
+    <string name="notification_recording_text">SoundRecorder is currently recording...</string>
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Confirm Delete...</string>
@@ -61,5 +61,20 @@
     <string name="frag_sched_scheduled_recording">scheduled recording</string>
     <string name="frag_sched_no_recordings">no scheduled recordings</string>
     <string name="act_addsched_schedule_recording">Schedule recording</string>
+
+    <string name="new_message_notification_title_template">New message: %1$s</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="new_message_notification_placeholder_text_template">You said %1$s and lorem ipsum
+        dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel
+        semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis.
+        Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper
+        ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis
+        viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec
+        tortor.
+    </string>
+
+    <string name="action_share">Share</string>
+    <string name="action_reply">Reply</string>
 
 </resources>

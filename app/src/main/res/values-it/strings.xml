@@ -24,7 +24,7 @@
 
     <!-- Notifications -->
     <string name="notification_recording">Registrazione...</string>
-    <string name="notification_recording_text">SoundRecorder sta registrando</string>
+    <string name="notification_recording_text">SoundRecorder sta registrando...</string>
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Conferma cancellazione</string>
