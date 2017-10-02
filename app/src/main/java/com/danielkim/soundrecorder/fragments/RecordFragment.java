@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -249,11 +250,13 @@ public class RecordFragment extends Fragment {
     }
 
     public void scheduledRecordingStarted() {
+        Log.d(TAG, "RecordFragment - scheduledRecordingStarted");
         updateUI(true);
         isRecording = true;
     }
 
     public void scheduledRecordingStopped() {
+        Log.d(TAG, "RecordFragment - scheduledRecordingStopped");
         updateUI(false);
         isRecording = false;
     }

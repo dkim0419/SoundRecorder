@@ -23,8 +23,6 @@ import com.danielkim.soundrecorder.database.DBHelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,11 +49,9 @@ public class RecordingService extends Service {
     private long mStartingTimeMillis = 0;
     private int mElapsedSeconds = 0;
 
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
     private TimerTask mIncrementTimerTask = null;
 
     private final IBinder myBinder = new LocalBinder();
-    private ScheduledRecordingItem scheduledRecordingItem = null;
     private boolean isRecording = false;
 
 
@@ -74,6 +70,7 @@ public class RecordingService extends Service {
     public static Intent makeIntent(Context context, ScheduledRecordingItem item) {
         Intent intent = new Intent(context, RecordingService.class);
         intent.putExtra(EXTRA_ITEM, item);
+        Log.d(TAG, "Recording Service makeIntent - intent extras are null? " + new Boolean(item == null));
         return intent;
     }
 
@@ -126,10 +123,11 @@ public class RecordingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Service - onStartCommand");
-        scheduledRecordingItem = intent.getParcelableExtra(EXTRA_ITEM);
-
-        int duration = 0;
+        ScheduledRecordingItem scheduledRecordingItem = intent.getParcelableExtra(EXTRA_ITEM);
+        Log.d(TAG, "Recording Service onStartCommand - intent extras are null? " + new Boolean(scheduledRecordingItem == null));
+        int duration;
         if (scheduledRecordingItem != null) { // automatic scheduled recording
+            Log.d(TAG, "Service - onStartCommand - scheduled recording");
             duration = (int) (scheduledRecordingItem.getEnd() - scheduledRecordingItem.getStart());
             // Remove scheduled recording from database and schedule next recording.
             mDatabase.removeScheduledRecording(scheduledRecordingItem.getId());
@@ -142,7 +140,7 @@ public class RecordingService extends Service {
             startRecording(duration);
         }
 
-        return START_NOT_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     /*
@@ -258,7 +256,8 @@ public class RecordingService extends Service {
 
     // Specific to scheduled recordings.
     private void stopScheduledRecording() {
-        // Stop recording as usuale.
+        Log.d(TAG, "Service - stopScheduledRecording");
+        // Stop recording as usual.
         stopRecording();
 
         /* If an Activity is connected, inform it that the scheduled recording has stopped,

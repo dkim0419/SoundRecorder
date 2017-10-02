@@ -24,6 +24,7 @@ import com.danielkim.soundrecorder.database.DBHelper;
 public class ScheduledRecordingService extends Service implements Handler.Callback {
 
     private final int SCHEDULE_RECORDINGS = 1;
+    private static final String TAG = "SCHEDULED_RECORDER_TAG";
     protected static final String EXTRA_WAKEFUL = "com.danielkim.soundrecorder.WAKEFUL";
 
     protected AlarmManager alarmManager;
@@ -116,7 +117,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
         ScheduledRecordingItem item = database.getNextScheduledRecording();
         if (item != null) {
             Intent intent = RecordingService.makeIntent(context, item);
-            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
+            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
                 alarmManager.set(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22

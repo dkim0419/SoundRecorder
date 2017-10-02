@@ -55,6 +55,7 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         int ERROR_SAVING = 4;
     }
 
+    private static final String TAG = "SCHEDULED_RECORDER_TAG";
     private static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
     private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
 
