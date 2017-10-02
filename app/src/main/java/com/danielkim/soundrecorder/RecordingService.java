@@ -1,12 +1,17 @@
+/*
+ * Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+ */
+
 package com.danielkim.soundrecorder;
 
+
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
+import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -26,91 +31,147 @@ import java.util.TimerTask;
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
 
 /**
- * Created by Daniel on 12/28/2014.
- * Edited by iClaude.
+ * Created by iClaude on 25/09/2017.
+ * Service used to record audio. This class implements an hybrid Service (bound and started
+ * Service).
+ * Compared with the original Service, this class adds 2 new features:
+ * 1) record scheduled recordings
+ * 2) bound Service features to connect this Service to an Activity
  */
-public class RecordingService extends Service {
 
-    private static final String LOG_TAG = "RecordingService";
+public class RecordingService extends Service {
+    private static final String TAG = "SCHEDULED_RECORDER_TAG";
     private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.ITEM";
     private static final int ONGOING_NOTIFICATION = 1;
 
     private String mFileName = null;
     private String mFilePath = null;
-
     private MediaRecorder mRecorder = null;
-
     private DBHelper mDatabase;
-
     private long mStartingTimeMillis = 0;
-    private long mElapsedMillis = 0;
     private int mElapsedSeconds = 0;
-    private OnTimerChangedListener onTimerChangedListener = null;
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
-    private Timer mTimer = null;
+    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
     private TimerTask mIncrementTimerTask = null;
 
-    private ScheduledRecordingItem item = null;
+    private final IBinder myBinder = new LocalBinder();
+    private ScheduledRecordingItem scheduledRecordingItem = null;
+    private boolean isRecording = false;
 
+
+    /*
+        Static factory method used to create an Intent to start this Service for a normal
+        recording.
+    */
+    public static Intent makeIntent(Context context) {
+        return new Intent(context, RecordingService.class);
+    }
 
     /*
         Static factory method used to create an Intent to start this Service for
         a scheduled recording.
-     */
+    */
     public static Intent makeIntent(Context context, ScheduledRecordingItem item) {
         Intent intent = new Intent(context, RecordingService.class);
         intent.putExtra(EXTRA_ITEM, item);
         return intent;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    /*
+        The following code implements a bound Service used to connect this Service to an Activity.
+    */
+
+    public class LocalBinder extends Binder {
+        public RecordingService getService() {
+            return RecordingService.this;
+        }
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return myBinder;
+    }
+
+    /*
+        Interface used to communicate the seconds of the current recording to the connected Activity.
+     */
     public interface OnTimerChangedListener {
         void onTimerChanged(int seconds);
     }
 
+    private OnTimerChangedListener onTimerChangedListener = null;
+
+    public void setOnTimerChangedListener(OnTimerChangedListener onTimerChangedListener) {
+        this.onTimerChangedListener = onTimerChangedListener;
+    }
+
+    /*
+        Interface used to communicate the start/stop of a scheduled recording to a connected
+        Activity, so that the UI can be updated accordingly.
+     */
+    public interface OnScheduledRecordingListener {
+        void onScheduledRecordingStart();
+        void onScheduledRecordingStop();
+    }
+
+    private OnScheduledRecordingListener onScheduledRecordingListener = null;
+
+    public void setOnScheduledRecordingListener(OnScheduledRecordingListener listener) {
+        this.onScheduledRecordingListener = listener;
+    }
+
+    /*
+        The following code implements a started Service.
+    */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "Service - onStartCommand");
+        scheduledRecordingItem = intent.getParcelableExtra(EXTRA_ITEM);
+
+        int duration = 0;
+        if (scheduledRecordingItem != null) { // automatic scheduled recording
+            duration = (int) (scheduledRecordingItem.getEnd() - scheduledRecordingItem.getStart());
+            // Remove scheduled recording from database and schedule next recording.
+            mDatabase.removeScheduledRecording(scheduledRecordingItem.getId());
+            startService(ScheduledRecordingService.makeIntent(this, false));
+
+
+            if (onScheduledRecordingListener != null) { // if an Activity is connected, inform it that a scheduled recording has started
+                onScheduledRecordingListener.onScheduledRecordingStart();
+            }
+            startRecording(duration);
+        }
+
+        return START_NOT_STICKY;
+    }
+
+    /*
+        The following code is shared by both started and bound Service.
+     */
+
     @Override
     public void onCreate() {
+        Log.d(TAG, "Service - onCreate");
         super.onCreate();
         mDatabase = new DBHelper(getApplicationContext());
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        startForeground(ONGOING_NOTIFICATION, createNotification());
-
-        item = intent.getParcelableExtra(EXTRA_ITEM);
-        int duration; // is this a scheduled recording?
-        if (item == null) {
-            duration = 0;
-        } else {
-            duration = (int) (item.getEnd() - item.getStart());
-            // Schedule next recording.
-            startService(ScheduledRecordingService.makeIntent(this, false));
-        }
-
-        startRecording(duration);
-
-        return START_STICKY;
-    }
-
-    @Override
     public void onDestroy() {
+        Log.d(TAG, "Service - onDestroy");
+        super.onDestroy();
         if (mRecorder != null) {
             stopRecording();
         }
 
-        super.onDestroy();
+        if (onTimerChangedListener != null) onTimerChangedListener = null;
     }
 
     public void startRecording(int duration) {
+        Log.d(TAG, "Service - startRecording");
+        startForeground(ONGOING_NOTIFICATION, createNotification());
 
         setFileNameAndPath();
-
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -132,19 +193,19 @@ public class RecordingService extends Service {
             mRecorder.prepare();
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
+            isRecording = true;
 
-            //startTimer();
-
+            startTimer();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(TAG, "prepare() failed");
         }
     }
 
-    public void setFileNameAndPath(){
+    private void setFileNameAndPath() {
         int count = 0;
         File f;
 
-        do{
+        do {
             count++;
 
             mFileName = getString(R.string.default_file_name)
@@ -153,56 +214,59 @@ public class RecordingService extends Service {
             mFilePath += "/SoundRecorder/" + mFileName;
 
             f = new File(mFilePath);
-        }while (f.exists() && !f.isDirectory());
+        } while (f.exists() && !f.isDirectory());
+    }
+
+    private void startTimer() {
+        Timer mTimer = new Timer();
+        mElapsedSeconds = 0;
+        mIncrementTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mElapsedSeconds++;
+                if (onTimerChangedListener != null) {
+                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
+                }
+            }
+        };
+        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
     }
 
     public void stopRecording() {
+        Log.d(TAG, "Service - stopRecording");
         mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
+        isRecording = false;
         Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
-        //remove notification
+        // Stop timer.
         if (mIncrementTimerTask != null) {
             mIncrementTimerTask.cancel();
             mIncrementTimerTask = null;
         }
 
         mRecorder = null;
-
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
-
-        } catch (Exception e){
-            Log.e(LOG_TAG, "exception", e);
+        } catch (Exception e) {
+            Log.e(TAG, "exception", e);
         }
 
         stopForeground(true);
-        stopSelf();
     }
 
     // Specific to scheduled recordings.
     private void stopScheduledRecording() {
-        // Remove scheduled recording from database.
-        mDatabase.removeScheduledRecording(item.getId());
-
-        // Save recording file to database.
+        // Stop recording as usuale.
         stopRecording();
-    }
 
-    private void startTimer() {
-        mTimer = new Timer();
-        mIncrementTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mElapsedSeconds++;
-                if (onTimerChangedListener != null)
-                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
-                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mgr.notify(1, createNotification());
-            }
-        };
-        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
+        /* If an Activity is connected, inform it that the scheduled recording has stopped,
+        otherwise stop the Service. */
+        if (onScheduledRecordingListener != null)
+            onScheduledRecordingListener.onScheduledRecordingStop();
+        else
+            stopSelf();
     }
 
     private Notification createNotification() {
@@ -217,5 +281,9 @@ public class RecordingService extends Service {
                 new Intent[]{new Intent(getApplicationContext(), MainActivity.class)}, 0));
 
         return mBuilder.build();
+    }
+
+    public boolean isRecording() {
+        return isRecording;
     }
 }

@@ -179,8 +179,7 @@ public class RecordFragment extends Fragment {
                 folder.mkdir();
             }
 
-            mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+            updateUI(true);
             Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
 
             // Start RecordingService: send request to main Activity.
@@ -192,9 +191,7 @@ public class RecordFragment extends Fragment {
             isRecording = true;
         } else {
             //stop recording
-            mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-            tvChronometer.setText("00:00");
-            mRecordingPrompt.setText(getString(R.string.record_prompt));
+            updateUI(false);
 
             // Stop RecordingService: send request to main Activity.
             if (serviceOperations != null) {
@@ -203,6 +200,17 @@ public class RecordFragment extends Fragment {
 
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //allow the screen to turn off again once recording is finished
             isRecording = false;
+        }
+    }
+
+    private void updateUI(boolean recording) {
+        if (recording) {
+            mRecordButton.setImageResource(R.drawable.ic_media_stop);
+            mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+        } else {
+            mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
+            tvChronometer.setText("00:00");
+            mRecordingPrompt.setText(getString(R.string.record_prompt));
         }
     }
 
@@ -241,15 +249,12 @@ public class RecordFragment extends Fragment {
     }
 
     public void scheduledRecordingStarted() {
-        mRecordButton.setImageResource(R.drawable.ic_media_stop);
-        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+        updateUI(true);
         isRecording = true;
     }
 
     public void scheduledRecordingStopped() {
-        mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-        tvChronometer.setText("00:00");
-        mRecordingPrompt.setText(getString(R.string.record_prompt));
+        updateUI(false);
         isRecording = false;
     }
 

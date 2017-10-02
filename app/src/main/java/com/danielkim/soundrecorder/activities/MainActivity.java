@@ -16,20 +16,20 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.danielkim.soundrecorder.R;
-import com.danielkim.soundrecorder.RecordingService2;
+import com.danielkim.soundrecorder.RecordingService;
 import com.danielkim.soundrecorder.fragments.FileViewerFragment;
 import com.danielkim.soundrecorder.fragments.LicensesFragment;
 import com.danielkim.soundrecorder.fragments.RecordFragment;
 import com.danielkim.soundrecorder.fragments.ScheduledRecordingsFragment;
 
 
-public class MainActivity extends ActionBarActivity implements RecordingService2.OnTimerChangedListener, RecordFragment.ServiceOperations {
+public class MainActivity extends ActionBarActivity implements RecordingService.OnTimerChangedListener, RecordFragment.ServiceOperations {
 
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
 
     private RecordFragment recordFragment = null;
 
-    private RecordingService2 recordingService;
+    private RecordingService recordingService;
     private boolean serviceConnected = false;
 
 
@@ -121,8 +121,8 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
         super.onStart();
 
         Log.d(TAG, "MainActivity - call bind to Service");
-        startService(RecordingService2.makeIntent(this));
-        bindService(RecordingService2.makeIntent(this), serviceConnection, BIND_AUTO_CREATE);
+        startService(RecordingService.makeIntent(this));
+        bindService(RecordingService.makeIntent(this), serviceConnection, BIND_AUTO_CREATE);
     }
 
     // Disconnection from local Service.
@@ -133,7 +133,7 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
         if (serviceConnected) {
             Log.d(TAG, "MainActivity - call unbind from Service");
             unbindService(serviceConnection);
-            if (!isRecording()) stopService(RecordingService2.makeIntent(this));
+            if (!isRecording()) stopService(RecordingService.makeIntent(this));
             recordingService = null;
             serviceConnected = false;
             if (recordFragment != null) {
@@ -179,7 +179,7 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "MainActivity - Service connected");
-            recordingService = ((RecordingService2.LocalBinder) iBinder).getService();
+            recordingService = ((RecordingService.LocalBinder) iBinder).getService();
             serviceConnected = true;
             if (recordFragment != null) {
                 recordFragment.serviceConnection(true);
@@ -211,7 +211,7 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
     }
 
     /*
-        Implementation of RecordingService2.OnTimerChangedListener interface.
+        Implementation of RecordingService.OnTimerChangedListener interface.
         The Service uses this interface to communicate the progress of the recording in seconds.
         The caller of this method runs on a separate thread.
     */
@@ -228,11 +228,11 @@ public class MainActivity extends ActionBarActivity implements RecordingService2
     }
 
     /*
-        Implementation of RecordingService2.OnScheduledRecordingListener interface.
+        Implementation of RecordingService.OnScheduledRecordingListener interface.
         The Service uses this interface to communicate to the connected Activity that a
         scheduled recording has started/stopped, so that the UI can be updated accordingly.
     */
-    private final RecordingService2.OnScheduledRecordingListener onScheduledRecordingListener = new RecordingService2.OnScheduledRecordingListener() {
+    private final RecordingService.OnScheduledRecordingListener onScheduledRecordingListener = new RecordingService.OnScheduledRecordingListener() {
         @Override
         public void onScheduledRecordingStart() {
             if (recordFragment != null)

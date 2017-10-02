@@ -40,7 +40,6 @@
         </provider>
 
         <service android:name=".RecordingService" />
-        <service android:name=".RecordingService2" />
         <service
             android:name=".ScheduledRecordingService"
             android:enabled="true"
