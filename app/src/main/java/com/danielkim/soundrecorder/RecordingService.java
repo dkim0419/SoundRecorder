@@ -39,7 +39,7 @@ import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACH
 
 public class RecordingService extends Service {
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
-    private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.ITEM";
+    private static final String EXTRA_ACTIVITY_STARTER = "com.danielkim.soundrecorder.EXTRA_ACTIVITY_STARTER";
     private static final int ONGOING_NOTIFICATION = 1;
 
     private String mFileName = null;
@@ -56,21 +56,21 @@ public class RecordingService extends Service {
 
 
     /*
-        Static factory method used to create an Intent to start this Service for a normal
-        recording.
+        Static factory method used to create an Intent to start this Service. The boolean value
+        activityStarter is true if this method is called by an Activity, false otherwise (i.e.
+        Service started by an AlarmManager for a scheduled recording.
     */
-    public static Intent makeIntent(Context context) {
-        return new Intent(context, RecordingService.class);
+    public static Intent makeIntent(Context context, boolean activityStarter) {
+        Intent intent = new Intent(context, RecordingService.class);
+        intent.putExtra(EXTRA_ACTIVITY_STARTER, activityStarter);
+        return intent;
     }
 
     /*
-        Static factory method used to create an Intent to start this Service for
-        a scheduled recording.
-    */
-    public static Intent makeIntent(Context context, ScheduledRecordingItem item) {
+        Other convenient method used to retrieve an empty Intent (i.e to stop this Service).
+     */
+    public static Intent makeIntent(Context context) {
         Intent intent = new Intent(context, RecordingService.class);
-        intent.putExtra(EXTRA_ITEM, item);
-        Log.d(TAG, "Recording Service makeIntent - intent extras are null? " + new Boolean(item == null));
         return intent;
     }
 
@@ -122,25 +122,24 @@ public class RecordingService extends Service {
     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "Service - onStartCommand");
-        ScheduledRecordingItem scheduledRecordingItem = intent.getParcelableExtra(EXTRA_ITEM);
-        Log.d(TAG, "Recording Service onStartCommand - intent extras are null? " + new Boolean(scheduledRecordingItem == null));
+        boolean activityStarter = intent.getBooleanExtra(EXTRA_ACTIVITY_STARTER, false);
         int duration;
-        if (scheduledRecordingItem != null) { // automatic scheduled recording
-            Log.d(TAG, "Service - onStartCommand - scheduled recording");
-            duration = (int) (scheduledRecordingItem.getEnd() - scheduledRecordingItem.getStart());
+        if (!activityStarter) { // automatic scheduled recording
+            // Get next recording data.
+            ScheduledRecordingItem item = mDatabase.getNextScheduledRecording();
+            duration = (int) (item.getEnd() - item.getStart());
             // Remove scheduled recording from database and schedule next recording.
-            mDatabase.removeScheduledRecording(scheduledRecordingItem.getId());
+            mDatabase.removeScheduledRecording(item.getId());
             startService(ScheduledRecordingService.makeIntent(this, false));
-
 
             if (onScheduledRecordingListener != null) { // if an Activity is connected, inform it that a scheduled recording has started
                 onScheduledRecordingListener.onScheduledRecordingStart();
             }
+            startForeground(ONGOING_NOTIFICATION, createNotification());
             startRecording(duration);
         }
 
-        return START_REDELIVER_INTENT;
+        return START_NOT_STICKY;
     }
 
     /*
@@ -149,14 +148,14 @@ public class RecordingService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "Service - onCreate");
+        Log.d(TAG, "RecordingService - onCreate");
         super.onCreate();
         mDatabase = new DBHelper(getApplicationContext());
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "Service - onDestroy");
+        Log.d(TAG, "RecordingService - onDestroy");
         super.onDestroy();
         if (mRecorder != null) {
             stopRecording();
@@ -166,7 +165,7 @@ public class RecordingService extends Service {
     }
 
     public void startRecording(int duration) {
-        Log.d(TAG, "Service - startRecording");
+        Log.d(TAG, "RecordingService - startRecording");
         startForeground(ONGOING_NOTIFICATION, createNotification());
 
         setFileNameAndPath();
@@ -231,7 +230,7 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        Log.d(TAG, "Service - stopRecording");
+        Log.d(TAG, "RecordingService - stopRecording");
         mRecorder.stop();
         long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
@@ -256,7 +255,7 @@ public class RecordingService extends Service {
 
     // Specific to scheduled recordings.
     private void stopScheduledRecording() {
-        Log.d(TAG, "Service - stopScheduledRecording");
+        Log.d(TAG, "RecordingService - stopScheduledRecording");
         // Stop recording as usual.
         stopRecording();
 

@@ -121,8 +121,8 @@ public class MainActivity extends ActionBarActivity implements RecordingService.
         super.onStart();
 
         Log.d(TAG, "MainActivity - call bind to Service");
-        startService(RecordingService.makeIntent(this));
-        bindService(RecordingService.makeIntent(this), serviceConnection, BIND_AUTO_CREATE);
+        startService(RecordingService.makeIntent(this, true));
+        bindService(RecordingService.makeIntent(this, true), serviceConnection, BIND_AUTO_CREATE);
     }
 
     // Disconnection from local Service.
