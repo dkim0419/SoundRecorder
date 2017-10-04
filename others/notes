@@ -1,9 +1,8 @@
-what's next:
-- create minimal interface for adding a scheduled recording
-- test the app
-- improve the UI
-
-TODO:
-- check dangerous permissions when inserting a scheduled recorder
-- RecordingService: what if a scheduled recording is ongoing and the user presses the record
-  button?
+bug da sistemare:
+- quando si imposta una registrazione schedulizzata bisogna controllare se ci sono i permessi
+  di scrittura
+- quando si lancia una registrazione normale e vengono chiesti i permessi, una volta dati bisogna
+  far partire la registrazione
+- registrazione schedulizzata normale (senza activity connessa): funziona
+- registrazione schedulizzata con activity connessa: funziona
+- lancio registrazione manuale e scatta una registrazione schedulizzata: cosa succede?

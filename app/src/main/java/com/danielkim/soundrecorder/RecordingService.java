@@ -123,6 +123,7 @@ public class RecordingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean activityStarter = intent.getBooleanExtra(EXTRA_ACTIVITY_STARTER, false);
+        Log.d(TAG, "RecordingService - onStartCommand - activity starter? " + activityStarter);
         int duration;
         if (!activityStarter) { // automatic scheduled recording
             // Get next recording data.
@@ -135,7 +136,6 @@ public class RecordingService extends Service {
             if (onScheduledRecordingListener != null) { // if an Activity is connected, inform it that a scheduled recording has started
                 onScheduledRecordingListener.onScheduledRecordingStart();
             }
-            startForeground(ONGOING_NOTIFICATION, createNotification());
             startRecording(duration);
         }
 
