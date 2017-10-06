@@ -89,13 +89,15 @@ public class RecordingService extends Service {
     }
 
     /*
-        Interface used to communicate to a connected Activity: the seconds elapsed and the end
-        of a recording with file path.
+        Interface used to communicate to a connected Activity changes in the status of a
+        recording:
+        - recording started
+        - recording stopped (with file path)
+        - seconds elapsed
      */
     public interface OnRecordingStatusChangedListener {
         void onRecordingStarted();
         void onTimerChanged(int seconds);
-
         void onRecordingStopped(String filePath);
     }
 
@@ -103,21 +105,6 @@ public class RecordingService extends Service {
 
     public void setOnRecordingStatusChangedListener(OnRecordingStatusChangedListener onRecordingStatusChangedListener) {
         this.onRecordingStatusChangedListener = onRecordingStatusChangedListener;
-    }
-
-    /*
-        Interface used to communicate the start/stop of a scheduled recording to a connected
-        Activity, so that the UI can be updated accordingly.
-     */
-    public interface OnScheduledRecordingListener {
-        void onScheduledRecordingStart();
-        void onScheduledRecordingStop();
-    }
-
-    private OnScheduledRecordingListener onScheduledRecordingListener = null;
-
-    public void setOnScheduledRecordingListener(OnScheduledRecordingListener listener) {
-        this.onScheduledRecordingListener = listener;
     }
 
     /*
@@ -137,8 +124,6 @@ public class RecordingService extends Service {
             startService(ScheduledRecordingService.makeIntent(this, false));
 
             if (!isRecording) {
-                if (onScheduledRecordingListener != null)  // if an Activity is connected, inform it that a scheduled recording has started
-                    onScheduledRecordingListener.onScheduledRecordingStart();
                 startRecording(duration);
             }
         }
@@ -272,11 +257,8 @@ public class RecordingService extends Service {
         // Stop recording as usual.
         stopRecording();
 
-        /* If an Activity is connected, inform it that the scheduled recording has stopped,
-        otherwise stop the Service. */
-        if (onScheduledRecordingListener != null)
-            onScheduledRecordingListener.onScheduledRecordingStop();
-        else
+        // No Activity connected -> stop the Service.
+        if (onRecordingStatusChangedListener == null)
             stopSelf();
     }
 

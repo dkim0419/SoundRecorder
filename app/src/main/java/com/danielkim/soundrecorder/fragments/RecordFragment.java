@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -167,7 +167,7 @@ public class RecordFragment extends Fragment {
         }
 
         // Request permissions.
-        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+        FragmentCompat.requestPermissions(this, arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
     }
 
     @Override
@@ -178,15 +178,10 @@ public class RecordFragment extends Fragment {
                 granted = false;
         }
 
-        switch (requestCode) {
-            case REQUEST_DANGEROUS_PERMISSIONS:
-                if (granted)
-                    startStopRecording();
-                else
-                    Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
-
-                break;
-        }
+        if (granted)
+            startStopRecording();
+        else
+            Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
     }
 
     // Recording Start/Stop
@@ -265,15 +260,15 @@ public class RecordFragment extends Fragment {
         tvChronometer.setText(mTimerFormat.format(new Date(seconds * 1000L)));
     }
 
-    public void scheduledRecordingStarted() {
+    public void recordingStarted() {
         Log.d(TAG, "RecordFragment - scheduledRecordingStarted");
         updateUI(true, null);
         isRecording = true;
     }
 
-    public void scheduledRecordingStopped() {
+    public void recordingStopped(String filePath) {
         Log.d(TAG, "RecordFragment - scheduledRecordingStopped");
-        updateUI(false, null);
+        updateUI(false, filePath);
         isRecording = false;
     }
 
