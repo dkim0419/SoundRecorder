@@ -16,7 +16,6 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.danielkim.soundrecorder.activities.MainActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
@@ -90,16 +89,20 @@ public class RecordingService extends Service {
     }
 
     /*
-        Interface used to communicate the seconds of the current recording to the connected Activity.
+        Interface used to communicate to a connected Activity: the seconds elapsed and the end
+        of a recording with file path.
      */
-    public interface OnTimerChangedListener {
+    public interface OnRecordingStatusChangedListener {
+        void onRecordingStarted();
         void onTimerChanged(int seconds);
+
+        void onRecordingStopped(String filePath);
     }
 
-    private OnTimerChangedListener onTimerChangedListener = null;
+    private OnRecordingStatusChangedListener onRecordingStatusChangedListener = null;
 
-    public void setOnTimerChangedListener(OnTimerChangedListener onTimerChangedListener) {
-        this.onTimerChangedListener = onTimerChangedListener;
+    public void setOnRecordingStatusChangedListener(OnRecordingStatusChangedListener onRecordingStatusChangedListener) {
+        this.onRecordingStatusChangedListener = onRecordingStatusChangedListener;
     }
 
     /*
@@ -133,10 +136,11 @@ public class RecordingService extends Service {
             mDatabase.removeScheduledRecording(item.getId());
             startService(ScheduledRecordingService.makeIntent(this, false));
 
-            if (onScheduledRecordingListener != null) { // if an Activity is connected, inform it that a scheduled recording has started
-                onScheduledRecordingListener.onScheduledRecordingStart();
+            if (!isRecording) {
+                if (onScheduledRecordingListener != null)  // if an Activity is connected, inform it that a scheduled recording has started
+                    onScheduledRecordingListener.onScheduledRecordingStart();
+                startRecording(duration);
             }
-            startRecording(duration);
         }
 
         return START_NOT_STICKY;
@@ -161,7 +165,7 @@ public class RecordingService extends Service {
             stopRecording();
         }
 
-        if (onTimerChangedListener != null) onTimerChangedListener = null;
+        if (onRecordingStatusChangedListener != null) onRecordingStatusChangedListener = null;
     }
 
     public void startRecording(int duration) {
@@ -196,6 +200,10 @@ public class RecordingService extends Service {
         } catch (IOException e) {
             Log.e(TAG, "prepare() failed");
         }
+
+        if (onRecordingStatusChangedListener != null) {
+            onRecordingStatusChangedListener.onRecordingStarted();
+        }
     }
 
     private void setFileNameAndPath() {
@@ -221,8 +229,8 @@ public class RecordingService extends Service {
             @Override
             public void run() {
                 mElapsedSeconds++;
-                if (onTimerChangedListener != null) {
-                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
+                if (onRecordingStatusChangedListener != null) {
+                    onRecordingStatusChangedListener.onTimerChanged(mElapsedSeconds);
                 }
             }
         };
@@ -235,7 +243,12 @@ public class RecordingService extends Service {
         long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();
         isRecording = false;
-        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+        mRecorder = null;
+
+        // Communicate the file path to the connected Activity.
+        if (onRecordingStatusChangedListener != null) {
+            onRecordingStatusChangedListener.onRecordingStopped(mFilePath);
+        }
 
         // Stop timer.
         if (mIncrementTimerTask != null) {
@@ -243,7 +256,7 @@ public class RecordingService extends Service {
             mIncrementTimerTask = null;
         }
 
-        mRecorder = null;
+        // Save the recording data in the database.
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
         } catch (Exception e) {

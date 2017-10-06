@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -36,7 +37,7 @@ import java.util.Locale;
 public class RecordFragment extends Fragment {
     // Constants.
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
-    private static final int REQUEST_DANGEROUS_PERMISSION = 0;
+    private static final int REQUEST_DANGEROUS_PERMISSIONS = 0;
 
     private final boolean marshmallow = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
@@ -166,22 +167,37 @@ public class RecordFragment extends Fragment {
         }
 
         // Request permissions.
-        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSION);
+        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean granted = true;
+        for (int i = 0; i < grantResults.length; i++) { // we nee all permissions granted
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+                granted = false;
+        }
+
+        switch (requestCode) {
+            case REQUEST_DANGEROUS_PERMISSIONS:
+                if (granted)
+                    startStopRecording();
+                else
+                    Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
+
+                break;
+        }
     }
 
     // Recording Start/Stop
     //TODO: recording pause
     private void startStopRecording() {
-        if (!isRecording) {
-            // start recording
+        if (!isRecording) { // start recording
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {
                 //folder /SoundRecorder doesn't exist, create the folder
                 folder.mkdir();
             }
-
-            updateUI(true);
-            Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
 
             // Start RecordingService: send request to main Activity.
             if (serviceOperations != null) {
@@ -190,10 +206,7 @@ public class RecordFragment extends Fragment {
 
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //keep screen on while recording
             isRecording = true;
-        } else {
-            //stop recording
-            updateUI(false);
-
+        } else { //stop recording
             // Stop RecordingService: send request to main Activity.
             if (serviceOperations != null) {
                 serviceOperations.requestStopRecording();
@@ -204,14 +217,17 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    private void updateUI(boolean recording) {
+    public void updateUI(boolean recording, String filePath) {
         if (recording) {
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+            Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
         } else {
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
             tvChronometer.setText("00:00");
             mRecordingPrompt.setText(getString(R.string.record_prompt));
+            if (filePath != null)
+                Toast.makeText(getActivity(), getString(R.string.toast_recording_finish) + " " + filePath, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -251,13 +267,13 @@ public class RecordFragment extends Fragment {
 
     public void scheduledRecordingStarted() {
         Log.d(TAG, "RecordFragment - scheduledRecordingStarted");
-        updateUI(true);
+        updateUI(true, null);
         isRecording = true;
     }
 
     public void scheduledRecordingStopped() {
         Log.d(TAG, "RecordFragment - scheduledRecordingStopped");
-        updateUI(false);
+        updateUI(false, null);
         isRecording = false;
     }
 

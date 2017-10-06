@@ -21,6 +21,8 @@
     <string name="toast_scheduledrecording_timeerror_already_scheduled">Un\'altra registrazione è già pianificata per l\'orario selezionato!</string>
     <string name="toast_scheduledrecording_deleted_error">Errore nell\'eliminazione  della registrazione pianificata!</string>
     <string name="toast_scheduledrecording_deleted">Elemento cancellato con successo</string>
+    <string name="toast_permissions_denied">L\'app non funzionerà senza i permessi richiesti!</string>
+
 
     <!-- Notifications -->
     <string name="notification_recording">Registrazione...</string>

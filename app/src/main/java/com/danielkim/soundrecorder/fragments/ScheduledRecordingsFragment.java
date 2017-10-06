@@ -4,13 +4,17 @@
 
 package com.danielkim.soundrecorder.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,6 +52,7 @@ import java.util.Locale;
 public class ScheduledRecordingsFragment extends Fragment implements ScheduledRecordingsFragmentItemAdapter.MyOnItemClickListener {
 
     private static final String ARG_POSITION = "position";
+    private static final int REQUEST_DANGEROUS_PERMISSIONS = 0;
     private static final int ADD_SCHEDULED_RECORDING = 0;
     private static final int EDIT_SCHEDULED_RECORDING = 1;
     private static final String TAG = "SRFragment";
@@ -211,10 +216,54 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
-            startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
+            checkPermissions();
         }
     };
+
+    // Check dangerous permissions for Android Marshmallow+.
+    private void checkPermissions() {
+        // Check permissions.
+        boolean writePerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean audioPerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        String[] arrPermissions;
+        if (!writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+        } else if (!writePerm && audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        } else if (writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        } else {
+            startAddScheduledRecordingActivity();
+            return;
+        }
+
+        // Request permissions.
+        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean granted = true;
+        for (int i = 0; i < grantResults.length; i++) { // we nee all permissions granted
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+                granted = false;
+        }
+
+        switch (requestCode) {
+            case REQUEST_DANGEROUS_PERMISSIONS:
+                if (granted)
+                    startAddScheduledRecordingActivity();
+                else
+                    Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
+
+                break;
+        }
+    }
+
+    private void startAddScheduledRecordingActivity() {
+        Intent intent = AddScheduledRecordingActivity.makeIntent(getActivity(), selectedDate.getTime());
+        startActivityForResult(intent, ADD_SCHEDULED_RECORDING);
+    }
 
     // After a new scheduled recording has been added, get all the recordings and refresh the layout.
     @Override

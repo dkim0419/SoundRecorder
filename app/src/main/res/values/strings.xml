@@ -22,6 +22,7 @@
     <string name="toast_scheduledrecording_saved_error">An error occured while saving the scheduled recording!</string>
     <string name="toast_scheduledrecording_deleted_error">An error occured while deleting the scheduled recording!</string>
     <string name="toast_scheduledrecording_deleted">Item successfully deleted</string>
+    <string name="toast_permissions_denied">The app won\'t work without the requested permissions!</string>
 
 
     <!-- Notifications -->

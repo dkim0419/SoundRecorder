@@ -23,7 +23,7 @@ import com.danielkim.soundrecorder.fragments.RecordFragment;
 import com.danielkim.soundrecorder.fragments.ScheduledRecordingsFragment;
 
 
-public class MainActivity extends ActionBarActivity implements RecordingService.OnTimerChangedListener, RecordFragment.ServiceOperations {
+public class MainActivity extends ActionBarActivity implements RecordingService.OnRecordingStatusChangedListener, RecordFragment.ServiceOperations {
 
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
 
@@ -184,14 +184,14 @@ public class MainActivity extends ActionBarActivity implements RecordingService.
             if (recordFragment != null) {
                 recordFragment.serviceConnection(true);
             }
-            recordingService.setOnTimerChangedListener(MainActivity.this);
+            recordingService.setOnRecordingStatusChangedListener(MainActivity.this);
             recordingService.setOnScheduledRecordingListener(onScheduledRecordingListener);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d(TAG, "MainActivity - Service disconnected");
-            recordingService.setOnTimerChangedListener(null);
+            recordingService.setOnRecordingStatusChangedListener(null);
             recordingService.setOnScheduledRecordingListener(null);
             recordingService = null;
             serviceConnected = false;
@@ -211,10 +211,18 @@ public class MainActivity extends ActionBarActivity implements RecordingService.
     }
 
     /*
-        Implementation of RecordingService.OnTimerChangedListener interface.
-        The Service uses this interface to communicate the progress of the recording in seconds.
-        The caller of this method runs on a separate thread.
+        Implementation of RecordingService.OnRecordingStatusChangedListener interface.
+        The Service uses this interface to communicate the status of the recording (started,
+        stopped and the seconds elapsed).
     */
+
+    @Override
+    public void onRecordingStarted() {
+        if (recordFragment != null)
+            recordFragment.updateUI(true, null);
+    }
+
+    // This method is called from a separate thread.
     @Override
     public void onTimerChanged(int seconds) {
         if (recordFragment != null) {
@@ -227,11 +235,18 @@ public class MainActivity extends ActionBarActivity implements RecordingService.
         }
     }
 
+    @Override
+    public void onRecordingStopped(String filePath) {
+        if (recordFragment != null)
+            recordFragment.updateUI(false, filePath);
+
+    }
+
     /*
-        Implementation of RecordingService.OnScheduledRecordingListener interface.
-        The Service uses this interface to communicate to the connected Activity that a
-        scheduled recording has started/stopped, so that the UI can be updated accordingly.
-    */
+            Implementation of RecordingService.OnScheduledRecordingListener interface.
+            The Service uses this interface to communicate to the connected Activity that a
+            scheduled recording has started/stopped, so that the UI can be updated accordingly.
+        */
     private final RecordingService.OnScheduledRecordingListener onScheduledRecordingListener = new RecordingService.OnScheduledRecordingListener() {
         @Override
         public void onScheduledRecordingStart() {
@@ -245,4 +260,5 @@ public class MainActivity extends ActionBarActivity implements RecordingService.
                 recordFragment.scheduledRecordingStopped();
         }
     };
+
 }
