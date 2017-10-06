@@ -3,6 +3,10 @@ bug da sistemare:
   di scrittura
 - quando si lancia una registrazione normale e vengono chiesti i permessi, una volta dati bisogna
   far partire la registrazione
-- registrazione schedulizzata normale (senza activity connessa): funziona
-- registrazione schedulizzata con activity connessa: funziona
 - lancio registrazione manuale e scatta una registrazione schedulizzata: cosa succede?
+- quando termina una registrazione schedulizzata il programma si arresta (forse dipende dal toast
+  che non deve essere visualizzato ad app spenta)
+- miglioramento: se creassi un Service come classe astratta e due estensioni concrete per
+  registrazioni normali e schedulizzate?
+- usare dependency injection per DBHelper con Dagger 2
+- guardare il codice e cercare uso operatore new all’interno delle classi: si può sostituire con DI?
