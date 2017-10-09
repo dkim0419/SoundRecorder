@@ -45,6 +45,7 @@ android {
 
 ext {
     libraryVersion = '25.1.1'
+    daggerVersion = '2.11-rc2'
 }
 
 dependencies {
@@ -69,4 +70,11 @@ dependencies {
     compile 'junit:junit:4.12'
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'org.robolectric:robolectric:3.3.2'
+
+    // Dagger2.
+    compile "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    compile "com.google.dagger:dagger-android-support:$daggerVersion"
+    provided 'javax.annotation:jsr250-api:1.0'
+
 }

@@ -14,6 +14,9 @@ import android.os.Message;
 import android.support.annotation.VisibleForTesting;
 
 import com.danielkim.soundrecorder.database.DBHelper;
+import com.danielkim.soundrecorder.didagger2.App;
+
+import javax.inject.Inject;
 
 /**
  * This Service gets triggered at boot time and sets the next scheduled recording using an
@@ -26,6 +29,9 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     private final int SCHEDULE_RECORDINGS = 1;
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
     protected static final String EXTRA_WAKEFUL = "com.danielkim.soundrecorder.WAKEFUL";
+
+    @Inject
+    DBHelper dbHelper;
 
     protected AlarmManager alarmManager;
     protected Context context;
@@ -55,6 +61,8 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     @Override
     public void onCreate() {
         super.onCreate();
+        App.getComponent().inject(this);
+
         onCreateCalls++; // just for testing
 
         if (alarmManager == null)
@@ -113,8 +121,7 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
 
     // Get scheduled recordings from database and set the AlarmManager.
     protected void scheduleNextRecording() {
-        DBHelper database = new DBHelper(context);
-        ScheduledRecordingItem item = database.getNextScheduledRecording();
+        ScheduledRecordingItem item = dbHelper.getNextScheduledRecording();
         if (item != null) {
             Intent intent = RecordingService.makeIntent(getApplicationContext(), false);
             PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

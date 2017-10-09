@@ -30,6 +30,7 @@ import com.danielkim.soundrecorder.ScheduledRecordingItem;
 import com.danielkim.soundrecorder.ScheduledRecordingService;
 import com.danielkim.soundrecorder.activities.AddScheduledRecordingActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
+import com.danielkim.soundrecorder.didagger2.App;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.melnykov.fab.FloatingActionButton;
@@ -42,6 +43,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 /**
  * This Fragment shows all scheduled recordings using a CalendarView.
@@ -61,6 +64,9 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     private TextView tvMonth;
     private TextView tvDate;
 
+    @Inject
+    DBHelper dbHelper;
+
     private RecyclerView.Adapter adapter;
     private List<ScheduledRecordingItem> scheduledRecordings;
     private Date selectedDate = new Date(System.currentTimeMillis());
@@ -72,6 +78,12 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         f.setArguments(b);
 
         return f;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        App.getComponent().inject(this);
     }
 
     @Nullable
@@ -139,7 +151,6 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
 
     // Retrieve all scheduled recordings in a separate thread.
     private class GetScheduledRecordingsTask extends AsyncTask<Void, Void, List<ScheduledRecordingItem>> {
-        private final DBHelper dbHelper = new DBHelper(getActivity());
 
         public GetScheduledRecordingsTask() {
         }
@@ -194,7 +205,6 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
 
     // Retrieve all scheduled recordings in a separate thread.
     private class DeleteItemTask extends AsyncTask<Long, Void, Integer> {
-        private final DBHelper dbHelper = new DBHelper(getActivity());
 
         protected Integer doInBackground(Long... params) {
             return dbHelper.removeScheduledRecording(params[0]);

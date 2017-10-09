@@ -22,11 +22,14 @@ import android.util.Log;
 
 import com.danielkim.soundrecorder.activities.MainActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
+import com.danielkim.soundrecorder.didagger2.App;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.inject.Inject;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
 
@@ -44,10 +47,12 @@ public class RecordingService extends Service {
     private static final String EXTRA_ACTIVITY_STARTER = "com.danielkim.soundrecorder.EXTRA_ACTIVITY_STARTER";
     private static final int ONGOING_NOTIFICATION = 1;
 
+    @Inject
+    DBHelper dbHelper;
+
     private String mFileName = null;
     private String mFilePath = null;
     private MediaRecorder mRecorder = null;
-    private DBHelper mDatabase;
     private long mStartingTimeMillis = 0;
     private int mElapsedSeconds = 0;
 
@@ -119,10 +124,10 @@ public class RecordingService extends Service {
         int duration;
         if (!activityStarter) { // automatic scheduled recording
             // Get next recording data.
-            ScheduledRecordingItem item = mDatabase.getNextScheduledRecording();
+            ScheduledRecordingItem item = dbHelper.getNextScheduledRecording();
             duration = (int) (item.getEnd() - item.getStart());
             // Remove scheduled recording from database and schedule next recording.
-            mDatabase.removeScheduledRecording(item.getId());
+            dbHelper.removeScheduledRecording(item.getId());
             startService(ScheduledRecordingService.makeIntent(this, false));
 
             if (!isRecording && hasPermissions()) {
@@ -141,7 +146,7 @@ public class RecordingService extends Service {
     public void onCreate() {
         Log.d(TAG, "RecordingService - onCreate");
         super.onCreate();
-        mDatabase = new DBHelper(getApplicationContext());
+        App.getComponent().inject(this);
     }
 
     @Override
@@ -201,7 +206,7 @@ public class RecordingService extends Service {
             count++;
 
             mFileName = getString(R.string.default_file_name)
-                    + " #" + (mDatabase.getSavedRecordingsCount() + count) + ".mp4";
+                    + " #" + (dbHelper.getSavedRecordingsCount() + count) + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 
@@ -245,7 +250,7 @@ public class RecordingService extends Service {
 
         // Save the recording data in the database.
         try {
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
+            dbHelper.addRecording(mFileName, mFilePath, mElapsedMillis);
         } catch (Exception e) {
             Log.e(TAG, "exception", e);
         }

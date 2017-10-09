@@ -1,4 +1,6 @@
 da sistemare:
-- usare dependency injection per DBHelper con Dagger 2
+- usare dependency injection per DBHelper con Dagger 2:
+  a) importare librerie e testare codice
+  b) e per i test?
 - guardare il codice e cercare uso operatore new all’interno delle classi: si può sostituire con DI?
 - eliminare tutti i log

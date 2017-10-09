@@ -26,6 +26,7 @@ import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.ScheduledRecordingItem;
 import com.danielkim.soundrecorder.ScheduledRecordingService;
 import com.danielkim.soundrecorder.database.DBHelper;
+import com.danielkim.soundrecorder.didagger2.App;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment;
 import com.danielkim.soundrecorder.fragments.DatePickerFragment.MyOnDateSetListener;
 import com.danielkim.soundrecorder.fragments.TimePickerFragment;
@@ -36,6 +37,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 import static com.danielkim.soundrecorder.database.RecordingsContract.MAX_DURATION;
 import static com.danielkim.soundrecorder.database.RecordingsContract.MIN_DURATION;
@@ -64,6 +67,9 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private TextView tvTimeStart;
     private TextView tvTimeEnd;
 
+    @Inject
+    DBHelper dbHelper;
+
     private Operation operation;
     private ScheduledRecordingItem item = null;
     private final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
@@ -91,6 +97,8 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_scheduled_recording);
+
+        App.getComponent().inject(this);
         // Action bar (Toolbar).
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
@@ -267,7 +275,6 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     }
 
     private class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Integer> {
-        private final DBHelper dbHelper = new DBHelper(AddScheduledRecordingActivity.this);
 
         protected Integer doInBackground(Void... params) {
             long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
