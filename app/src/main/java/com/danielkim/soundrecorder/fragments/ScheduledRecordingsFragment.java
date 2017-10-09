@@ -7,6 +7,7 @@ package com.danielkim.soundrecorder.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,8 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -238,7 +238,7 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         }
 
         // Request permissions.
-        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+        FragmentCompat.requestPermissions(this, arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
     }
 
     @Override
@@ -249,15 +249,10 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
                 granted = false;
         }
 
-        switch (requestCode) {
-            case REQUEST_DANGEROUS_PERMISSIONS:
-                if (granted)
-                    startAddScheduledRecordingActivity();
-                else
-                    Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
-
-                break;
-        }
+        if (granted)
+            startAddScheduledRecordingActivity();
+        else
+            Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
     }
 
     private void startAddScheduledRecordingActivity() {
