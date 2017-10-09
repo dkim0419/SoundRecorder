@@ -102,7 +102,6 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int position = getArguments().getInt(ARG_POSITION);
     }
 
     @Override
@@ -116,8 +115,8 @@ public class RecordFragment extends Fragment {
         mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
 
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
-        mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
-        mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
+        mRecordButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.primary));
+        mRecordButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.primary_dark));
         mRecordButton.setEnabled(serviceOperations.isServiceConnected());
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,7 +134,7 @@ public class RecordFragment extends Fragment {
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onPauseRecord(mPauseRecording);
+                //onPauseRecord(mPauseRecording);
                 mPauseRecording = !mPauseRecording;
             }
         });
@@ -212,7 +211,7 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    public void updateUI(boolean recording, String filePath) {
+    private void updateUI(boolean recording, String filePath) {
         if (recording) {
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
@@ -227,9 +226,9 @@ public class RecordFragment extends Fragment {
     }
 
     //TODO: implement pause recording
-    private void onPauseRecord(boolean pause) {
+/*    private void onPauseRecord(boolean pause) {
 
-    }
+    }*/
 
     /*
         When the Activity establishes the connection with the Service, it informs this Fragment

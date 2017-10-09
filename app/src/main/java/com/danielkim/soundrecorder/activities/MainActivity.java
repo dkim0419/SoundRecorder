@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +23,7 @@ import com.danielkim.soundrecorder.fragments.RecordFragment;
 import com.danielkim.soundrecorder.fragments.ScheduledRecordingsFragment;
 
 
-public class MainActivity extends ActionBarActivity implements RecordFragment.ServiceOperations {
+public class MainActivity extends AppCompatActivity implements RecordFragment.ServiceOperations {
 
     private static final String TAG = "SCHEDULED_RECORDER_TAG";
 
@@ -168,10 +168,7 @@ public class MainActivity extends ActionBarActivity implements RecordFragment.Se
 
     @Override
     public boolean isServiceRecording() {
-        if (recordingService != null) {
-            return recordingService.isRecording();
-        }
-        return false;
+        return recordingService != null && recordingService.isRecording();
     }
 
     /*

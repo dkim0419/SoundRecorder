@@ -72,8 +72,7 @@ public class RecordingService extends Service {
         Other convenient method used to retrieve an empty Intent (i.e to stop this Service).
      */
     public static Intent makeIntent(Context context) {
-        Intent intent = new Intent(context, RecordingService.class);
-        return intent;
+        return new Intent(context, RecordingService.class);
     }
 
     /*
