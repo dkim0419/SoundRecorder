@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements RecordFragment.Se
 
     private void openLicenses() {
         LicensesFragment licensesFragment = new LicensesFragment();
-        licensesFragment.show(getSupportFragmentManager().beginTransaction(), "dialog_licenses");
+        licensesFragment.show(getFragmentManager().beginTransaction(), "dialog_licenses");
     }
 
     public class MyAdapter extends FragmentPagerAdapter {

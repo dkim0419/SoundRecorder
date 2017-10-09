@@ -1,13 +1,13 @@
 package com.danielkim.soundrecorder.adapters;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -80,7 +80,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             new PlaybackFragment().newInstance(getItem(holder.getPosition()));
 
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
-                            .getSupportFragmentManager()
+                            .getFragmentManager()
                             .beginTransaction();
 
                     playbackFragment.show(transaction, "dialog_playback");
