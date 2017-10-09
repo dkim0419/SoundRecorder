@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -167,7 +167,7 @@ public class RecordFragment extends Fragment {
         }
 
         // Request permissions.
-        FragmentCompat.requestPermissions(this, arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+        ActivityCompat.requestPermissions(getActivity(), arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
     }
 
     @Override
