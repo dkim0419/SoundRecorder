@@ -5,11 +5,3 @@ bug da sistemare:
 - guardare il codice e cercare uso operatore new all’interno delle classi: si può sostituire con DI?
 
 
-sistemati:
-- quando termina una registrazione schedulizzata il programma si arresta (forse dipende dal toast
-  che non deve essere visualizzato ad app spenta)
-- quando si imposta una registrazione schedulizzata bisogna controllare se ci sono i permessi
-  di scrittura
-- quando si lancia una registrazione normale e vengono chiesti i permessi, una volta dati bisogna
-  far partire la registrazione
-- lancio registrazione manuale e scatta una registrazione schedulizzata: cosa succede?

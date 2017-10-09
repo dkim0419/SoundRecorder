@@ -261,13 +261,13 @@ public class RecordFragment extends Fragment {
     }
 
     public void recordingStarted() {
-        Log.d(TAG, "RecordFragment - scheduledRecordingStarted");
+        Log.d(TAG, "RecordFragment - recording started");
         updateUI(true, null);
         isRecording = true;
     }
 
     public void recordingStopped(String filePath) {
-        Log.d(TAG, "RecordFragment - scheduledRecordingStopped");
+        Log.d(TAG, "RecordFragment - recording stopped");
         updateUI(false, filePath);
         isRecording = false;
     }

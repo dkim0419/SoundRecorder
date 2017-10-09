@@ -5,16 +5,19 @@
 package com.danielkim.soundrecorder;
 
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.danielkim.soundrecorder.activities.MainActivity;
@@ -123,7 +126,7 @@ public class RecordingService extends Service {
             mDatabase.removeScheduledRecording(item.getId());
             startService(ScheduledRecordingService.makeIntent(this, false));
 
-            if (!isRecording) {
+            if (!isRecording && hasPermissions()) {
                 startRecording(duration);
             }
         }
@@ -278,5 +281,16 @@ public class RecordingService extends Service {
 
     public boolean isRecording() {
         return isRecording;
+    }
+
+    /*
+        For Marshmallow+ check if we have the necessary permissions. This method is called for
+        scheduled recordings because the use might deny the permissions after a scheduled
+        recording has already been set.
+     */
+    private boolean hasPermissions() {
+        boolean writePerm = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean audioPerm = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        return writePerm && audioPerm;
     }
 }
