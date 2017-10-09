@@ -1,7 +1,4 @@
-bug da sistemare:
-- miglioramento: se creassi un Service come classe astratta e due estensioni concrete per
-  registrazioni normali e schedulizzate?
+da sistemare:
 - usare dependency injection per DBHelper con Dagger 2
 - guardare il codice e cercare uso operatore new all’interno delle classi: si può sostituire con DI?
-
-
+- eliminare tutti i log
