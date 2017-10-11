@@ -256,7 +256,8 @@ public class RecordFragment extends Fragment {
     }
 
     public void timerChanged(int seconds) {
-        tvChronometer.setText(mTimerFormat.format(new Date(seconds * 1000L)));
+        if (isRecording)
+            tvChronometer.setText(mTimerFormat.format(new Date(seconds * 1000L)));
     }
 
     public void recordingStarted() {

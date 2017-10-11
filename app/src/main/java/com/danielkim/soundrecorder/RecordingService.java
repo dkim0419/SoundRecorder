@@ -177,7 +177,7 @@ public class RecordingService extends Service {
             // Called only if a max duration has been set (scheduled recordings).
             public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
                 if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                    stopScheduledRecording();
+                    stopRecording();
                 }
             }
         });
@@ -242,11 +242,6 @@ public class RecordingService extends Service {
             onRecordingStatusChangedListener.onRecordingStopped(mFilePath);
         }
 
-        // Stop timer.
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
-        }
 
         // Save the recording data in the database.
         try {
@@ -255,18 +250,17 @@ public class RecordingService extends Service {
             Log.e(TAG, "exception", e);
         }
 
-        stopForeground(true);
-    }
+        // Stop timer.
+        if (mIncrementTimerTask != null) {
+            mIncrementTimerTask.cancel();
+            mIncrementTimerTask = null;
+        }
 
-    // Specific to scheduled recordings.
-    private void stopScheduledRecording() {
-        Log.d(TAG, "RecordingService - stopScheduledRecording");
-        // Stop recording as usual.
-        stopRecording();
-
-        // No Activity connected -> stop the Service.
+        // No Activity connected -> stop the Service (scheduled recording).
         if (onRecordingStatusChangedListener == null)
             stopSelf();
+
+        stopForeground(true);
     }
 
     private Notification createNotification() {

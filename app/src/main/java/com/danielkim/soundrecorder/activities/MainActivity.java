@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
             Log.d(TAG, "MainActivity - call unbind from Service");
             unbindService(serviceConnection);
             if (!isServiceRecording()) stopService(RecordingService.makeIntent(this));
+            recordingService.setOnRecordingStatusChangedListener(null);
             recordingService = null;
             serviceConnected = false;
             if (recordFragment != null) {
@@ -190,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             Log.d(TAG, "MainActivity - Service disconnected");
-            recordingService.setOnRecordingStatusChangedListener(null);
             recordingService.setOnRecordingStatusChangedListener(null);
             recordingService = null;
             serviceConnected = false;
