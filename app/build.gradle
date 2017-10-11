@@ -44,7 +44,7 @@ android {
 }
 
 ext {
-    libraryVersion = '25.1.1'
+    libraryVersion = '25.3.1'
     daggerVersion = '2.11-rc2'
 }
 
@@ -53,22 +53,31 @@ dependencies {
     compile "com.android.support:cardview-v7:$libraryVersion"
     compile "com.android.support:recyclerview-v7:$libraryVersion"
     compile "com.android.support:support-v13:$libraryVersion"
+    compile "com.android.support:support-v4:$libraryVersion"
 
-    // Testing.
-    androidTestCompile('com.android.support.test:runner:0.5') {
-        exclude module: 'support-annotations'
-    }
-    // Use JUnit 4 rules for this dependency.
-    androidTestCompile('com.android.support.test:rules:0.5') {
-        exclude module: 'support-annotations'
-    }
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.melnykov:floatingactionbutton:1.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
     compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
+
+    // Testing.
+    androidTestCompile('com.android.support.test:runner:1.0.1') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile('com.android.support.test:rules:1.0.1') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:3.0.1') {
+        exclude module: 'support-annotations'
+        exclude module: 'support-v4'
+        exclude module: 'support-v13'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
+
     compile 'com.android.support:support-annotations:24.2.0'
     compile 'junit:junit:4.12'
-    compile 'com.android.support:support-v4:25.3.1'
     testCompile 'org.robolectric:robolectric:3.3.2'
 
     // Dagger2.
