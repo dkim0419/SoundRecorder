@@ -123,8 +123,8 @@ public class ScheduledRecordingService extends Service implements Handler.Callba
     protected void scheduleNextRecording() {
         ScheduledRecordingItem item = dbHelper.getNextScheduledRecording();
         if (item != null) {
-            Intent intent = RecordingService.makeIntent(getApplicationContext(), false);
-            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent intent = RecordingService.makeIntent(context, false);
+            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) { // up to API 18
                 alarmManager.set(AlarmManager.RTC_WAKEUP, item.getStart(), pendingIntent);
             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) { // API 19-22
