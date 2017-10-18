@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
@@ -36,7 +37,7 @@ public class MainActivityEspressoTest {
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
 
     /*
-        Check that:
+        Checks that:
         - when I click on the start/stop record button the UI changes correctly
         - when I stop recording the new recording is added to the file viewer Fragment
      */
@@ -65,5 +66,82 @@ public class MainActivityEspressoTest {
         onView(withId(R.id.pager)).perform(swipeLeft());
         onView(withId(R.id.recyclerView)).perform(actionOnItemAtPosition(0, click()));
         onView(withId(R.id.file_name_text_view)).check(matches(withText(containsString(defaultFileName))));
+    }
+
+    /*
+        Checks that:
+        - when I stop the Activity while recording the recording continues
+        - when I start the Activity again the UI shows the ongoing recording correctly
+     */
+    @Test
+    public void stopActivityWhileRecording() {
+        String recording = mActivityRule.getActivity().getResources().getString(R.string.record_in_progress);
+        String prompt = mActivityRule.getActivity().getResources().getString(R.string.record_prompt);
+
+        onView(withId(R.id.btnRecord)).perform(click());
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        MainActivity activity = mActivityRule.getActivity();
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                getInstrumentation().callActivityOnPause(activity);
+                getInstrumentation().callActivityOnStop(activity);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getInstrumentation().callActivityOnRestart(activity);
+                getInstrumentation().callActivityOnStart(activity);
+                getInstrumentation().callActivityOnResume(activity);
+            }
+        });
+
+        onView(withId(R.id.recording_status_text)).check(matches(withText(containsString(recording))));
+        onView(withId(R.id.tvChronometer)).check(matches(withText(not(containsString("00:00")))));
+
+        onView(withId(R.id.btnRecord)).perform(click());
+        onView(withId(R.id.recording_status_text)).check(matches(withText(containsString(prompt))));
+        onView(withId(R.id.tvChronometer)).check(matches(withText(containsString("00:00"))));
+    }
+
+    @Test
+    public void destroyActivityWhileRecording() {
+        String recording = mActivityRule.getActivity().getResources().getString(R.string.record_in_progress);
+        String prompt = mActivityRule.getActivity().getResources().getString(R.string.record_prompt);
+
+        onView(withId(R.id.btnRecord)).perform(click());
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        MainActivity activity = mActivityRule.getActivity();
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                activity.finish();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        mActivityRule.getActivity();
+        getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.recording_status_text)).check(matches(withText(containsString(recording))));
+        onView(withId(R.id.tvChronometer)).check(matches(withText(not(containsString("00:00")))));
+
+        onView(withId(R.id.btnRecord)).perform(click());
+        onView(withId(R.id.recording_status_text)).check(matches(withText(containsString(prompt))));
+        onView(withId(R.id.tvChronometer)).check(matches(withText(containsString("00:00"))));
     }
 }
