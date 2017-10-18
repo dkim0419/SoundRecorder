@@ -16,9 +16,9 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
@@ -35,6 +35,11 @@ public class MainActivityEspressoTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(MainActivity.class);
 
+    /*
+        Check that:
+        - when I click on the start/stop record button the UI changes correctly
+        - when I stop recording the new recording is added to the file viewer Fragment
+     */
     @Test
     public void startAndStopRecording() {
         String recording = mActivityRule.getActivity().getResources().getString(R.string.record_in_progress);
@@ -57,7 +62,8 @@ public class MainActivityEspressoTest {
 
         // Check that the recording is added to FileViewerFragment.
         String defaultFileName = mActivityRule.getActivity().getResources().getString(R.string.default_file_name);
-        onView(withId(R.id.recyclerView)).perform(scrollToPosition(0));
-        onView(withText(containsString(defaultFileName))).check(matches(isDisplayed()));
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        onView(withId(R.id.recyclerView)).perform(actionOnItemAtPosition(0, click()));
+        onView(withId(R.id.file_name_text_view)).check(matches(withText(containsString(defaultFileName))));
     }
 }
