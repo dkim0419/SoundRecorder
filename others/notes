@@ -1,5 +1,4 @@
 da sistemare:
-- bug scheduled recording: registra ma non salva nel database
 - rivedere test
 - creare nuovi functional test
 - eliminare tutti i log
