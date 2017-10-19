@@ -36,7 +36,6 @@
     <string name="no_saved_recordings_message">Keine gespeicherten Aufnahmen</string>
     <string name="pause_recording_button">Pause</string>
     <string name="resume_recording_button">Fortfahren</string>
-    <string name="default_file_name">Meine Aufzeichnung</string>
     <string name="record_prompt">Berühre den Button, um die Aufzeichnung zu starten</string>
     <string name="record_in_progress">Nehme auf</string>
 

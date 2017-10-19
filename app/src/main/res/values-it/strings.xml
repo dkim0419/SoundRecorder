@@ -34,7 +34,6 @@
     <string name="no_saved_recordings_message">Nessuna registrazione salvata</string>
     <string name="pause_recording_button">Pausa</string>
     <string name="resume_recording_button">Riprendi</string>
-    <string name="default_file_name">Le mie registrazioni</string>
     <string name="record_prompt">Premi il bottone per iniziare a registrare</string>
     <string name="record_in_progress">Registrazione in corso</string>
 

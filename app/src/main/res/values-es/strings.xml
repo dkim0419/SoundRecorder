@@ -34,7 +34,6 @@
     <string name="no_saved_recordings_message">Sin grabaciones guardadas</string>
     <string name="pause_recording_button">Pausar</string>
     <string name="resume_recording_button">Continuar</string>
-    <string name="default_file_name">Mi grabación</string>
     <string name="record_prompt">Pulse el botón para iniciar la grabación</string>
     <string name="record_in_progress">Grabando</string>
 
