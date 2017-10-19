@@ -34,7 +34,6 @@
     <string name="no_saved_recordings_message">Neniu konservataj registraĵoj</string>
     <string name="pause_recording_button">Paŭzigi</string>
     <string name="resume_recording_button">Daŭrigi</string>
-    <string name="default_file_name">Miaj registraĵoj</string>
     <string name="record_prompt">Premi la butonon por ekregistri</string>
     <string name="record_in_progress">Registrado</string>
 

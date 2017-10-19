@@ -38,7 +38,6 @@
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">Pause</string>
     <string name="resume_recording_button">Resume</string>
-    <string name="default_file_name">My Recording</string>
     <string name="record_prompt">Tap the button to start recording</string>
     <string name="record_in_progress">Recording</string>
 

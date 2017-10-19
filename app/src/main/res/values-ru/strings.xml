@@ -32,7 +32,6 @@
     <string name="no_saved_recordings_message">Нет сохраненных записей</string>
     <string name="pause_recording_button">Пауза</string>
     <string name="resume_recording_button">Продолжить</string>
-    <string name="default_file_name">Запись</string>
     <string name="record_prompt">Нажмите на кнопку, чтобы начать запись</string>
     <string name="record_in_progress">Запись</string>
     <string name="action_settings">Настройки</string>
