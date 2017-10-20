@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

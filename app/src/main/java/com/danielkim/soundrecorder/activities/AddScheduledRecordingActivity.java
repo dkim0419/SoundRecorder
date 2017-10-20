@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -313,5 +314,20 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
                 finish();
             }
         }
+    }
+
+    @VisibleForTesting
+    public void setDatesAndTimesForTesting(int yearStart, int monthStart, int dayStart, int hourStart, int minuteStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd) {
+        this.yearStart = yearStart;
+        this.yearEnd = yearEnd;
+        this.monthStart = monthStart;
+        this.monthEnd = monthEnd;
+        this.dayStart = dayStart;
+        this.dayEnd = dayEnd;
+        this.hourStart = hourStart;
+        this.hourEnd = hourEnd;
+        this.minuteStart = minuteStart;
+        this.minuteEnd = minuteEnd;
+        statusCode = StatusCodes.NO_ERROR;
     }
 }
