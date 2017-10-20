@@ -187,12 +187,56 @@ public class MainActivityEspressoTest {
         onView(withId(R.id.fab_add)).perform(click()); // click on add new scheduled recording button
 
         // Set date and time for a scheduled recording in AddScheduledRecordingActivity.
-        GregorianCalendar tomorrow = new GregorianCalendar();
-        int year = tomorrow.get(Calendar.YEAR);
-        int month = tomorrow.get(Calendar.MONTH);
-        int day = tomorrow.get(Calendar.DAY_OF_MONTH);
+        GregorianCalendar today = new GregorianCalendar();
+        int year = today.get(Calendar.YEAR);
+        int month = today.get(Calendar.MONTH);
+        int day = today.get(Calendar.DAY_OF_MONTH);
         AddScheduledRecordingActivity activity = (AddScheduledRecordingActivity) getActivityInstance();
         activity.setDatesAndTimesForTesting(year, month, day, 23, 0, year, month, day, 23, 5);
+
+        // Click on action save.
+        ViewInteraction actionMenuItemView = onView(
+                Matchers.allOf(withId(R.id.action_save), withText(save), isDisplayed()));
+        actionMenuItemView.perform(click());
+
+        // Check that the new scheduled recording is added to the list.
+        String scheduledRecording = mActivityRule.getActivity().getResources().getString(R.string.frag_sched_scheduled_recording);
+        onView(withId(R.id.rvRecordings)).perform(scrollToPosition(0));
+        onView(withText(scheduledRecording)).check(matches(isDisplayed()));
+        onView(withText("23:00")).check(matches(isDisplayed()));
+        onView(withText("23:05")).check(matches(isDisplayed()));
+
+        // Delete the scheduled recording.
+        onView(withText("23:00")).perform(longClick());
+        ViewInteraction appCompatButton3 = onView(
+                Matchers.allOf(withId(android.R.id.button1), withText("OK")));
+        appCompatButton3.perform(scrollTo(), click());
+
+        // Check that the scheduled recording is no longer in the list.
+        onView(withText("23:00")).check(doesNotExist());
+    }
+
+    /*
+    Add a new scheduled recording with a duration of 3 minutes.
+    Check that the recording is added to the list with a duration of 5 minutes.
+    Delete the recording.
+    Check that the recording is no longer in the list.
+ */
+    @Test
+    public void addScheduledRecording3Minutes() {
+        String save = mActivityRule.getActivity().getResources().getString(R.string.action_save);
+
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        onView(withId(R.id.pager)).perform(swipeLeft()); // go to ScheduledRecordingsFragment
+        onView(withId(R.id.fab_add)).perform(click()); // click on add new scheduled recording button
+
+        // Set date and time for a scheduled recording in AddScheduledRecordingActivity.
+        GregorianCalendar today = new GregorianCalendar();
+        int year = today.get(Calendar.YEAR);
+        int month = today.get(Calendar.MONTH);
+        int day = today.get(Calendar.DAY_OF_MONTH);
+        AddScheduledRecordingActivity activity = (AddScheduledRecordingActivity) getActivityInstance();
+        activity.setDatesAndTimesForTesting(year, month, day, 23, 0, year, month, day, 23, 3);
 
         // Click on action save.
         ViewInteraction actionMenuItemView = onView(

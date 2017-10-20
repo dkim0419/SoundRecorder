@@ -316,7 +316,7 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         }
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public void setDatesAndTimesForTesting(int yearStart, int monthStart, int dayStart, int hourStart, int minuteStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd) {
         this.yearStart = yearStart;
         this.yearEnd = yearEnd;
@@ -328,6 +328,6 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         this.hourEnd = hourEnd;
         this.minuteStart = minuteStart;
         this.minuteEnd = minuteEnd;
-        statusCode = StatusCodes.NO_ERROR;
+        statusCode = getTimeErrorCode();
     }
 }
