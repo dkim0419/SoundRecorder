@@ -24,7 +24,6 @@ import java.util.GregorianCalendar;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -80,9 +79,7 @@ public class EspressoScheduledRecordingsFragment {
 
         // Delete the scheduled recording.
         onView(withText("23:00")).perform(longClick());
-        ViewInteraction appCompatButton3 = onView(
-                Matchers.allOf(withId(android.R.id.button1), withText("OK")));
-        appCompatButton3.perform(scrollTo(), click());
+        onView(withText("OK")).perform(click());
 
         // Check that the scheduled recording is no longer in the list.
         onView(withText("23:00")).check(doesNotExist());
@@ -124,9 +121,7 @@ public class EspressoScheduledRecordingsFragment {
 
         // Delete the scheduled recording.
         onView(withText("23:00")).perform(longClick());
-        ViewInteraction appCompatButton3 = onView(
-                Matchers.allOf(withId(android.R.id.button1), withText("OK")));
-        appCompatButton3.perform(scrollTo(), click());
+        onView(withText("OK")).perform(click());
 
         // Check that the scheduled recording is no longer in the list.
         onView(withText("23:00")).check(doesNotExist());

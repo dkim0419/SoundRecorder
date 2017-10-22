@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
             recordingService = ((RecordingService.LocalBinder) iBinder).getService();
             serviceConnected = true;
             if (recordFragment != null) {
+                Log.d(TAG, "MainActivity - Fragment is not null");
                 recordFragment.serviceConnection(true);
             }
             recordingService.setOnRecordingStatusChangedListener(onScheduledRecordingListener);

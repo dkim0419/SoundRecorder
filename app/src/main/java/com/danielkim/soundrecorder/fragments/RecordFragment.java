@@ -117,7 +117,9 @@ public class RecordFragment extends Fragment {
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
         mRecordButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.primary));
         mRecordButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.primary_dark));
-        mRecordButton.setEnabled(serviceOperations.isServiceConnected());
+        if (serviceOperations != null) {
+            mRecordButton.setEnabled(serviceOperations.isServiceConnected());
+        }
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

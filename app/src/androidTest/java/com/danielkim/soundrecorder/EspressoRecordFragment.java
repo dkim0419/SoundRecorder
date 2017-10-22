@@ -177,7 +177,9 @@ public class EspressoRecordFragment {
             }
         });
 
-        getInstrumentation().startActivitySync(new Intent(InstrumentationRegistry.getTargetContext(), MainActivity.class));
+        Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getInstrumentation().startActivitySync(intent);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
