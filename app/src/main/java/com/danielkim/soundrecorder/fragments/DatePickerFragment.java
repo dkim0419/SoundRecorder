@@ -1,5 +1,7 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -40,6 +42,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         return new DatePickerDialog(getActivity(), this, year, month, day);
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -48,6 +51,18 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             listener = (MyOnDateSetListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "must implement DatePickerFragment.MyOnDateSetListener");
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            listener = (MyOnDateSetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + "must implement DatePickerFragment.MyOnDateSetListener");
         }
     }
 

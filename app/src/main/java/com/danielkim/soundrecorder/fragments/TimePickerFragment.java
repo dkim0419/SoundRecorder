@@ -1,5 +1,7 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -42,6 +44,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -50,6 +53,18 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
             listener = (TimePickerFragment.MyOnTimeSetListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + "must implement TimePickerFragment.MyOnTimeSetListener");
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            listener = (TimePickerFragment.MyOnTimeSetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + "must implement TimePickerFragment.MyOnTimeSetListener");
         }
     }
 

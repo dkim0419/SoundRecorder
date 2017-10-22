@@ -1,6 +1,8 @@
 package com.danielkim.soundrecorder.fragments;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -70,6 +72,7 @@ public class RecordFragment extends Fragment {
         boolean isServiceRecording();
     }
 
+    @TargetApi(23)
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -78,6 +81,18 @@ public class RecordFragment extends Fragment {
             serviceOperations = (ServiceOperations) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement ServiceOperations");
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            serviceOperations = (ServiceOperations) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement ServiceOperations");
         }
     }
 

@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -184,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
             recordingService = ((RecordingService.LocalBinder) iBinder).getService();
             serviceConnected = true;
             if (recordFragment != null) {
-                Log.d(TAG, "MainActivity - Fragment is not null");
                 recordFragment.serviceConnection(true);
             }
             recordingService.setOnRecordingStatusChangedListener(onScheduledRecordingListener);

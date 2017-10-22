@@ -9,7 +9,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
-        <item name="android:actionMenuTextColor">@color/text</item>
+        <item name="actionMenuTextColor">@color/text</item>
     </style>
 
     <style name="ToolbarWhiteArrow" parent="AppTheme">
