@@ -1,5 +1,10 @@
 da sistemare:
+- cancellare i file aggiunti dopo ogni test (instrumented)
 - creare nuovi functional test
 
-functional test superati:
+android instrumented test superati:
+api 16: ok
 api 19
+api 22
+api 23
+api 25

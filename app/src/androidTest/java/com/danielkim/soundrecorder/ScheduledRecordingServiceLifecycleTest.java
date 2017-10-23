@@ -34,6 +34,9 @@ public class ScheduledRecordingServiceLifecycleTest implements ServiceConnection
 
     @Test
     public void testLifecycleMethods() throws TimeoutException {
+        ScheduledRecordingService.onDestroyCalls = 0;
+        ScheduledRecordingService.onStartCommandCalls = 0;
+
         Intent intent = ScheduledRecordingService.makeIntent(InstrumentationRegistry.getTargetContext(), false);
         // Call startService 3 times.
         mServiceRule.startService(intent);

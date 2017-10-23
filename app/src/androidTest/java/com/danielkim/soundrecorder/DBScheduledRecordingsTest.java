@@ -35,6 +35,7 @@ public class DBScheduledRecordingsTest {
 
     @After
     public void finish() {
+        dbHelper.restoreDatabase();
         dbHelper.close();
     }
 
