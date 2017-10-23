@@ -190,7 +190,7 @@ public class RecordingService extends Service {
 
             startTimer();
         } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
+            Log.e(TAG, "prepare() failed" + e.toString());
         }
 
         if (onRecordingStatusChangedListener != null) {
@@ -199,6 +199,8 @@ public class RecordingService extends Service {
     }
 
     private void setFileNameAndPath() {
+        Log.d(TAG, "external storage available for writing = " + isExternalStorageWritable());
+
         int count = 0;
         File f;
 
@@ -207,12 +209,30 @@ public class RecordingService extends Service {
 
             mFileName = getString(R.string.default_file_name)
                     + " #" + (dbHelper.getSavedRecordingsCount() + count) + ".mp4";
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
+            createFilePath(mFileName);
 
             f = new File(mFilePath);
         } while (f.exists() && !f.isDirectory());
     }
+
+    private void createFilePath(String fileName) {
+        if (isExternalStorageWritable()) {
+            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFilePath += "/SoundRecorder/" + mFileName;
+        } else {
+            mFilePath = getFilesDir().getAbsolutePath();
+            mFilePath += "/" + mFileName;
+        }
+    }
+
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
 
     private void startTimer() {
         Timer mTimer = new Timer();
