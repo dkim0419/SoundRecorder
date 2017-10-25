@@ -14,8 +14,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -23,6 +23,7 @@ import android.util.Log;
 import com.danielkim.soundrecorder.activities.MainActivity;
 import com.danielkim.soundrecorder.database.DBHelper;
 import com.danielkim.soundrecorder.didagger2.App;
+import com.danielkim.soundrecorder.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +61,14 @@ public class RecordingService extends Service {
 
     private final IBinder myBinder = new LocalBinder();
     private boolean isRecording = false;
+
+    // Just for testing.
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static int onCreateCalls = 0;
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static int onDestroyCalls = 0;
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public static int onStartCommandCalls = 0;
 
 
     /*
@@ -119,6 +128,7 @@ public class RecordingService extends Service {
     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        onStartCommandCalls++;
         boolean activityStarter = intent.getBooleanExtra(EXTRA_ACTIVITY_STARTER, false);
         Log.d(TAG, "RecordingService - onStartCommand - activity starter? " + activityStarter);
         int duration;
@@ -145,6 +155,7 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "RecordingService - onCreate");
+        onCreateCalls++;
         super.onCreate();
         App.getComponent().inject(this);
     }
@@ -152,6 +163,7 @@ public class RecordingService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "RecordingService - onDestroy");
+        onDestroyCalls++;
         super.onDestroy();
         if (mRecorder != null) {
             stopRecording();
@@ -199,8 +211,6 @@ public class RecordingService extends Service {
     }
 
     private void setFileNameAndPath() {
-        Log.d(TAG, "external storage available for writing = " + isExternalStorageWritable());
-
         int count = 0;
         File f;
 
@@ -209,30 +219,11 @@ public class RecordingService extends Service {
 
             mFileName = getString(R.string.default_file_name)
                     + " #" + (dbHelper.getSavedRecordingsCount() + count) + ".mp4";
-            createFilePath(mFileName);
+            mFilePath = Utils.getDirectoryPath(this) + "/" + mFileName;
 
             f = new File(mFilePath);
         } while (f.exists() && !f.isDirectory());
     }
-
-    private void createFilePath(String fileName) {
-        if (isExternalStorageWritable()) {
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
-        } else {
-            mFilePath = getFilesDir().getAbsolutePath();
-            mFilePath += "/" + mFileName;
-        }
-    }
-
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
 
     private void startTimer() {
         Timer mTimer = new Timer();

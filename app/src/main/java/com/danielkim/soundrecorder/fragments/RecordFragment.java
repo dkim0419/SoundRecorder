@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 import com.danielkim.soundrecorder.R;
 import com.melnykov.fab.FloatingActionButton;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -204,12 +202,6 @@ public class RecordFragment extends Fragment {
     //TODO: recording pause
     private void startStopRecording() {
         if (!isRecording) { // start recording
-            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
-            if (!folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
-            }
-
             // Start RecordingService: send request to main Activity.
             if (serviceOperations != null) {
                 serviceOperations.requestStartRecording();
