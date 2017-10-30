@@ -145,7 +145,7 @@ public class RecordingServiceTest {
         assertTrue("The start of the recording was not communicated to the listener",
                 listener.isRecordingStarted());
         assertTrue("The stop of the recording was not communicated to the listener",
-                listener.isRecordingStarted());
+                listener.isRecordingStopped());
         assertTrue("The elapsed seconds of the recording was not communicated to the listener",
                 listener.getElapsedSeconds() > 0);
         assertTrue("The file path of the recording was not communicated to the listener",
