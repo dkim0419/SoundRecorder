@@ -4,11 +4,13 @@
 
 package com.danielkim.soundrecorder;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.rule.ServiceTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -47,6 +49,11 @@ public class RecordingServiceTest {
             RecordingService.onDestroyCalls = 0;
         }
     };
+
+    @Rule
+    public GrantPermissionRule mRuntimePermissionRule = GrantPermissionRule.grant(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE);
 
     /*
         Test that the Local Binder Pattern for this Service works correctly.
