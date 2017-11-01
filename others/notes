@@ -1,9 +1,6 @@
 da sistemare:
-- creare nuovi functional test
+- concessione permessi automatici x tutti i test
 
-android instrumented test superati:
-api 16: ok
-api 19: ok
-api 22: ok
-api 23: ok
-api 25: ok
+AS 3.0:
+- rimuovare Jack
+- provare Kotlin

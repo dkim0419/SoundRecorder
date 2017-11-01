@@ -12,11 +12,6 @@ android {
         versionName "1.4"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        // Added for Robolectric compatibility.
-        jackOptions {
-            enabled true
-        }
     }
 
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
