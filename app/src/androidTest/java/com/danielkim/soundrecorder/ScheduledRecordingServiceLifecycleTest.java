@@ -1,3 +1,7 @@
+/*
+ * Year: 2017. This class was added by iClaude.
+ */
+
 package com.danielkim.soundrecorder;
 
 import android.content.ComponentName;

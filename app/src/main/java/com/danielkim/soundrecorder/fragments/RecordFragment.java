@@ -1,3 +1,7 @@
+/*
+ * Year: 2017. This class was edited by iClaude.
+ */
+
 package com.danielkim.soundrecorder.fragments;
 
 import android.Manifest;

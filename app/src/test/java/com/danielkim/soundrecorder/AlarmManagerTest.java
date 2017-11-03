@@ -1,3 +1,7 @@
+/*
+ * Year: 2017. This class was added by iClaude.
+ */
+
 package com.danielkim.soundrecorder;
 
 import android.app.AlarmManager;
@@ -19,7 +23,7 @@ import static junit.framework.Assert.assertNull;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
- * Created by iClaude on 24/07/2017.
+ * Tests the AlarmManager used the schedule recordings.
  */
 
 @RunWith(RobolectricTestRunner.class)

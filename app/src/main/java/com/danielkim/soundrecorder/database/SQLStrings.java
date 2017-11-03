@@ -1,7 +1,11 @@
+/*
+ * Year: 2017. This class was added by iClaude.
+ */
+
 package com.danielkim.soundrecorder.database;
 
 /**
- * Created by agost on 08/05/2017.
+ * Class containing strings with SQL commands for the database.
  */
 
 public interface SQLStrings {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+ * Year: 2017. This class was added by iClaude.
  */
 
 package com.danielkim.soundrecorder.didagger2;

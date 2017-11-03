@@ -1,14 +1,17 @@
+/*
+ * Year: 2017. This class was added by iClaude.
+ */
+
 package com.danielkim.soundrecorder.database;
 
 import android.provider.BaseColumns;
 
 /**
- * Created by iClaude on 08/05/2017.
+ * Contract class for all operations related to database.
  */
 
 public class RecordingsContract {
 
-    // Table "saved_recordings".
     public static class TableSavedRecording implements BaseColumns {
         public static final String TABLE_NAME = "saved_recordings";
 

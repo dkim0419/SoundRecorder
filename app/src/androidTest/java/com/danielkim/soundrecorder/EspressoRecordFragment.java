@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+ * Year: 2017. This class was added by iClaude.
  */
 
 package com.danielkim.soundrecorder;
@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 /**
- * Created by iClaude on 11/10/2017.
+ * Tests on RecordFragment.
  */
 
 @RunWith(AndroidJUnit4.class)

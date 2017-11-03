@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+ * Year: 2017. This class was added by iClaude.
  */
 
 package com.danielkim.soundrecorder;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED;
 
 /**
- * Created by iClaude on 25/09/2017.
+ * Edited by iClaude on 25/09/2017.
  * Service used to record audio. This class implements an hybrid Service (bound and started
  * Service).
  * Compared with the original Service, this class adds 2 new features:

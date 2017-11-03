@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+ * Year: 2017. This class was added by iClaude.
  */
 
 package com.danielkim.soundrecorder;
@@ -37,7 +37,7 @@ import static android.support.test.runner.lifecycle.Stage.RESUMED;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * Created by iClaude on 20/10/2017.
+ * Tests on ScheduledRecordingFragment.
  */
 
 public class EspressoScheduledRecordingsFragment {

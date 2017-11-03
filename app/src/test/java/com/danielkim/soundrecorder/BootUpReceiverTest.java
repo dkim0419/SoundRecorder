@@ -1,3 +1,7 @@
+/*
+ * Year: 2017. This class was added by iClaude.
+ */
+
 package com.danielkim.soundrecorder;
 
 import android.content.BroadcastReceiver;
@@ -14,7 +18,8 @@ import java.util.List;
 
 
 /**
- * Created by iClaude on 24/07/2017.
+ * Tests the BootupReceiver (used to start a Service to schedule the next recording with an
+ * AlarmManager).
  */
 
 @RunWith(RobolectricTestRunner.class)
