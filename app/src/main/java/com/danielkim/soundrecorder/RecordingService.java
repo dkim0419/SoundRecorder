@@ -1,5 +1,6 @@
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder;
@@ -184,13 +185,10 @@ public class RecordingService extends Service {
         mRecorder.setMaxDuration(duration); // if this is a scheduled recording, set the max duration, after which the Service is stopped
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
-        mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
-            @Override
-            // Called only if a max duration has been set (scheduled recordings).
-            public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
-                if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                    stopRecording();
-                }
+        // Called only if a max duration has been set (scheduled recordings).
+        mRecorder.setOnInfoListener((mediaRecorder, what, extra) -> {
+            if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                stopRecording();
             }
         });
 

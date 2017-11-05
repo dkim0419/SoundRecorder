@@ -1,7 +1,6 @@
-
-
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder;

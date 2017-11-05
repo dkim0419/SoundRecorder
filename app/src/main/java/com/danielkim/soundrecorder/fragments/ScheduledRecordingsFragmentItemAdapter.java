@@ -1,5 +1,6 @@
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder.fragments;
@@ -45,25 +46,19 @@ public class ScheduledRecordingsFragmentItemAdapter extends RecyclerView.Adapter
             tvEnd = (TextView) v.findViewById(R.id.tvEnd);
             tvColor = (TextView) v.findViewById(R.id.tvColor);
 
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int pos = recyclerView.getChildAdapterPosition(view);
-                    if (pos >= 0 && pos < getItemCount()) {
-                        listener.onItemClick(items.get(pos));
-                    }
+            v.setOnClickListener(view -> {
+                int pos = recyclerView.getChildAdapterPosition(view);
+                if (pos >= 0 && pos < getItemCount()) {
+                    listener.onItemClick(items.get(pos));
                 }
             });
 
-            v.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    int pos = recyclerView.getChildAdapterPosition(view);
-                    if (pos >= 0 && pos < getItemCount()) {
-                        listener.onItemLongClick(items.get(pos));
-                    }
-                    return true;
+            v.setOnLongClickListener(view -> {
+                int pos = recyclerView.getChildAdapterPosition(view);
+                if (pos >= 0 && pos < getItemCount()) {
+                    listener.onItemLongClick(items.get(pos));
                 }
+                return true;
             });
         }
     }

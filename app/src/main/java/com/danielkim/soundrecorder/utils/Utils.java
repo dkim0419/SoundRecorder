@@ -1,5 +1,6 @@
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder.utils;
@@ -20,21 +21,19 @@ public class Utils {
      */
     public static String getDirectoryPath(Context context) {
         String directoryPath;
+
         if (isExternalStorageWritable()) {
             directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SoundRecorder";
-            new File(directoryPath).mkdirs();
-        } else {
-            directoryPath = context.getFilesDir().getAbsolutePath();
+            boolean result = new File(directoryPath).mkdirs();
+            if (result)
+                return directoryPath;
         }
 
-        return directoryPath;
+        return context.getFilesDir().getAbsolutePath();
     }
 
     private static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 }

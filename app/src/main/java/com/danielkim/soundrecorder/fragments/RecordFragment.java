@@ -1,10 +1,12 @@
 /*
- * Year: 2017. This class was edited by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
@@ -116,11 +118,7 @@ public class RecordFragment extends Fragment {
     public RecordFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -137,25 +135,19 @@ public class RecordFragment extends Fragment {
         if (serviceOperations != null) {
             mRecordButton.setEnabled(serviceOperations.isServiceConnected());
         }
-        mRecordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!marshmallow) {
-                    startStopRecording();
-                } else {
-                    checkPermissions();
-                }
+        mRecordButton.setOnClickListener(v -> {
+            if (!marshmallow) {
+                startStopRecording();
+            } else {
+                checkPermissions();
             }
         });
 
         Button mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
-        mPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //onPauseRecord(mPauseRecording);
-                mPauseRecording = !mPauseRecording;
-            }
+        mPauseButton.setOnClickListener(v -> {
+            //onPauseRecord(mPauseRecording);
+            mPauseRecording = !mPauseRecording;
         });
 
         /*  Are we already recording? Check necessary if Service is connected to the Activity
@@ -168,6 +160,7 @@ public class RecordFragment extends Fragment {
     }
 
     // Check dangerous permissions for Android Marshmallow+.
+    @SuppressWarnings("ConstantConditions")
     private void checkPermissions() {
         // Check permissions.
         boolean writePerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
@@ -191,8 +184,8 @@ public class RecordFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         boolean granted = true;
-        for (int i = 0; i < grantResults.length; i++) { // we nee all permissions granted
-            if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+        for (int grantResult : grantResults) { // we nee all permissions granted
+            if (grantResult != PackageManager.PERMISSION_GRANTED)
                 granted = false;
         }
 

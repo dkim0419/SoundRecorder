@@ -1,5 +1,6 @@
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder.activities;
@@ -33,6 +34,7 @@ import com.danielkim.soundrecorder.fragments.DatePickerFragment.MyOnDateSetListe
 import com.danielkim.soundrecorder.fragments.TimePickerFragment;
 import com.danielkim.soundrecorder.fragments.TimePickerFragment.MyOnTimeSetListener;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,7 +61,6 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         int ERROR_SAVING = 4;
     }
 
-    private static final String TAG = "SCHEDULED_RECORDER_TAG";
     private static final String EXTRA_DATE_LONG = "com.danielkim.soundrecorder.activities.EXTRA_DATE_LONG";
     private static final String EXTRA_ITEM = "com.danielkim.soundrecorder.activities.EXTRA_ITEM";
 
@@ -68,16 +69,13 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private TextView tvTimeStart;
     private TextView tvTimeEnd;
 
-    @Inject
-    DBHelper dbHelper;
-
     private Operation operation;
     private ScheduledRecordingItem item = null;
     private final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private int yearStart, monthStart, dayStart, hourStart, minuteStart;
     private int yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd;
     private int statusCode = StatusCodes.NO_ERROR;
-    private final int[] toastMsgs = {R.string.toast_scheduledrecording_saved,
+    private static final int[] toastMsgs = {R.string.toast_scheduledrecording_saved,
             R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past,
             R.string.toast_scheduledrecording_timeerror_already_scheduled, R.string.toast_scheduledrecording_saved_error};
 
@@ -269,13 +267,49 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
 
     private void saveScheduledRecording() {
         if (statusCode == StatusCodes.NO_ERROR) {
-            new SaveScheduledRecordingsTask().execute();
+            new SaveScheduledRecordingsTask(this, operation, item, statusCode, yearStart, monthStart, dayStart, hourStart, minuteStart, yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).execute();
         } else {
             Toast.makeText(this, getString(toastMsgs[statusCode]), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Integer> {
+    public static class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Integer> {
+        @SuppressWarnings("unused")
+        @Inject
+        DBHelper dbHelper;
+
+        private final WeakReference<AddScheduledRecordingActivity> weakActivity;
+        private final Operation operation;
+        private final ScheduledRecordingItem item;
+        private final int yearStart;
+        private final int monthStart;
+        private final int dayStart;
+        private final int hourStart;
+        private final int minuteStart;
+        private final int yearEnd;
+        private final int monthEnd;
+        private final int dayEnd;
+        private final int hourEnd;
+        private final int minuteEnd;
+        private int statusCode;
+
+        public SaveScheduledRecordingsTask(AddScheduledRecordingActivity activity, Operation operation, ScheduledRecordingItem item, int statusCode, int yearStart, int monthStart, int dayStart, int hourStart, int minuteStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd) {
+            App.getComponent().inject(this);
+            weakActivity = new WeakReference<>(activity);
+            this.operation = operation;
+            this.item = item;
+            this.yearStart = yearStart;
+            this.monthStart = monthStart;
+            this.dayStart = dayStart;
+            this.hourStart = hourStart;
+            this.minuteStart = minuteStart;
+            this.yearEnd = yearEnd;
+            this.monthEnd = monthEnd;
+            this.dayEnd = dayEnd;
+            this.hourEnd = hourEnd;
+            this.minuteEnd = minuteEnd;
+            this.statusCode = statusCode;
+        }
 
         protected Integer doInBackground(Void... params) {
             long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
@@ -307,11 +341,15 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
         }
 
         protected void onPostExecute(Integer result) {
-            Toast.makeText(AddScheduledRecordingActivity.this, toastMsgs[result], Toast.LENGTH_SHORT).show();
+            AddScheduledRecordingActivity activity = weakActivity.get();
+            if (activity == null)
+                return;
+
+            Toast.makeText(activity, toastMsgs[result], Toast.LENGTH_SHORT).show();
             if (result == StatusCodes.NO_ERROR) {
-                setResult(RESULT_OK);
-                startService(ScheduledRecordingService.makeIntent(AddScheduledRecordingActivity.this, false));
-                finish();
+                activity.setResult(RESULT_OK);
+                activity.startService(ScheduledRecordingService.makeIntent(activity, false));
+                activity.finish();
             }
         }
     }

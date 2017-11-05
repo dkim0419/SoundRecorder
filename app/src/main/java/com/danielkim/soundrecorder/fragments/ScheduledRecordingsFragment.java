@@ -1,5 +1,6 @@
 /*
- * Year: 2017. This class was added by iClaude.
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
  */
 
 package com.danielkim.soundrecorder.fragments;
@@ -8,7 +9,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -35,6 +35,7 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.melnykov.fab.FloatingActionButton;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,14 +59,10 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     private static final int REQUEST_DANGEROUS_PERMISSIONS = 0;
     private static final int ADD_SCHEDULED_RECORDING = 0;
     private static final int EDIT_SCHEDULED_RECORDING = 1;
-    private static final String TAG = "SRFragment";
 
     private CompactCalendarView calendarView;
     private TextView tvMonth;
     private TextView tvDate;
-
-    @Inject
-    DBHelper dbHelper;
 
     private RecyclerView.Adapter adapter;
     private List<ScheduledRecordingItem> scheduledRecordings;
@@ -78,12 +75,6 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         f.setArguments(b);
 
         return f;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        App.getComponent().inject(this);
     }
 
     @Nullable
@@ -113,7 +104,7 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         mRecordButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.primary_dark));
         mRecordButton.setOnClickListener(addScheduledRecordingListener);
 
-        new GetScheduledRecordingsTask().execute();
+        new GetScheduledRecordingsTask(this, calendarView, myCalendarViewListener, selectedDate).execute();
 
         return v;
     }
@@ -150,9 +141,22 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     }
 
     // Retrieve all scheduled recordings in a separate thread.
-    private class GetScheduledRecordingsTask extends AsyncTask<Void, Void, List<ScheduledRecordingItem>> {
+    public static class GetScheduledRecordingsTask extends AsyncTask<Void, Void, List<ScheduledRecordingItem>> {
+        @Inject
+        DBHelper dbHelper;
 
-        public GetScheduledRecordingsTask() {
+        private final WeakReference<ScheduledRecordingsFragment> weakFragment;
+        private final WeakReference<CompactCalendarView> weakCalendarView;
+        private final WeakReference<CompactCalendarView.CompactCalendarViewListener> weakCompactCalendarViewListener;
+
+        private final Date selectedDate;
+
+        public GetScheduledRecordingsTask(ScheduledRecordingsFragment scheduledRecordingsFragment, CompactCalendarView compactCalendarView, CompactCalendarView.CompactCalendarViewListener compactCalendarViewListener, Date selectedDate) {
+            App.getComponent().inject(this);
+            weakFragment = new WeakReference<>(scheduledRecordingsFragment);
+            weakCalendarView = new WeakReference<>(compactCalendarView);
+            weakCompactCalendarViewListener = new WeakReference<>(compactCalendarViewListener);
+            this.selectedDate = selectedDate;
         }
 
         protected List<ScheduledRecordingItem> doInBackground(Void... params) {
@@ -160,13 +164,19 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         }
 
         protected void onPostExecute(List<ScheduledRecordingItem> scheduledRecordings) {
+            ScheduledRecordingsFragment scheduledRecordingsFragment = weakFragment.get();
+            CompactCalendarView calendarView = weakCalendarView.get();
+            CompactCalendarView.CompactCalendarViewListener compactCalendarViewListener = weakCompactCalendarViewListener.get();
+            if (scheduledRecordingsFragment == null || calendarView == null || compactCalendarViewListener == null)
+                return;
+
             calendarView.removeAllEvents();
             for (ScheduledRecordingItem item : scheduledRecordings) {
-                Event event = new Event(ContextCompat.getColor(getActivity(), R.color.accent), item.getStart(), item);
+                Event event = new Event(ContextCompat.getColor(scheduledRecordingsFragment.getActivity(), R.color.accent), item.getStart(), item);
                 calendarView.addEvent(event, false);
             }
             calendarView.invalidate(); // refresh the calendar view
-            myCalendarViewListener.onDayClick(selectedDate); // click to show current day
+            compactCalendarViewListener.onDayClick(selectedDate); // click to show current day
         }
     }
 
@@ -185,52 +195,62 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         builder.setTitle(getString(R.string.dialog_title_delete));
         builder.setMessage(R.string.dialog_text_delete_generic);
         builder.setPositiveButton(R.string.dialog_action_ok,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        new DeleteItemTask().execute(item.getId());
-                    }
-                });
+                (dialogInterface, i) -> new DeleteItemTask(this, calendarView, myCalendarViewListener, selectedDate).execute(item.getId()));
         builder.setCancelable(true);
         builder.setNegativeButton(getString(R.string.dialog_action_cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                (dialog, id) -> dialog.cancel());
 
         AlertDialog alert = builder.create();
         alert.show();
     }
 
     // Retrieve all scheduled recordings in a separate thread.
-    private class DeleteItemTask extends AsyncTask<Long, Void, Integer> {
+    public static class DeleteItemTask extends AsyncTask<Long, Void, Integer> {
+        @Inject
+        DBHelper dbHelper;
+
+        private final WeakReference<ScheduledRecordingsFragment> weakFragment;
+        private final WeakReference<CompactCalendarView> weakCalendarView;
+        private final WeakReference<CompactCalendarView.CompactCalendarViewListener> weakCompactCalendarViewListener;
+        private final Date selectedDate;
+
+
+        public DeleteItemTask(ScheduledRecordingsFragment scheduledRecordingsFragment, CompactCalendarView compactCalendarView, CompactCalendarView.CompactCalendarViewListener compactCalendarViewListener, Date selectedDate) {
+            App.getComponent().inject(this);
+            weakFragment = new WeakReference<>(scheduledRecordingsFragment);
+            weakCalendarView = new WeakReference<>(compactCalendarView);
+            weakCompactCalendarViewListener = new WeakReference<>(compactCalendarViewListener);
+            this.selectedDate = selectedDate;
+        }
 
         protected Integer doInBackground(Long... params) {
             return dbHelper.removeScheduledRecording(params[0]);
         }
 
         protected void onPostExecute(Integer result) {
+            ScheduledRecordingsFragment scheduledRecordingsFragment = weakFragment.get();
+            CompactCalendarView calendarView = weakCalendarView.get();
+            CompactCalendarView.CompactCalendarViewListener compactCalendarViewListener = weakCompactCalendarViewListener.get();
+            if (scheduledRecordingsFragment == null || calendarView == null || compactCalendarViewListener == null)
+                return;
+
+            Activity mActivity = scheduledRecordingsFragment.getActivity();
             if (result > 0) {
-                Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted), Toast.LENGTH_SHORT).show();
-                new GetScheduledRecordingsTask().execute();
-                getActivity().startService(ScheduledRecordingService.makeIntent(getActivity(), false));
+                Toast.makeText(mActivity, mActivity.getString(R.string.toast_scheduledrecording_deleted), Toast.LENGTH_SHORT).show();
+                new GetScheduledRecordingsTask(scheduledRecordingsFragment, calendarView, compactCalendarViewListener, selectedDate).execute();
+                mActivity.startService(ScheduledRecordingService.makeIntent(mActivity, false));
 
             } else {
-                Toast.makeText(getActivity(), getString(R.string.toast_scheduledrecording_deleted_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mActivity, mActivity.getString(R.string.toast_scheduledrecording_deleted_error), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     // Click listener of the button to add a new scheduled recording.
-    private final View.OnClickListener addScheduledRecordingListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            checkPermissions();
-        }
-    };
+    private final View.OnClickListener addScheduledRecordingListener = view -> checkPermissions();
 
     // Check dangerous permissions for Android Marshmallow+.
+    @SuppressWarnings("ConstantConditions")
     private void checkPermissions() {
         // Check permissions.
         boolean writePerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
@@ -254,8 +274,8 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         boolean granted = true;
-        for (int i = 0; i < grantResults.length; i++) { // we nee all permissions granted
-            if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+        for (int grantResult : grantResults) { // we nee all permissions granted
+            if (grantResult != PackageManager.PERMISSION_GRANTED)
                 granted = false;
         }
 
@@ -276,7 +296,7 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         super.onActivityResult(requestCode, resultCode, data);
 
         if ((requestCode == ADD_SCHEDULED_RECORDING || requestCode == EDIT_SCHEDULED_RECORDING) && resultCode == Activity.RESULT_OK) {
-            new GetScheduledRecordingsTask().execute();
+            new GetScheduledRecordingsTask(this, calendarView, myCalendarViewListener, selectedDate).execute();
         }
     }
 }
