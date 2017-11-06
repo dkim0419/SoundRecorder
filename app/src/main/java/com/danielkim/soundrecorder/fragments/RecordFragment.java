@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -267,13 +266,11 @@ public class RecordFragment extends Fragment {
     }
 
     public void recordingStarted() {
-        Log.d(TAG, "RecordFragment - recording started");
         updateUI(true, null);
         isRecording = true;
     }
 
     public void recordingStopped(String filePath) {
-        Log.d(TAG, "RecordFragment - recording stopped");
         updateUI(false, filePath);
         isRecording = false;
     }

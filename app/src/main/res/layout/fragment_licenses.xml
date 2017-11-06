@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
-                android:text="@string/link"/>
+                android:text="@string/link" />
 
             <!-- Floating Action Button -->
             <TextView

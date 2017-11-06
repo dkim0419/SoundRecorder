@@ -131,7 +131,6 @@ public class RecordingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         onStartCommandCalls++;
         boolean activityStarter = intent.getBooleanExtra(EXTRA_ACTIVITY_STARTER, false);
-        Log.d(TAG, "RecordingService - onStartCommand - activity starter? " + activityStarter);
         int duration;
         if (!activityStarter) { // automatic scheduled recording
             // Get next recording data.
@@ -155,7 +154,6 @@ public class RecordingService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "RecordingService - onCreate");
         onCreateCalls++;
         super.onCreate();
         App.getComponent().inject(this);
@@ -163,7 +161,6 @@ public class RecordingService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "RecordingService - onDestroy");
         onDestroyCalls++;
         super.onDestroy();
         if (mRecorder != null) {
@@ -174,7 +171,6 @@ public class RecordingService extends Service {
     }
 
     public void startRecording(int duration) {
-        Log.d(TAG, "RecordingService - startRecording");
         startForeground(ONGOING_NOTIFICATION, createNotification());
 
         setFileNameAndPath();
@@ -185,6 +181,10 @@ public class RecordingService extends Service {
         mRecorder.setMaxDuration(duration); // if this is a scheduled recording, set the max duration, after which the Service is stopped
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
+        if (MySharedPreferences.getPrefHighQuality(this)) {
+            mRecorder.setAudioSamplingRate(44100);
+            mRecorder.setAudioEncodingBitRate(192000);
+        }
         // Called only if a max duration has been set (scheduled recordings).
         mRecorder.setOnInfoListener((mediaRecorder, what, extra) -> {
             if (what == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
@@ -239,7 +239,6 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        Log.d(TAG, "RecordingService - stopRecording");
         mRecorder.stop();
         long mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         mRecorder.release();

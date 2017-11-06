@@ -7,16 +7,14 @@ package com.danielkim.soundrecorder.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ComponentName;
-import android.content.ServiceConnection;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -127,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
     protected void onStart() {
         super.onStart();
 
-        Log.d(TAG, "MainActivity - call bind to Service");
         startService(RecordingService.makeIntent(this, true));
         bindService(RecordingService.makeIntent(this, true), serviceConnection, BIND_AUTO_CREATE);
     }
@@ -138,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
         super.onStop();
 
         if (serviceConnected) {
-            Log.d(TAG, "MainActivity - call unbind from Service");
             unbindService(serviceConnection);
             if (!isServiceRecording()) stopService(RecordingService.makeIntent(this));
             recordingService.setOnRecordingStatusChangedListener(null);
@@ -186,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d(TAG, "MainActivity - Service connected");
             recordingService = ((RecordingService.LocalBinder) iBinder).getService();
             serviceConnected = true;
             if (recordFragment != null) {
@@ -197,7 +192,6 @@ public class MainActivity extends AppCompatActivity implements RecordFragment.Se
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.d(TAG, "MainActivity - Service disconnected");
             recordingService.setOnRecordingStatusChangedListener(null);
             recordingService = null;
             serviceConnected = false;
