@@ -27,6 +27,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activities.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/action_settings"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.danielkim.soundrecorder.activities.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.AddScheduledRecordingActivity"
             android:label="@string/app_name"
             android:parentActivityName=".activities.MainActivity"
