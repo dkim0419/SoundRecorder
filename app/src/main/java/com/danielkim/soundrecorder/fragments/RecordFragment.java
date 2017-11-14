@@ -19,6 +19,8 @@ import com.danielkim.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -112,6 +114,21 @@ public class RecordFragment extends Fragment {
         return recordView;
     }
 
+    private void createFolderForRecordings(){
+
+        boolean isStorageAvailable = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+        if(isStorageAvailable){
+            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
+            if (!folder.exists()) {
+                //folder /SoundRecorder doesn't exist, create the folder
+                boolean isFolderCreated = folder.mkdir();
+                if (!isFolderCreated) {
+                    Toast.makeText(getActivity(), "Unable to create directory!!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+    }
     // Recording Start/Stop
     //TODO: recording pause
     private void onRecord(boolean start){
@@ -123,12 +140,7 @@ public class RecordFragment extends Fragment {
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             //mPauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
-            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
-            if (!folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
-            }
-
+            createFolderForRecordings();
             //start Chronometer
             mChronometer.setBase(SystemClock.elapsedRealtime());
             mChronometer.start();
