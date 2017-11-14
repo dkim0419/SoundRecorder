@@ -88,6 +88,14 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 onRecord(mStartRecording);
                 mStartRecording = !mStartRecording;
+
+                if(mPauseButton.getVisibility() == View.GONE){
+                    mPauseButton.setVisibility(View.VISIBLE);
+                }else{
+                    mPauseButton.setVisibility(View.GONE);
+                }
+
+
             }
         });
 
