@@ -333,12 +333,19 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
     private void saveRecordingCompleted(int result) {
         Toast.makeText(this, toastMsgs[result], Toast.LENGTH_SHORT).show();
         if (result == StatusCodes.NO_ERROR) {
-            disposable.dispose();
 
             setResult(RESULT_OK);
             startService(ScheduledRecordingService.makeIntent(this, false));
             finish();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (disposable != null && !disposable.isDisposed())
+            disposable.dispose();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
