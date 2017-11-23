@@ -131,6 +131,7 @@
     <orderEntry type="library" scope="TEST" name="com.squareup:javawriter:2.1.1@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-compat-25.3.1" level="project" />
     <orderEntry type="library" name="com.nineoldandroids:library:2.4.0@jar" level="project" />
+    <orderEntry type="library" name="io.reactivex.rxjava2:rxjava:2.1.1@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="org.robolectric:robolectric-sandbox:3.3.2@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="org.apache.maven.wagon:wagon-http-shared:1.0-beta-6@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:2.1@jar" level="project" />
@@ -158,6 +159,7 @@
     <orderEntry type="library" name="com.jpardogo.materialtabstrip:library-1.0.6" level="project" />
     <orderEntry type="library" scope="TEST" name="org.hamcrest:hamcrest-integration:1.3@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="nekohtml:nekohtml:1.9.6.2@jar" level="project" />
+    <orderEntry type="library" name="org.reactivestreams:reactive-streams:1.0.0@jar" level="project" />
     <orderEntry type="library" name="com.google.dagger:dagger-android-2.11-rc2" level="project" />
     <orderEntry type="library" scope="TEST" name="net.sf.kxml:kxml2:2.3.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:2.0@jar" level="project" />
@@ -183,6 +185,7 @@
     <orderEntry type="library" scope="TEST" name="org.apache.maven.wagon:wagon-file:1.0-beta-6@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.thoughtworks.xstream:xstream:1.4.8@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="com.almworks.sqlite4java:sqlite4java:0.282@jar" level="project" />
+    <orderEntry type="library" name="io.reactivex.rxjava2:rxandroid-2.0.1" level="project" />
     <orderEntry type="library" name="com.android.support:animated-vector-drawable-25.3.1" level="project" />
     <orderEntry type="library" scope="TEST" name="org.apache.maven.wagon:wagon-provider-api:1.0-beta-6@jar" level="project" />
     <orderEntry type="library" name="javax.annotation:jsr250-api:1.0@jar" level="project" />

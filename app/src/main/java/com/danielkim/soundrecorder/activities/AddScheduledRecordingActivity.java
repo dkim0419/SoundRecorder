@@ -8,7 +8,6 @@ package com.danielkim.soundrecorder.activities;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,7 +33,6 @@ import com.danielkim.soundrecorder.fragments.DatePickerFragment.MyOnDateSetListe
 import com.danielkim.soundrecorder.fragments.TimePickerFragment;
 import com.danielkim.soundrecorder.fragments.TimePickerFragment.MyOnTimeSetListener;
 
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +40,12 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import javax.inject.Inject;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.danielkim.soundrecorder.database.RecordingsContract.MAX_DURATION;
 import static com.danielkim.soundrecorder.database.RecordingsContract.MIN_DURATION;
@@ -79,6 +83,9 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
             R.string.toast_scheduledrecording_timeerror_start_after_end, R.string.toast_scheduledrecording_timeerror_past,
             R.string.toast_scheduledrecording_timeerror_already_scheduled, R.string.toast_scheduledrecording_saved_error};
 
+    @Inject
+    DBHelper dbHelper;
+    private Disposable disposable;
 
     public static Intent makeIntent(Context context, long selectedDate) {
         Intent intent = new Intent(context, AddScheduledRecordingActivity.class);
@@ -267,90 +274,70 @@ public class AddScheduledRecordingActivity extends AppCompatActivity implements 
 
     private void saveScheduledRecording() {
         if (statusCode == StatusCodes.NO_ERROR) {
-            new SaveScheduledRecordingsTask(this, operation, item, statusCode, yearStart, monthStart, dayStart, hourStart, minuteStart, yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).execute();
+            disposable = observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(observer);
         } else {
             Toast.makeText(this, getString(toastMsgs[statusCode]), Toast.LENGTH_SHORT).show();
         }
     }
 
-    public static class SaveScheduledRecordingsTask extends AsyncTask<Void, Void, Integer> {
-        @SuppressWarnings("unused")
-        @Inject
-        DBHelper dbHelper;
+    // Save the scheduled recording.
+    private final Single<Integer> observable = Single.create(emitter -> {
+        int result = saveRecording();
+        emitter.onSuccess(result);
+    });
 
-        private final WeakReference<AddScheduledRecordingActivity> weakActivity;
-        private final Operation operation;
-        private final ScheduledRecordingItem item;
-        private final int yearStart;
-        private final int monthStart;
-        private final int dayStart;
-        private final int hourStart;
-        private final int minuteStart;
-        private final int yearEnd;
-        private final int monthEnd;
-        private final int dayEnd;
-        private final int hourEnd;
-        private final int minuteEnd;
-        private int statusCode;
-
-        public SaveScheduledRecordingsTask(AddScheduledRecordingActivity activity, Operation operation, ScheduledRecordingItem item, int statusCode, int yearStart, int monthStart, int dayStart, int hourStart, int minuteStart, int yearEnd, int monthEnd, int dayEnd, int hourEnd, int minuteEnd) {
-            App.getComponent().inject(this);
-            weakActivity = new WeakReference<>(activity);
-            this.operation = operation;
-            this.item = item;
-            this.yearStart = yearStart;
-            this.monthStart = monthStart;
-            this.dayStart = dayStart;
-            this.hourStart = hourStart;
-            this.minuteStart = minuteStart;
-            this.yearEnd = yearEnd;
-            this.monthEnd = monthEnd;
-            this.dayEnd = dayEnd;
-            this.hourEnd = hourEnd;
-            this.minuteEnd = minuteEnd;
-            this.statusCode = statusCode;
+    private final DisposableSingleObserver<Integer> observer = new DisposableSingleObserver<Integer>() {
+        @Override
+        public void onSuccess(Integer integer) {
+            saveRecordingCompleted(integer);
         }
 
-        protected Integer doInBackground(Void... params) {
-            long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
-            long endLong = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).getTimeInMillis();
-            if (endLong - startLong < MIN_DURATION) {
-                endLong = startLong + MIN_DURATION; // a scheduled recording must be at least 5 minutes
-            } else if (endLong - startLong > MAX_DURATION) {
-                endLong = startLong + MAX_DURATION; // a scheduled recording must be at most 3 hours
-            }
+        @Override
+        public void onError(Throwable e) {
+            statusCode = StatusCodes.ERROR_SAVING;
+            saveRecordingCompleted(statusCode);
+        }
+    };
 
-            if (operation == Operation.ADD) {
-                if (dbHelper.alreadyScheduled(startLong)) {
-                    statusCode = StatusCodes.ERROR_ALREADY_SCHEDULED;
-                    return statusCode;
-                }
-
-                long id = dbHelper.addScheduledRecording(startLong, endLong);
-                if (id == -1) {
-                    statusCode = StatusCodes.ERROR_SAVING;
-                }
-            } else {
-                int updated = dbHelper.updateScheduledRecording(item.getId(), startLong, endLong);
-                if (updated == 0) {
-                    statusCode = StatusCodes.ERROR_SAVING;
-                }
-            }
-
-            return statusCode;
+    private int saveRecording() {
+        long startLong = new GregorianCalendar(yearStart, monthStart, dayStart, hourStart, minuteStart).getTimeInMillis();
+        long endLong = new GregorianCalendar(yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd).getTimeInMillis();
+        if (endLong - startLong < MIN_DURATION) {
+            endLong = startLong + MIN_DURATION; // a scheduled recording must be at least 5 minutes
+        } else if (endLong - startLong > MAX_DURATION) {
+            endLong = startLong + MAX_DURATION; // a scheduled recording must be at most 3 hours
         }
 
-        protected void onPostExecute(Integer result) {
-            AddScheduledRecordingActivity activity = weakActivity.get();
-            if (activity == null)
-                return;
-
-            Toast.makeText(activity, toastMsgs[result], Toast.LENGTH_SHORT).show();
-            if (result == StatusCodes.NO_ERROR) {
-                activity.setResult(RESULT_OK);
-                activity.startService(ScheduledRecordingService.makeIntent(activity, false));
-                activity.finish();
+        if (operation == Operation.ADD) {
+            if (dbHelper.alreadyScheduled(startLong)) {
+                statusCode = StatusCodes.ERROR_ALREADY_SCHEDULED;
+                return statusCode;
             }
+
+            long id = dbHelper.addScheduledRecording(startLong, endLong);
+            if (id == -1) {
+                statusCode = StatusCodes.ERROR_SAVING;
+            }
+        } else {
+            int updated = dbHelper.updateScheduledRecording(item.getId(), startLong, endLong);
+            if (updated == 0) {
+                statusCode = StatusCodes.ERROR_SAVING;
+            }
+        }
+
+        return statusCode;
+    }
+
+    private void saveRecordingCompleted(int result) {
+        Toast.makeText(this, toastMsgs[result], Toast.LENGTH_SHORT).show();
+        if (result == StatusCodes.NO_ERROR) {
+            disposable.dispose();
+
+            setResult(RESULT_OK);
+            startService(ScheduledRecordingService.makeIntent(this, false));
+            finish();
         }
     }
 

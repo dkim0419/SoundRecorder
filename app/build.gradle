@@ -55,6 +55,16 @@ dependencies {
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
     compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
 
+    // Dagger2.
+    compile "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    compile "com.google.dagger:dagger-android-support:$daggerVersion"
+    provided 'javax.annotation:jsr250-api:1.0'
+
+    // RxJava2.
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
     // Testing.
     androidTestCompile('com.android.support.test:runner:1.0.1') {
         exclude module: 'support-annotations'
@@ -76,10 +86,5 @@ dependencies {
     compile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.3.2'
 
-    // Dagger2.
-    compile "com.google.dagger:dagger:$daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
-    compile "com.google.dagger:dagger-android-support:$daggerVersion"
-    provided 'javax.annotation:jsr250-api:1.0'
 
 }

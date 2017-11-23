@@ -33,5 +33,4 @@ public interface AppComponent {
 
     void inject(ScheduledRecordingsFragment.DeleteItemTask deleteItemTask);
 
-    void inject(AddScheduledRecordingActivity.SaveScheduledRecordingsTask saveScheduledRecordingsTask);
 }
