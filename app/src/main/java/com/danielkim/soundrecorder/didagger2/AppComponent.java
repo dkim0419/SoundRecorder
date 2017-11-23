@@ -29,8 +29,6 @@ public interface AppComponent {
 
     void inject(ScheduledRecordingService scheduledRecordingService);
 
-    void inject(ScheduledRecordingsFragment.GetScheduledRecordingsTask getScheduledRecordingsTask);
-
-    void inject(ScheduledRecordingsFragment.DeleteItemTask deleteItemTask);
+    void inject(ScheduledRecordingsFragment scheduledRecordingsFragment);
 
 }
