@@ -24,8 +24,9 @@ public class Utils {
 
         if (isExternalStorageWritable()) {
             directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SoundRecorder";
-            boolean result = new File(directoryPath).mkdirs();
-            if (result)
+            File f = new File(directoryPath);
+            boolean available = f.mkdirs() || f.isDirectory();
+            if (available)
                 return directoryPath;
         }
 
@@ -34,6 +35,6 @@ public class Utils {
 
     private static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
+        return Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 }
