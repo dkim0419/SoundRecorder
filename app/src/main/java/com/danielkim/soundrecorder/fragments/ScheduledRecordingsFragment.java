@@ -18,6 +18,7 @@ import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -59,6 +60,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ScheduledRecordingsFragment extends Fragment implements ScheduledRecordingsFragmentItemAdapter.MyOnItemClickListener {
 
+    private final String TAG = this.getClass().getSimpleName();
     private static final String ARG_POSITION = "position";
     private static final int REQUEST_DANGEROUS_PERMISSIONS = 0;
     private static final int ADD_SCHEDULED_RECORDING = 0;
@@ -156,17 +158,23 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
     }
 
     // Get all scheduled recordings and provide them.
-    private final Observable<List<ScheduledRecordingItem>> getRecordingsObservable = Observable.create(emitter -> {
-        List<ScheduledRecordingItem> recordings = dbHelper.getAllScheduledRecordings();
-        emitter.onNext(recordings);
-        emitter.onComplete();
+    private final Single<List<ScheduledRecordingItem>> getRecordingsSingle = Single.create(emitter -> {
+        try {
+            List<ScheduledRecordingItem> recordings = dbHelper.getAllScheduledRecordings();
+            emitter.onSuccess(recordings);
+        } catch (Exception e) {
+            emitter.onError(e);
+        }
     });
 
     private void subscribeToGetRecordingsObservable() {
-        Disposable subscribe = getRecordingsObservable
+        Disposable subscribe = getRecordingsSingle
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::updateUI);
+                .subscribe(
+                        this::updateUI,
+                        throwable -> Log.e(TAG, throwable.getMessage())
+                );
         compositeDisposable.add(subscribe);
     }
 
@@ -197,12 +205,11 @@ public class ScheduledRecordingsFragment extends Fragment implements ScheduledRe
         builder.setMessage(R.string.dialog_text_delete_generic);
         builder.setPositiveButton(R.string.dialog_action_ok,
                 (dialogInterface, i) -> {
-                    final Observable<Integer> deleteItemObservable = Observable.create(emitter -> {
+                    final Single<Integer> deleteItemSingle = Single.create(emitter -> {
                         int numDeleted = dbHelper.removeScheduledRecording(item.getId());
-                        emitter.onNext(numDeleted);
-                        emitter.onComplete();
+                        emitter.onSuccess(numDeleted);
                     });
-                    Disposable subscribe = deleteItemObservable
+                    Disposable subscribe = deleteItemSingle
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(this::deleteItemCompleted);
