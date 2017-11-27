@@ -121,9 +121,15 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        mRecorder.release();
+        try {
+            mRecorder.stop();
+            mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+            mRecorder.release();
+
+        } catch (RuntimeException e) {
+            Log.e(LOG_TAG,"Runtime Exception");
+        }
+
         Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
         //remove notification
