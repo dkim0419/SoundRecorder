@@ -5,6 +5,7 @@
     <string name="app_name">Registratore suoni</string>
     <string name="action_licenses">Licenze</string>
     <string name="action_settings">Impostazioni</string>
+    <string name="exit_settings">Uscita</string>
     <string name="tab_title_record">Registra</string>
     <string name="tab_title_saved_recordings">Registrazioni salvate</string>
 

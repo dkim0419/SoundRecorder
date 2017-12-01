@@ -4,6 +4,7 @@
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">Лицензии</string>
+    <string name="exit_settings">Выход</string>
     <string name="tab_title_saved_recordings">Сохраненные</string>
 
     <!-- Toasts -->

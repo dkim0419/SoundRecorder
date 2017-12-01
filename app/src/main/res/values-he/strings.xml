@@ -5,6 +5,7 @@
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">רשיונות</string>
     <string name="action_settings">הגדרות</string>
+    <string name="exit_settings">יְצִיאָה</string>
     <string name="tab_title_record">הקלטה</string>
     <string name="tab_title_saved_recordings">הקלטות שמורות</string>
 

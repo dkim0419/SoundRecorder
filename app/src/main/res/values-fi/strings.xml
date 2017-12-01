@@ -5,6 +5,7 @@
     <string name="app_name">Nauhuri</string>
     <string name="action_licenses">Lisenssit</string>
     <string name="action_settings">Asetukset</string>
+    <string name="exit_settings">poistuminen</string>
     <string name="tab_title_record">Äänitä</string>
     <string name="tab_title_saved_recordings">Tallennetut äänitykset</string>
 
