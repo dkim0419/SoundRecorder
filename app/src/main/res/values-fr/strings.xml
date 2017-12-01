@@ -5,6 +5,7 @@
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">Licenses</string>
     <string name="action_settings">Paramètres</string>
+    <string name="exit_settings">Quitter</string>
     <string name="tab_title_record">Enregistrer</string>
     <string name="tab_title_saved_recordings">Enregistrements</string>
 

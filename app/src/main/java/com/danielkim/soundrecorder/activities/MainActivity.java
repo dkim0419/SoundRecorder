@@ -62,6 +62,12 @@ public class MainActivity extends ActionBarActivity{
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
+            case R.id.exit_setting:
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

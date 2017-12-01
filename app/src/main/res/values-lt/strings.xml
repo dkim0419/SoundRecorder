@@ -5,6 +5,7 @@
     <string name="app_name">Garso įrašytuvas</string>
     <string name="action_licenses">Licenzijos</string>
     <string name="action_settings">Nustatymai</string>
+    <string name="exit_settings">Išeiti</string>
     <string name="tab_title_record">Įrašyti</string>
     <string name="tab_title_saved_recordings">Išsaugoti įrašai</string>
 

@@ -5,6 +5,7 @@
     <string name="app_name">Sonregistrilo</string>
     <string name="action_licenses">Permesiloj</string>
     <string name="action_settings">Agordoj</string>
+    <string name="exit_settings">Setting</string>
     <string name="tab_title_record">Registri</string>
     <string name="tab_title_saved_recordings">Konservataj registraĵoj</string>
 
