@@ -7,21 +7,34 @@
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">Licenses</string>
     <string name="action_settings">Settings</string>
+    <string name="action_save">Save</string>
     <string name="tab_title_record">Record</string>
     <string name="tab_title_saved_recordings">Saved Recordings</string>
+    <string name="tab_title_scheduled_recordings">Scheduled Recordings</string>
 
     <!-- Toasts -->
     <string name="toast_recording_start">Recording started</string>
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
+    <string name="toast_scheduledrecording_timeerror_start_after_end">The start time of the recording must be before the end time!</string>
+    <string name="toast_scheduledrecording_timeerror_past">It is not possible to schedule a recording in the past!</string>
+    <string name="toast_scheduledrecording_timeerror_already_scheduled">Another recording has already been scheduled for that time!</string>
+    <string name="toast_scheduledrecording_saved">The scheduled recording was saved</string>
+    <string name="toast_scheduledrecording_saved_error">An error occured while saving the scheduled recording!</string>
+    <string name="toast_scheduledrecording_deleted_error">An error occured while deleting the scheduled recording!</string>
+    <string name="toast_scheduledrecording_deleted">Item successfully deleted</string>
+    <string name="toast_permissions_denied">The app won\'t work without the requested permissions!</string>
+
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
+    <string name="notification_recording_text">SoundRecorder is currently recording...</string>
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Confirm Delete...</string>
     <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
+    <string name="dialog_text_delete_generic">Are you sure you would like to delete the selected item?</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_share">Share File</string>
     <string name="dialog_title_rename">Rename File</string>
@@ -30,6 +43,8 @@
     <string name="dialog_file_share">Share File</string>
     <string name="dialog_file_rename">Rename File</string>
     <string name="dialog_file_delete">Delete File</string>
+    <string name="dialog_file_edit">Edit</string>
+    <string name="dialog_item_delete">Delete Item</string>
     <string name="dialog_action_cancel">Cancel</string>
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>
@@ -43,6 +58,27 @@
     <string name="record_in_progress">Recording</string>
 
     <string name="send_to">Send to</string>
+
+    <!-- Fragments -->
+    <string name="frag_sched_title">Scheduled recordings</string>
+    <string name="frag_sched_scheduled_recording">scheduled recording</string>
+    <string name="frag_sched_no_recordings">no scheduled recordings</string>
+    <string name="act_addsched_schedule_recording">Schedule recording</string>
+
+    <string name="new_message_notification_title_template">New message: %1$s</string>
+
+    <!-- TODO: remove this placeholder text -->
+    <string name="new_message_notification_placeholder_text_template">You said %1$s and lorem ipsum
+        dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel
+        semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis.
+        Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper
+        ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis
+        viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec
+        tortor.
+    </string>
+
+    <string name="action_share">Share</string>
+    <string name="action_reply">Reply</string>
 
     <!-- Preferences -->
     <string name="pref_high_quality_key">pref_high_quality</string>

@@ -1,15 +1,16 @@
 package com.danielkim.soundrecorder.adapters;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +18,19 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.format.DateUtils;
 
-import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
+import com.danielkim.soundrecorder.database.DBHelper;
+import com.danielkim.soundrecorder.didagger2.App;
 import com.danielkim.soundrecorder.fragments.PlaybackFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -38,7 +40,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     private static final String LOG_TAG = "FileViewerAdapter";
 
-    private DBHelper mDatabase;
+    @Inject
+    DBHelper dbHelper;
 
     RecordingItem item;
     Context mContext;
@@ -46,9 +49,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
+        App.getComponent().inject(this);
         mContext = context;
-        mDatabase = new DBHelper(mContext);
-        mDatabase.setOnDatabaseChangedListener(this);
+        dbHelper.setOnDatabaseChangedListener(this);
         llm = linearLayoutManager;
     }
 
@@ -81,7 +84,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             new PlaybackFragment().newInstance(getItem(holder.getPosition()));
 
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
-                            .getSupportFragmentManager()
+                            .getFragmentManager()
                             .beginTransaction();
 
                     playbackFragment.show(transaction, "dialog_playback");
@@ -163,11 +166,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     @Override
     public int getItemCount() {
-        return mDatabase.getCount();
+        return dbHelper.getSavedRecordingsCount();
     }
 
     public RecordingItem getItem(int position) {
-        return mDatabase.getItemAt(position);
+        return dbHelper.getRecording(position);
     }
 
     @Override
@@ -199,7 +202,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             Toast.LENGTH_SHORT
         ).show();
 
-        mDatabase.removeItemWithId(getItem(position).getId());
+        dbHelper.removeRecording(getItem(position).getId());
         notifyItemRemoved(position);
     }
 
@@ -225,7 +228,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             //file name is unique, rename file
             File oldFilePath = new File(getItem(position).getFilePath());
             oldFilePath.renameTo(f);
-            mDatabase.renameItem(getItem(position), name, mFilePath);
+            dbHelper.updateRecording(getItem(position), name, mFilePath);
             notifyItemChanged(position);
         }
     }

@@ -1,24 +1,36 @@
+/*
+ * Copyright (c) 2017 Claudio "iClaude" Agostini <agostini.claudio1@gmail.com>
+ * Licensed under the Apache License, Version 2.0
+ */
+
 package com.danielkim.soundrecorder.fragments;
 
-import android.content.Intent;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.SystemClock;
-import android.support.v4.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.v13.app.FragmentCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
-import com.danielkim.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
-import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,24 +40,64 @@ import java.io.File;
  * create an instance of this fragment.
  */
 public class RecordFragment extends Fragment {
+    // Constants.
+    private static final String TAG = "SCHEDULED_RECORDER_TAG";
+    private static final int REQUEST_DANGEROUS_PERMISSIONS = 0;
+
+    private final boolean marshmallow = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
-    private static final String LOG_TAG = RecordFragment.class.getSimpleName();
-
-    private int position;
 
     //Recording controls
     private FloatingActionButton mRecordButton = null;
-    private Button mPauseButton = null;
-
     private TextView mRecordingPrompt;
-    private int mRecordPromptCount = 0;
 
-    private boolean mStartRecording = true;
-    private boolean mPauseRecording = true;
+    private boolean isRecording = false;
+    private boolean mPauseRecording;
 
-    private Chronometer mChronometer = null;
-    long timeWhenPaused = 0; //stores time when user clicks pause button
+    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
+    private TextView tvChronometer;
+
+    private ServiceOperations serviceOperations;
+
+
+    /*
+        Interface used to communicate with the Activity with regard to the connected Service.
+     */
+    public interface ServiceOperations {
+        void requestStartRecording();
+
+        void requestStopRecording();
+
+        boolean isServiceConnected();
+
+        boolean isServiceRecording();
+    }
+
+    @TargetApi(23)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            serviceOperations = (ServiceOperations) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement ServiceOperations");
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            serviceOperations = (ServiceOperations) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement ServiceOperations");
+        }
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -65,120 +117,168 @@ public class RecordFragment extends Fragment {
     public RecordFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        position = getArguments().getInt(ARG_POSITION);
-    }
-
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
-        mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
+        tvChronometer = (TextView) recordView.findViewById(R.id.tvChronometer);
+        tvChronometer.setText("00:00");
         //update recording prompt text
         mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
 
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
-        mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
-        mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
-        mRecordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                mStartRecording = !mStartRecording;
+        mRecordButton.setColorNormal(ContextCompat.getColor(getActivity(), R.color.primary));
+        mRecordButton.setColorPressed(ContextCompat.getColor(getActivity(), R.color.primary_dark));
+        if (serviceOperations != null) {
+            mRecordButton.setEnabled(serviceOperations.isServiceConnected());
+        }
+        mRecordButton.setOnClickListener(v -> {
+            if (!marshmallow) {
+                startStopRecording();
+            } else {
+                checkPermissions();
             }
         });
 
-        mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
+        Button mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
-        mPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPauseRecord(mPauseRecording);
-                mPauseRecording = !mPauseRecording;
-            }
+        mPauseButton.setOnClickListener(v -> {
+            //onPauseRecord(mPauseRecording);
+            mPauseRecording = !mPauseRecording;
         });
+
+        /*  Are we already recording? Check necessary if Service is connected to the Activity
+            before the Fragment is created: in this case the method serviceConnection(boolean
+            isConnected of this Fragment is not called).
+         */
+        checkRecording();
 
         return recordView;
     }
 
+    // Check dangerous permissions for Android Marshmallow+.
+    @SuppressWarnings("ConstantConditions")
+    private void checkPermissions() {
+        // Check permissions.
+        boolean writePerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean audioPerm = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        String[] arrPermissions;
+        if (!writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+        } else if (!writePerm && audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        } else if (writePerm && !audioPerm) {
+            arrPermissions = new String[]{Manifest.permission.RECORD_AUDIO};
+        } else {
+            startStopRecording();
+            return;
+        }
+
+        // Request permissions.
+        FragmentCompat.requestPermissions(this, arrPermissions, REQUEST_DANGEROUS_PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean granted = true;
+        for (int grantResult : grantResults) { // we nee all permissions granted
+            if (grantResult != PackageManager.PERMISSION_GRANTED)
+                granted = false;
+        }
+
+        if (granted)
+            startStopRecording();
+        else
+            Toast.makeText(getActivity(), getString(R.string.toast_permissions_denied), Toast.LENGTH_LONG).show();
+    }
+
     // Recording Start/Stop
     //TODO: recording pause
-    private void onRecord(boolean start){
-
-        Intent intent = new Intent(getActivity(), RecordingService.class);
-
-        if (start) {
-            // start recording
-            mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            //mPauseButton.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
-            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
-            if (!folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
+    private void startStopRecording() {
+        if (!isRecording) { // start recording
+            // Start RecordingService: send request to main Activity.
+            if (serviceOperations != null) {
+                serviceOperations.requestStartRecording();
             }
 
-            //start Chronometer
-            mChronometer.setBase(SystemClock.elapsedRealtime());
-            mChronometer.start();
-            mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-                @Override
-                public void onChronometerTick(Chronometer chronometer) {
-                    if (mRecordPromptCount == 0) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
-                    } else if (mRecordPromptCount == 1) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "..");
-                    } else if (mRecordPromptCount == 2) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
-                        mRecordPromptCount = -1;
-                    }
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //keep screen on while recording
+            isRecording = true;
+        } else { //stop recording
+            // Stop RecordingService: send request to main Activity.
+            if (serviceOperations != null) {
+                serviceOperations.requestStopRecording();
+            }
 
-                    mRecordPromptCount++;
-                }
-            });
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //allow the screen to turn off again once recording is finished
+            isRecording = false;
+        }
+    }
 
-            //start RecordingService
-            getActivity().startService(intent);
-            //keep screen on while recording
-            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
-            mRecordPromptCount++;
-
+    private void updateUI(boolean recording, String filePath) {
+        if (recording) {
+            mRecordButton.setImageResource(R.drawable.ic_media_stop);
+            mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+            Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
         } else {
-            //stop recording
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-            //mPauseButton.setVisibility(View.GONE);
-            mChronometer.stop();
-            mChronometer.setBase(SystemClock.elapsedRealtime());
-            timeWhenPaused = 0;
+            tvChronometer.setText("00:00");
             mRecordingPrompt.setText(getString(R.string.record_prompt));
-
-            getActivity().stopService(intent);
-            //allow the screen to turn off again once recording is finished
-            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (filePath != null)
+                Toast.makeText(getActivity(), getString(R.string.toast_recording_finish) + " " + filePath, Toast.LENGTH_LONG).show();
         }
     }
 
     //TODO: implement pause recording
-    private void onPauseRecord(boolean pause) {
-        if (pause) {
-            //pause recording
-            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
-            timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
-            mChronometer.stop();
-        } else {
-            //resume recording
-            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
-            mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
-            mChronometer.start();
+/*    private void onPauseRecord(boolean pause) {
+
+    }*/
+
+    /*
+        When the Activity establishes the connection with the Service, it informs this Fragment
+        so that the record button can be enabled.
+     */
+    public void serviceConnection(boolean isConnected) {
+        mRecordButton.setEnabled(isConnected);
+
+        // Are we already recording?
+        checkRecording();
+    }
+
+    /*
+        If the Service is currently recording update the UI accordingly and update the value
+        of isRecording.
+     */
+    private void checkRecording() {
+        if (serviceOperations == null) return;
+
+        if (serviceOperations.isServiceConnected() && serviceOperations.isServiceRecording()) {
+            mRecordButton.setImageResource(R.drawable.ic_media_stop);
+            mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+            isRecording = true;
         }
+    }
+
+    public void timerChanged(int seconds) {
+        if (isRecording)
+            tvChronometer.setText(mTimerFormat.format(new Date(seconds * 1000L)));
+    }
+
+    public void recordingStarted() {
+        updateUI(true, null);
+        isRecording = true;
+    }
+
+    public void recordingStopped(String filePath) {
+        updateUI(false, filePath);
+        isRecording = false;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        if (serviceOperations != null) serviceOperations = null;
     }
 }

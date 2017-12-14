@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- remove action bar, using toolbar -->
-        <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="actionMenuTextColor">@color/text</item>
 
         <!-- colors -->
         <item name="android:colorPrimary">@color/primary</item>

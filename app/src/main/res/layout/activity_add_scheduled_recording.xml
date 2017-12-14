@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2017. This code was written by iClaude. All rights reserved.
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="@color/primary"
+        android:elevation="4dp"
+        android:theme="@style/ToolbarWhiteArrow"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
+        app:srcCompat="@drawable/ic_access_time_black_24dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="@string/act_addsched_schedule_recording"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintLeft_toRightOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/tvDateStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:onClick="showDatePickerDialog"
+        tools:text="Mer 23 Ago 2017" />
+
+    <TextView
+        android:id="@+id/tvDateEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/tvDateStart"
+        android:onClick="showDatePickerDialog"
+        tools:text="Mer 23 Ago 2017" />
+
+    <TextView
+        android:id="@+id/tvTimeStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateStart"
+        app:layout_constraintRight_toRightOf="parent"
+        android:onClick="showTimePickerDialog"
+        tools:text="10:00"
+        android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/tvTimeEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvDateEnd"
+        app:layout_constraintRight_toRightOf="parent"
+        android:onClick="showTimePickerDialog"
+        tools:text="11:00"
+        android:layout_marginEnd="16dp" />
+</android.support.constraint.ConstraintLayout>

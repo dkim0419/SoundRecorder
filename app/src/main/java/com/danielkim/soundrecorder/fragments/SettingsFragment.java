@@ -37,7 +37,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 LicensesFragment licensesFragment = new LicensesFragment();
-                licensesFragment.show(((SettingsActivity)getActivity()).getSupportFragmentManager().beginTransaction(), "dialog_licenses");
+                licensesFragment.show(((SettingsActivity) getActivity()).getFragmentManager().beginTransaction(), "dialog_licenses");
                 return true;
             }
         });

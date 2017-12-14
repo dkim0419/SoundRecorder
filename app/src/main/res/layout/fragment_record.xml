@@ -16,15 +16,17 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_mic_white_36dp" />
 
-    <Chronometer
+    <TextView
+        android:id="@+id/tvChronometer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/chronometer"
-        android:textSize="60sp"
-        android:fontFamily="sans-serif-light"
         android:layout_alignBottom="@+id/recordProgressBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp" />
+        android:layout_marginBottom="64dp"
+        android:fontFamily="sans-serif-light"
+        android:text="00:00"
+        android:textColor="@color/primary_text"
+        android:textSize="60sp" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
@@ -36,7 +38,7 @@
         android:indeterminate="false"
         android:max="100"
         android:progress="0"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="29dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
