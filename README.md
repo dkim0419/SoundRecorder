@@ -3,7 +3,16 @@ Easy Sound Recorder
 
 <p>A simple sound recording app implementing Material Design.</p>
 
-[![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder) [![Android app on F-Droid](https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Get_it_on_F-Droid.svg/200px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/repository/browse/?fdid=com.danielkim.soundrecorder)
+<a href="https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder/">
+    <img alt="Get it on Google Play"
+        height="80"
+        src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
+</a>  
+<a href="https://f-droid.org/repository/browse/?fdid=com.danielkim.soundrecorder/">
+    <img alt="Get it on F-Droid"
+        height="80"
+        src="https://f-droid.org/badge/get-it-on.png" />
+        </a>
 
 Screenshots:
 
