@@ -10,8 +10,7 @@ android:
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
-  licenses:
-    - '.+'
+  
 
 before_install:
   - export JAVA7_HOME=/usr/lib/jvm/java-7-oracle
