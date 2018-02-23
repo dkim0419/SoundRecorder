@@ -10,7 +10,10 @@ android:
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
-  
+licenses:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'  
 
 before_install:
   - export JAVA7_HOME=/usr/lib/jvm/java-7-oracle
