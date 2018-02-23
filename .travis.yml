@@ -1,0 +1,23 @@
+ language: android
+ java: oraclejdk8 # We need this if your sdk version is 24
+ android:
+   components:
+     # Uncomment the lines below if you want to
+     # use the latest revision of Android SDK Tools
+     - platform-tools
+     - tools
+
+     # The BuildTools version used by your project
+     - build-tools-YOUR_NOTED_BUILD_TOOLS_VERSION
+
+     # The SDK version used to compile your project
+     - android-YOUR_NOTED_TARGET_SDK_VERSION
+
+     # Additional components
+     #- extra-google-google_play_services
+     - extra-google-m2repository
+     - extra-android-m2repository
+     - addon-google_apis-google-19
+
+ script:
+   - ./gradlew build
