@@ -1,8 +1,12 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -46,6 +50,8 @@ public class RecordFragment extends Fragment {
 
     private Chronometer mChronometer = null;
     long timeWhenPaused = 0; //stores time when user clicks pause button
+
+    RecordingService mRecordingService;
 
     /**
      * Use this factory method to create a new instance of
@@ -104,6 +110,24 @@ public class RecordFragment extends Fragment {
         return recordView;
     }
 
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            RecordingService.LocalBinder binder = (RecordingService.LocalBinder) service;
+            mRecordingService = binder.getService();
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+
+        }
+    };
+
     // Recording Start/Stop
     //TODO: recording pause
     private void onRecord(boolean start){
@@ -113,7 +137,7 @@ public class RecordFragment extends Fragment {
         if (start) {
             // start recording
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            //mPauseButton.setVisibility(View.VISIBLE);
+            mPauseButton.setVisibility(View.VISIBLE);
             Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {
@@ -142,6 +166,7 @@ public class RecordFragment extends Fragment {
 
             //start RecordingService
             getActivity().startService(intent);
+            getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             //keep screen on while recording
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -151,13 +176,15 @@ public class RecordFragment extends Fragment {
         } else {
             //stop recording
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-            //mPauseButton.setVisibility(View.GONE);
+            mPauseButton.setVisibility(View.GONE);
             mChronometer.stop();
             mChronometer.setBase(SystemClock.elapsedRealtime());
             timeWhenPaused = 0;
             mRecordingPrompt.setText(getString(R.string.record_prompt));
 
             getActivity().stopService(intent);
+            getActivity().unbindService(mConnection);
+
             //allow the screen to turn off again once recording is finished
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
@@ -167,6 +194,7 @@ public class RecordFragment extends Fragment {
     private void onPauseRecord(boolean pause) {
         if (pause) {
             //pause recording
+            mRecordingService.pauseRecording();
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
             mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
@@ -174,6 +202,7 @@ public class RecordFragment extends Fragment {
             mChronometer.stop();
         } else {
             //resume recording
+            mRecordingService.resumeRecording();
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_pause ,0 ,0 ,0);
             mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
