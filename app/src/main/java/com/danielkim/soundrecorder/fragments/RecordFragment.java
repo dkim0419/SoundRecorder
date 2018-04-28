@@ -129,7 +129,6 @@ public class RecordFragment extends Fragment {
     };
 
     // Recording Start/Stop
-    //TODO: recording pause
     private void onRecord(boolean start){
 
         Intent intent = new Intent(getActivity(), RecordingService.class);
@@ -192,7 +191,6 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    //TODO: implement pause recording
     private void onPauseRecord(boolean pause) {
         if (pause) {
             //pause recording
