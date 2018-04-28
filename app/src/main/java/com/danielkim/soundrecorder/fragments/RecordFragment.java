@@ -182,6 +182,8 @@ public class RecordFragment extends Fragment {
             timeWhenPaused = 0;
             mRecordingPrompt.setText(getString(R.string.record_prompt));
 
+            //handle case : user press stop after pause
+            if(!mPauseRecording) mPauseRecording = true;
             getActivity().stopService(intent);
             getActivity().unbindService(mConnection);
 

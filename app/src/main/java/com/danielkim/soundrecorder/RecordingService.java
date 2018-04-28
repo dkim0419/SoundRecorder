@@ -58,7 +58,8 @@ public class RecordingService extends Service {
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
 
-    private boolean isPausePressed;
+    private boolean isFilePathTemp = true;
+    private boolean isPaused;
     private int tempFileCount = 0;
 
     private ArrayList<String> filesPaused = new ArrayList<>();
@@ -98,7 +99,32 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
+  public void setFileNameAndPath() {
+    if (isFilePathTemp) {
+      mFileName = getString(R.string.default_file_name) + (++tempFileCount )+ "_" + ".tmp";
+      mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+      mFilePath += "/SoundRecorder/" + mFileName;
+    } else {
+      int count = 0;
+      File f;
+
+      do {
+        count++;
+
+        mFileName =
+            getString(R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
+
+        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFilePath += "/SoundRecorder/" + mFileName;
+
+        f = new File(mFilePath);
+      } while (f.exists() && !f.isDirectory());
+    }
+  }
+
     public void startRecording() {
+        isPaused = false;
+        isFilePathTemp=true;
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -125,41 +151,37 @@ public class RecordingService extends Service {
         }
     }
 
-  public void setFileNameAndPath() {
-    if (isPausePressed) {
-      mFileName = getString(R.string.default_file_name) + (++tempFileCount )+ "_" + ".tmp";
-      mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-      mFilePath += "/SoundRecorder/" + mFileName;
-    } else {
-      int count = 0;
-      File f;
-
-      do {
-        count++;
-
-        mFileName =
-            getString(R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
-
-        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFilePath += "/SoundRecorder/" + mFileName;
-
-        f = new File(mFilePath);
-      } while (f.exists() && !f.isDirectory());
-    }
-  }
-
-    public void stopRecording() {
-    if (isPausePressed)
-        filesPaused.add(mFilePath);
-
-        isPausePressed=false;
-        setFileNameAndPath();
-
+    public void pauseRecording(){
+        isPaused = true;
         mRecorder.stop();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        pauseDurations.add(mElapsedMillis);
+        Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
+
+        //remove notification
+        if (mIncrementTimerTask != null) {
+            mIncrementTimerTask.cancel();
+            mIncrementTimerTask = null;
+        }
+        filesPaused.add(mFilePath);
+
+    }
+
+    public void stopRecording() {
+        if(!isPaused)
+            filesPaused.add(mFilePath);
+
+        isFilePathTemp =false;
+        setFileNameAndPath();
+
+        if (!isPaused) {
+            mRecorder.stop();
+            mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        }
         mRecorder.release();
         Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
+        isPaused = false;
         //remove notification
         if (mIncrementTimerTask != null) {
             mIncrementTimerTask.cancel();
@@ -215,7 +237,6 @@ public class RecordingService extends Service {
         Container mp4file = new DefaultMp4Builder().build(finalMovie);
         FileChannel fc = null;
         try {
-            setFileNameAndPath();
             fc = new FileOutputStream(new File(mFilePath)).getChannel();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -232,23 +253,8 @@ public class RecordingService extends Service {
 
     }
 
-    public void pauseRecording(){
-        isPausePressed=true;
-        mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        pauseDurations.add(mElapsedMillis);
-        Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
-
-        //remove notification
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
-        }
-        filesPaused.add(mFilePath);
-
-    }
-
     public void resumeRecording(){
+        isPaused=false;
         startRecording();
     }
 
