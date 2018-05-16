@@ -1,0 +1,29 @@
+Frequently Asked Questions in the Sound recorder application (FAQs)
+
+These "Frequently Asked Questions" will be explained in the app and will be explained in the app to help users find their answers to the questions they ask.
+
+What is Sound recorder ?
+
+sound recorder is a simple android app that can be used to record audio. This sound recorder application also includes a very good and simple open source application.
+
+How do I change the recording name?
+
+click the recording you want to rename. then click rename and enter a new name for your recording
+
+Where are my recordings stored?
+
+Your recording will be saved in the Sound recorder application. If you delete this app automatically your recording will be deleted.
+
+How do I share my recordings?
+
+first open the sound recorder application. then click and select the recording you want to share. next step click share file.
+
+How do I delete a recording?
+
+in the saved recording menu click and select the recording you want to delete and then click delete.
+
+Where can I leave feedbacks or suggestions or report bugs?
+
+You can report them directly on :
+
+https://github.com/dkim0419/SoundRecorder/pulls
