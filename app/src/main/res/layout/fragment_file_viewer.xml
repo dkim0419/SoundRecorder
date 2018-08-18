@@ -3,7 +3,7 @@
     android:id="@+id/fragment_file_viewer"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.danielkim.soundrecorder.fragments.FileViewerFragment">
+    tools:context="by.naxa.soundrecorder.fragments.FileViewerFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

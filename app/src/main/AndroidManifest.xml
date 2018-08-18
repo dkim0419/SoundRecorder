@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.danielkim.soundrecorder" >
+    package="by.naxa.soundrecorder" >
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -27,11 +27,11 @@
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.danielkim.soundrecorder.activities.MainActivity" />
+                android:value=".activities.MainActivity" />
         </activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.danielkim.soundrecorder.fileprovider"
+            android:authorities="by.naxa.soundrecorder.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

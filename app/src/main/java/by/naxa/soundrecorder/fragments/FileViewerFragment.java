@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder.fragments;
+package by.naxa.soundrecorder.fragments;
 
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -11,13 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.danielkim.soundrecorder.R;
-import com.danielkim.soundrecorder.adapters.FileViewerAdapter;
+import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.adapters.FileViewerAdapter;
 
 /**
  * Created by Daniel on 12/23/2014.
  */
-public class FileViewerFragment extends Fragment{
+public class FileViewerFragment extends Fragment {
     private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = "FileViewerFragment";
 
@@ -44,7 +44,7 @@ public class FileViewerFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_file_viewer, container, false);
 
-        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = v.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -68,7 +68,7 @@ public class FileViewerFragment extends Fragment{
                 // set up a file observer to watch this directory on sd card
                 @Override
                 public void onEvent(int event, String file) {
-                    if(event == FileObserver.DELETE){
+                    if (event == FileObserver.DELETE) {
                         // user deletes a recording file out of the app
 
                         String filePath = android.os.Environment.getExternalStorageDirectory().toString()

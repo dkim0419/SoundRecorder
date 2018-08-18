@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder;
+package by.naxa.soundrecorder;
 
 import android.content.Context;
 import android.content.SharedPreferences;

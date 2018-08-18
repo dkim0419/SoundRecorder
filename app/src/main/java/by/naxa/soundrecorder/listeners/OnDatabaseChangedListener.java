@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder.listeners;
+package by.naxa.soundrecorder.listeners;
 
 /**
  * Created by Daniel on 1/3/2015.

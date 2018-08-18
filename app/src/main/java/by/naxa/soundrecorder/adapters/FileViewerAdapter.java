@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder.adapters;
+package by.naxa.soundrecorder.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,14 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.text.format.DateUtils;
 
-import com.danielkim.soundrecorder.DBHelper;
-import com.danielkim.soundrecorder.R;
-import com.danielkim.soundrecorder.RecordingItem;
-import com.danielkim.soundrecorder.fragments.PlaybackFragment;
-import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
+import by.naxa.soundrecorder.DBHelper;
+import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.RecordingItem;
+import by.naxa.soundrecorder.fragments.PlaybackFragment;
+import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 
@@ -34,7 +33,7 @@ import java.util.ArrayList;
  * Created by Daniel on 12/29/2014.
  */
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
-    implements OnDatabaseChangedListener{
+    implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
 
@@ -154,9 +153,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         public RecordingsViewHolder(View v) {
             super(v);
-            vName = (TextView) v.findViewById(R.id.file_name_text);
-            vLength = (TextView) v.findViewById(R.id.file_length_text);
-            vDateAdded = (TextView) v.findViewById(R.id.file_date_added_text);
+            vName = v.findViewById(R.id.file_name_text);
+            vLength = v.findViewById(R.id.file_length_text);
+            vDateAdded = v.findViewById(R.id.file_date_added_text);
             cardView = v.findViewById(R.id.card_view);
         }
     }
@@ -245,7 +244,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.dialog_rename_file, null);
 
-        final EditText input = (EditText) view.findViewById(R.id.new_name);
+        final EditText input = view.findViewById(R.id.new_name);
 
         renameFileBuilder.setTitle(mContext.getString(R.string.dialog_title_rename));
         renameFileBuilder.setCancelable(true);

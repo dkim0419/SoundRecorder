@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder.fragments;
+package by.naxa.soundrecorder.fragments;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,8 +18,8 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.danielkim.soundrecorder.R;
-import com.danielkim.soundrecorder.RecordingService;
+import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
@@ -82,11 +82,11 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
-        mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
+        mChronometer = recordView.findViewById(R.id.chronometer);
         //update recording prompt text
-        mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
+        mRecordingPrompt = recordView.findViewById(R.id.recording_status_text);
 
-        mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
+        mRecordButton = recordView.findViewById(R.id.btnRecord);
         mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
         mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
         mRecordButton.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +97,7 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
+        mPauseButton = recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,7 +197,7 @@ public class RecordFragment extends Fragment {
             mRecordingService.pauseRecording();
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
+            mRecordingPrompt.setText(getString(R.string.resume_recording_button).toUpperCase());
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
@@ -205,7 +205,7 @@ public class RecordFragment extends Fragment {
             mRecordingService.resumeRecording();
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
+            mRecordingPrompt.setText(getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
         }

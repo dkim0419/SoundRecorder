@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder;
+package by.naxa.soundrecorder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,7 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
-import com.danielkim.soundrecorder.activities.MainActivity;
+import by.naxa.soundrecorder.activities.MainActivity;
 import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -101,7 +101,7 @@ public class RecordingService extends Service {
 
   public void setFileNameAndPath() {
     if (isFilePathTemp) {
-      mFileName = getString(R.string.default_file_name) + (++tempFileCount )+ "_" + ".tmp";
+      mFileName = getString(by.naxa.soundrecorder.R.string.default_file_name) + (++tempFileCount )+ "_" + ".tmp";
       mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
       mFilePath += "/SoundRecorder/" + mFileName;
     } else {
@@ -112,7 +112,7 @@ public class RecordingService extends Service {
         count++;
 
         mFileName =
-            getString(R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
+            getString(by.naxa.soundrecorder.R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
 
         mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         mFilePath += "/SoundRecorder/" + mFileName;
@@ -156,7 +156,7 @@ public class RecordingService extends Service {
         mRecorder.stop();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         pauseDurations.add(mElapsedMillis);
-        Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(by.naxa.soundrecorder.R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
         //remove notification
         if (mIncrementTimerTask != null) {
@@ -179,7 +179,7 @@ public class RecordingService extends Service {
             mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         }
         mRecorder.release();
-        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(by.naxa.soundrecorder.R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
         isPaused = false;
         //remove notification
@@ -277,8 +277,8 @@ public class RecordingService extends Service {
     private Notification createNotification() {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.ic_mic_white_36dp)
-                        .setContentTitle(getString(R.string.notification_recording))
+                        .setSmallIcon(by.naxa.soundrecorder.R.drawable.ic_mic_white_36dp)
+                        .setContentTitle(getString(by.naxa.soundrecorder.R.string.notification_recording))
                         .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
                         .setOngoing(true);
 

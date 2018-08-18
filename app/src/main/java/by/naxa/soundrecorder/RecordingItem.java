@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder;
+package by.naxa.soundrecorder;
 
 import android.os.Parcel;
 import android.os.Parcelable;
