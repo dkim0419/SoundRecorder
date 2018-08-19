@@ -1,7 +1,9 @@
 package by.naxa.soundrecorder.fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
@@ -16,12 +18,15 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import by.naxa.soundrecorder.R;
-import by.naxa.soundrecorder.RecordingItem;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.RecordingItem;
+
+import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
  * Created by Daniel on 1/1/2015.
@@ -29,8 +34,9 @@ import java.util.concurrent.TimeUnit;
 public class PlaybackFragment extends DialogFragment {
 
     private static final String LOG_TAG = "PlaybackFragment";
-
     private static final String ARG_ITEM = "recording_item";
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 3;
+
     private RecordingItem item;
 
     private Handler mHandler = new Handler();
@@ -62,7 +68,20 @@ public class PlaybackFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        item = getArguments().getParcelable(ARG_ITEM);
+
+        final Bundle args;
+        if (savedInstanceState == null) {
+            // not restart
+            args = getArguments();
+        } else {
+            // restart
+            args = savedInstanceState;
+        }
+        if (args == null) {
+            throw new IllegalArgumentException("Bundle args required");
+        }
+
+        item = args.getParcelable(ARG_ITEM);
 
         long itemDuration = item.getLength();
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
@@ -141,8 +160,7 @@ public class PlaybackFragment extends DialogFragment {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onPlay(isPlaying);
-                isPlaying = !isPlaying;
+                isPlaying = onPlay(isPlaying);
             }
         });
 
@@ -191,18 +209,29 @@ public class PlaybackFragment extends DialogFragment {
     }
 
     // Play start/stop
-    private void onPlay(boolean isPlaying) {
+    private boolean onPlay(boolean isPlaying) {
         if (!isPlaying) {
-            //currently MediaPlayer is not playing audio
-            if (mMediaPlayer == null) {
-                startPlaying(); //start from beginning
-            } else {
-                resumePlaying(); //resume the currently paused MediaPlayer
+            if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted -> request the permission
+                this.requestPermissions(
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                return isPlaying;
             }
-
+            startOrResumePlaying();
         } else {
             //pause the MediaPlayer
             pausePlaying();
+        }
+        return !isPlaying;
+    }
+
+    private void startOrResumePlaying() {
+        if (mMediaPlayer == null) {
+            // if currently MediaPlayer is not playing audio
+            startPlaying(); // from the beginning
+        } else {
+            resumePlaying();
         }
     }
 
@@ -265,15 +294,21 @@ public class PlaybackFragment extends DialogFragment {
     }
 
     private void pausePlaying() {
+        if (!isPlaying)
+            return;
         mPlayButton.setImageResource(R.drawable.ic_media_play);
         mHandler.removeCallbacks(mRunnable);
-        mMediaPlayer.pause();
+        if (mMediaPlayer != null)
+            mMediaPlayer.pause();
     }
 
     private void resumePlaying() {
+        if (isPlaying)
+            return;
         mPlayButton.setImageResource(R.drawable.ic_media_pause);
         mHandler.removeCallbacks(mRunnable);
-        mMediaPlayer.start();
+        if (mMediaPlayer != null)
+            mMediaPlayer.start();
         updateSeekBar();
     }
 
@@ -317,4 +352,27 @@ public class PlaybackFragment extends DialogFragment {
     private void updateSeekBar() {
         mHandler.postDelayed(mRunnable, 1000);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    startOrResumePlaying();
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(ARG_ITEM, item);
+    }
+
 }

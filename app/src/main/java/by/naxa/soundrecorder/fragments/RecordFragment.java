@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -18,11 +19,13 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import by.naxa.soundrecorder.R;
-import by.naxa.soundrecorder.RecordingService;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
+
+import by.naxa.soundrecorder.PermissionsHelper;
+import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.RecordingService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +38,8 @@ public class RecordFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = RecordFragment.class.getSimpleName();
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO_RESUME = 2;
 
     private int position;
 
@@ -92,8 +97,7 @@ public class RecordFragment extends Fragment {
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRecord(mStartRecording);
-                mStartRecording = !mStartRecording;
+                mStartRecording = onRecord(mStartRecording);
             }
         });
 
@@ -102,15 +106,16 @@ public class RecordFragment extends Fragment {
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onPauseRecord(mPauseRecording);
-                mPauseRecording = !mPauseRecording;
+                mPauseRecording = onPauseRecord(mPauseRecording);
             }
         });
 
         return recordView;
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -129,49 +134,15 @@ public class RecordFragment extends Fragment {
     };
 
     // Recording Start/Stop
-    private void onRecord(boolean start){
-
-        Intent intent = new Intent(getActivity(), RecordingService.class);
+    private boolean onRecord(boolean start) {
+        final Intent intent = new Intent(getActivity(), RecordingService.class);
 
         if (start) {
-            // start recording
-            mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            mPauseButton.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
-            File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
-            if (!folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
+            if (!PermissionsHelper.checkAndRequestPermissions(this,
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                return start;
             }
-
-            //start Chronometer
-            mChronometer.setBase(SystemClock.elapsedRealtime());
-            mChronometer.start();
-            mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-                @Override
-                public void onChronometerTick(Chronometer chronometer) {
-                    if (mRecordPromptCount == 0) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
-                    } else if (mRecordPromptCount == 1) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "..");
-                    } else if (mRecordPromptCount == 2) {
-                        mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
-                        mRecordPromptCount = -1;
-                    }
-
-                    mRecordPromptCount++;
-                }
-            });
-
-            //start RecordingService
-            getActivity().startService(intent);
-            getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            //keep screen on while recording
-            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
-            mRecordPromptCount++;
-
+            startRecording(intent);
         } else {
             //stop recording
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
@@ -182,32 +153,117 @@ public class RecordFragment extends Fragment {
             mRecordingPrompt.setText(getString(R.string.record_prompt));
 
             //handle case : user press stop after pause
-            if(!mPauseRecording) mPauseRecording = true;
+            if (!mPauseRecording) mPauseRecording = true;
             getActivity().stopService(intent);
             getActivity().unbindService(mConnection);
 
             //allow the screen to turn off again once recording is finished
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+        return !start;
     }
 
-    private void onPauseRecord(boolean pause) {
+    private void startRecording(Intent intent) {
+        // start recording
+        mRecordButton.setImageResource(R.drawable.ic_media_stop);
+        mPauseButton.setVisibility(View.VISIBLE);
+        Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
+        File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
+        if (!folder.exists()) {
+            //folder /SoundRecorder doesn't exist, create the folder
+            folder.mkdir();
+        }
+
+        //start Chronometer
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+        mChronometer.start();
+        mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                if (mRecordPromptCount == 0) {
+                    mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
+                } else if (mRecordPromptCount == 1) {
+                    mRecordingPrompt.setText(getString(R.string.record_in_progress) + "..");
+                } else if (mRecordPromptCount == 2) {
+                    mRecordingPrompt.setText(getString(R.string.record_in_progress) + "...");
+                    mRecordPromptCount = -1;
+                }
+
+                mRecordPromptCount++;
+            }
+        });
+
+        //start RecordingService
+        getActivity().startService(intent);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        //keep screen on while recording
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
+        mRecordPromptCount++;
+
+        mStartRecording = false;
+    }
+
+    private boolean onPauseRecord(boolean pause) {
         if (pause) {
             //pause recording
             mRecordingService.pauseRecording();
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText(getString(R.string.resume_recording_button).toUpperCase());
+                    (R.drawable.ic_media_play, 0, 0, 0);
+            mPauseButton.setText(getString(R.string.resume_recording_button).toUpperCase());
+            mRecordingPrompt.setText(getString(R.string.record_paused));
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
-            //resume recording
-            mRecordingService.resumeRecording();
-            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText(getString(R.string.pause_recording_button).toUpperCase());
-            mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
-            mChronometer.start();
+            if (!PermissionsHelper.checkAndRequestPermissions(this,
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                return pause;
+            }
+            resumeRecording();
+        }
+
+        return !pause;
+    }
+
+    private void resumeRecording() {
+        mRecordingService.resumeRecording();
+        mPauseButton.setCompoundDrawablesWithIntrinsicBounds
+                (R.drawable.ic_media_pause, 0, 0, 0);
+        mPauseButton.setText(getString(R.string.pause_recording_button).toUpperCase());
+        mRecordingPrompt.setText(getString(R.string.record_in_progress));
+        mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
+        mChronometer.start();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    final Intent intent = new Intent(getActivity(), RecordingService.class);
+                    startRecording(intent);
+                    mStartRecording = false;
+                }
+                break;
+            }
+
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO_RESUME: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    resumeRecording();
+                    mPauseRecording = true;
+                }
+                break;
+            }
         }
     }
+
 }

@@ -1,21 +1,15 @@
 package by.naxa.soundrecorder;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
-import by.naxa.soundrecorder.activities.MainActivity;
 import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -63,7 +57,7 @@ public class RecordingService extends Service {
     private int tempFileCount = 0;
 
     private ArrayList<String> filesPaused = new ArrayList<>();
-    private ArrayList<Long> pauseDurations= new ArrayList<>();
+    private ArrayList<Long> pauseDurations = new ArrayList<>();
 
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
@@ -99,32 +93,32 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-  public void setFileNameAndPath() {
-    if (isFilePathTemp) {
-      mFileName = getString(by.naxa.soundrecorder.R.string.default_file_name) + (++tempFileCount )+ "_" + ".tmp";
-      mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-      mFilePath += "/SoundRecorder/" + mFileName;
-    } else {
-      int count = 0;
-      File f;
+    public void setFileNameAndPath() {
+        if (isFilePathTemp) {
+            mFileName = getString(by.naxa.soundrecorder.R.string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
+            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFilePath += "/SoundRecorder/" + mFileName;
+        } else {
+            int count = 0;
+            File f;
 
-      do {
-        count++;
+            do {
+                count++;
 
-        mFileName =
-            getString(by.naxa.soundrecorder.R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
+                mFileName =
+                        getString(by.naxa.soundrecorder.R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
 
-        mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFilePath += "/SoundRecorder/" + mFileName;
+                mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+                mFilePath += "/SoundRecorder/" + mFileName;
 
-        f = new File(mFilePath);
-      } while (f.exists() && !f.isDirectory());
+                f = new File(mFilePath);
+            } while (f.exists() && !f.isDirectory());
+        }
     }
-  }
 
     public void startRecording() {
         isPaused = false;
-        isFilePathTemp=true;
+        isFilePathTemp = true;
         setFileNameAndPath();
 
         mRecorder = new MediaRecorder();
@@ -143,15 +137,16 @@ public class RecordingService extends Service {
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
 
-            //startTimer();
-            //startForeground(1, createNotification());
-
         } catch (IOException e) {
+            // TODO propagate this exception to MainActivity
             Log.e(LOG_TAG, "prepare() failed");
         }
     }
 
-    public void pauseRecording(){
+    public void pauseRecording() {
+        if (isPaused)
+            return;
+
         isPaused = true;
         mRecorder.stop();
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
@@ -168,10 +163,10 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        if(!isPaused)
+        if (!isPaused)
             filesPaused.add(mFilePath);
 
-        isFilePathTemp =false;
+        isFilePathTemp = false;
         setFileNameAndPath();
 
         if (!isPaused) {
@@ -199,22 +194,23 @@ public class RecordingService extends Service {
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e(LOG_TAG, "exception", e);
         }
     }
 
     /**
      * collect temp generated files because of pause to one target file
+     *
      * @param filesPaused contains all temp files due to pause
      */
     private boolean makeSingleFile(ArrayList<String> filesPaused) {
-        ArrayList<Track> tracks =new ArrayList<>();
-        Movie finalMovie =new Movie();
+        ArrayList<Track> tracks = new ArrayList<>();
+        Movie finalMovie = new Movie();
         for (String filePath : filesPaused) {
             try {
-                 Movie movie = MovieCreator.build(new FileDataSourceImpl(filePath));
-                 List<Track> movieTracks = movie.getTracks();
+                Movie movie = MovieCreator.build(new FileDataSourceImpl(filePath));
+                List<Track> movieTracks = movie.getTracks();
                 tracks.addAll(movieTracks);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -253,42 +249,10 @@ public class RecordingService extends Service {
 
     }
 
-    public void resumeRecording(){
-        isPaused=false;
+    public void resumeRecording() {
+        isPaused = false;
         startRecording();
     }
-
-    private void startTimer() {
-        mTimer = new Timer();
-        mIncrementTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mElapsedSeconds++;
-                if (onTimerChangedListener != null)
-                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
-                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mgr.notify(1, createNotification());
-            }
-        };
-        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
-    }
-
-    //TODO:
-    private Notification createNotification() {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(by.naxa.soundrecorder.R.drawable.ic_mic_white_36dp)
-                        .setContentTitle(getString(by.naxa.soundrecorder.R.string.notification_recording))
-                        .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
-                        .setOngoing(true);
-
-        mBuilder.setContentIntent(PendingIntent.getActivities(getApplicationContext(), 0,
-                new Intent[]{new Intent(getApplicationContext(), MainActivity.class)}, 0));
-
-        return mBuilder.build();
-    }
-
-
 
     /**
      * Class used for the client Binder.  Because we know this service always

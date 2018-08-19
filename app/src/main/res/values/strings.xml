@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- About -->
-    <string name="link">Website: github.com/dkim0419/SoundRecorder</string>
+    <string name="link">Website: github.com/naXa777/SoundRecorder</string>
 
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
@@ -19,10 +19,10 @@
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">Recording...</string>
+    <string name="notification_recording">Recording…</string>
 
     <!-- Dialogs -->
-    <string name="dialog_title_delete">Confirm Delete...</string>
+    <string name="dialog_title_delete">Confirm Delete…</string>
     <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_share">Share File</string>
@@ -43,6 +43,7 @@
     <string name="default_file_name">My Recording</string>
     <string name="record_prompt">Tap the button to start recording</string>
     <string name="record_in_progress">Recording</string>
+    <string name="record_paused">Paused</string>
 
     <string name="send_to">Send to</string>
 
