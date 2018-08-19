@@ -11,23 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import by.naxa.soundrecorder.Paths;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.adapters.FileViewerAdapter;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 /**
  * Created by Daniel on 12/23/2014.
  */
 public class FileViewerFragment extends Fragment {
-    private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = "FileViewerFragment";
 
-    private int position;
     private FileViewerAdapter mFileViewerAdapter;
 
-    public static FileViewerFragment newInstance(int position) {
+    public static FileViewerFragment newInstance() {
         FileViewerFragment f = new FileViewerFragment();
         Bundle b = new Bundle();
-        b.putInt(ARG_POSITION, position);
         f.setArguments(b);
 
         return f;
@@ -36,7 +36,6 @@ public class FileViewerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        position = getArguments().getInt(ARG_POSITION);
         observer.startWatching();
     }
 
@@ -62,21 +61,18 @@ public class FileViewerFragment extends Fragment {
         return v;
     }
 
-    FileObserver observer =
-            new FileObserver(android.os.Environment.getExternalStorageDirectory().toString()
-                    + "/SoundRecorder") {
+    private final FileObserver observer =
+            new FileObserver(Paths.combine(
+                    getExternalStorageDirectory(), Paths.SOUND_RECORDER_FOLDER)) {
                 // set up a file observer to watch this directory on sd card
                 @Override
                 public void onEvent(int event, String file) {
                     if (event == FileObserver.DELETE) {
                         // user deletes a recording file out of the app
 
-                        String filePath = android.os.Environment.getExternalStorageDirectory().toString()
-                                + "/SoundRecorder" + file + "]";
-
-                        Log.d(LOG_TAG, "File deleted ["
-                                + android.os.Environment.getExternalStorageDirectory().toString()
-                                + "/SoundRecorder" + file + "]");
+                        String filePath = Paths.combine(getExternalStorageDirectory(),
+                                Paths.SOUND_RECORDER_FOLDER, file);
+                        Log.d(LOG_TAG, "File deleted [" + filePath + "]");
 
                         // remove file from database and recyclerview
                         mFileViewerAdapter.removeOutOfApp(filePath);

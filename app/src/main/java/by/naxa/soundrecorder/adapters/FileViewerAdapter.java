@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +18,17 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.format.DateUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import by.naxa.soundrecorder.DBHelper;
+import by.naxa.soundrecorder.Paths;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.fragments.PlaybackFragment;
 import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-import java.util.ArrayList;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -47,7 +48,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         super();
         mContext = context;
         mDatabase = new DBHelper(mContext);
-        mDatabase.setOnDatabaseChangedListener(this);
+        DBHelper.setOnDatabaseChangedListener(this);
         llm = linearLayoutManager;
     }
 
@@ -210,8 +211,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public void rename(int position, String name) {
         //rename a file
 
-        String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFilePath += "/SoundRecorder/" + name;
+        String mFilePath = Paths.combine(
+                Environment.getExternalStorageDirectory().getAbsolutePath(),
+                Paths.SOUND_RECORDER_FOLDER, name);
         File f = new File(mFilePath);
 
         if (f.exists() && !f.isDirectory()) {

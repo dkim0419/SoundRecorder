@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- About -->
-    <string name="link">Website: github.com/naXa777/SoundRecorder</string>
+    <string name="link">Website: https://github.com/naXa777/SoundRecorder</string>
 
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>

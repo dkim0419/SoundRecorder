@@ -23,6 +23,7 @@ import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
 
+import by.naxa.soundrecorder.Paths;
 import by.naxa.soundrecorder.PermissionsHelper;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingService;
@@ -35,13 +36,9 @@ import by.naxa.soundrecorder.RecordingService;
  * create an instance of this fragment.
  */
 public class RecordFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_POSITION = "position";
     private static final String LOG_TAG = RecordFragment.class.getSimpleName();
     private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO_RESUME = 2;
-
-    private int position;
 
     //Recording controls
     private FloatingActionButton mRecordButton = null;
@@ -64,22 +61,17 @@ public class RecordFragment extends Fragment {
      *
      * @return A new instance of fragment Record_Fragment.
      */
-    public static RecordFragment newInstance(int position) {
+    public static RecordFragment newInstance() {
         RecordFragment f = new RecordFragment();
         Bundle b = new Bundle();
-        b.putInt(ARG_POSITION, position);
         f.setArguments(b);
 
         return f;
     }
 
-    public RecordFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        position = getArguments().getInt(ARG_POSITION);
     }
 
     @Override
@@ -169,7 +161,8 @@ public class RecordFragment extends Fragment {
         mRecordButton.setImageResource(R.drawable.ic_media_stop);
         mPauseButton.setVisibility(View.VISIBLE);
         Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
-        File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
+        File folder = new File(Environment.getExternalStorageDirectory(),
+                Paths.SOUND_RECORDER_FOLDER);
         if (!folder.exists()) {
             //folder /SoundRecorder doesn't exist, create the folder
             folder.mkdir();

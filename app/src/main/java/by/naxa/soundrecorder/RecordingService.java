@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
+import com.crashlytics.android.Crashlytics;
 import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -22,12 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import static by.naxa.soundrecorder.R.string;
 
 /**
  * Created by Daniel on 12/28/2014.
@@ -45,14 +44,7 @@ public class RecordingService extends Service {
 
     private long mStartingTimeMillis = 0;
     private long mElapsedMillis = 0;
-    private int mElapsedSeconds = 0;
-    private OnTimerChangedListener onTimerChangedListener = null;
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
 
-    private Timer mTimer = null;
-    private TimerTask mIncrementTimerTask = null;
-
-    private boolean isFilePathTemp = true;
     private boolean isPaused;
     private int tempFileCount = 0;
 
@@ -66,10 +58,6 @@ public class RecordingService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
-    }
-
-    public interface OnTimerChangedListener {
-        void onTimerChanged(int seconds);
     }
 
     @Override
@@ -93,23 +81,24 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-    public void setFileNameAndPath() {
+    public void setFileNameAndPath(boolean isFilePathTemp) {
         if (isFilePathTemp) {
-            mFileName = getString(by.naxa.soundrecorder.R.string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
+            mFileName = getString(string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
+            mFilePath = Paths.combine(Environment.getExternalStorageDirectory().getAbsolutePath(),
+                    Paths.SOUND_RECORDER_FOLDER, mFileName);
         } else {
             int count = 0;
             File f;
 
             do {
-                count++;
+                ++count;
 
                 mFileName =
-                        getString(by.naxa.soundrecorder.R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
+                        getString(string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
 
-                mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                mFilePath += "/SoundRecorder/" + mFileName;
+                mFilePath = Paths.combine(
+                        Environment.getExternalStorageDirectory().getAbsolutePath(),
+                        Paths.SOUND_RECORDER_FOLDER, mFileName);
 
                 f = new File(mFilePath);
             } while (f.exists() && !f.isDirectory());
@@ -117,9 +106,8 @@ public class RecordingService extends Service {
     }
 
     public void startRecording() {
-        isPaused = false;
-        isFilePathTemp = true;
-        setFileNameAndPath();
+        boolean isTemporary = true;
+        setFileNameAndPath(isTemporary);
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -135,10 +123,11 @@ public class RecordingService extends Service {
         try {
             mRecorder.prepare();
             mRecorder.start();
+            isPaused = false;
             mStartingTimeMillis = System.currentTimeMillis();
-
         } catch (IOException e) {
             // TODO propagate this exception to MainActivity
+            Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
         }
     }
@@ -147,41 +136,30 @@ public class RecordingService extends Service {
         if (isPaused)
             return;
 
-        isPaused = true;
         mRecorder.stop();
+        isPaused = true;
         mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         pauseDurations.add(mElapsedMillis);
-        Toast.makeText(this, getString(by.naxa.soundrecorder.R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
-        //remove notification
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
-        }
         filesPaused.add(mFilePath);
-
     }
 
     public void stopRecording() {
         if (!isPaused)
             filesPaused.add(mFilePath);
 
-        isFilePathTemp = false;
-        setFileNameAndPath();
+        boolean isTemporary = false;
+        setFileNameAndPath(isTemporary);
 
         if (!isPaused) {
             mRecorder.stop();
             mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
         }
         mRecorder.release();
-        Toast.makeText(this, getString(by.naxa.soundrecorder.R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
         isPaused = false;
-        //remove notification
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
-        }
 
         mRecorder = null;
         if (filesPaused != null && !filesPaused.isEmpty()) {
@@ -193,8 +171,8 @@ public class RecordingService extends Service {
 
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
-
         } catch (Exception e) {
+            Crashlytics.logException(e);
             Log.e(LOG_TAG, "exception", e);
         }
     }
@@ -213,6 +191,7 @@ public class RecordingService extends Service {
                 List<Track> movieTracks = movie.getTracks();
                 tracks.addAll(movieTracks);
             } catch (IOException e) {
+                Crashlytics.logException(e);
                 e.printStackTrace();
                 return false;
             }
@@ -222,19 +201,17 @@ public class RecordingService extends Service {
             try {
                 finalMovie.addTrack(new AppendTrack(tracks.toArray(new Track[tracks.size()])));
             } catch (IOException e) {
+                Crashlytics.logException(e);
                 e.printStackTrace();
             }
         }
-//        try {
-//            finalMovie.addTrack(new AppendTrack((Track) tracks));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
         Container mp4file = new DefaultMp4Builder().build(finalMovie);
         FileChannel fc = null;
         try {
             fc = new FileOutputStream(new File(mFilePath)).getChannel();
         } catch (FileNotFoundException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return false;
         }
@@ -243,6 +220,7 @@ public class RecordingService extends Service {
             fc.close();
             return true;
         } catch (IOException e) {
+            Crashlytics.logException(e);
             e.printStackTrace();
             return false;
         }
