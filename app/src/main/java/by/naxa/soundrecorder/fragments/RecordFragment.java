@@ -243,9 +243,8 @@ public class RecordFragment extends Fragment {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay!
+                if (allPermissionsGranted(grantResults)) {
+                    // permissions were granted, yay!
                     final Intent intent = new Intent(getActivity(), RecordingService.class);
                     startRecording(intent);
                     mStartRecording = false;
@@ -255,8 +254,7 @@ public class RecordFragment extends Fragment {
 
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO_RESUME: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (allPermissionsGranted(grantResults)) {
                     // permission was granted, yay!
                     resumeRecording();
                     mPauseRecording = true;
@@ -264,6 +262,17 @@ public class RecordFragment extends Fragment {
                 break;
             }
         }
+    }
+
+    private boolean allPermissionsGranted(int[] grantResults) {
+        if (grantResults == null || grantResults.length == 0)
+            return false;
+
+        boolean ok = true;
+        for (int grantResult : grantResults) {
+            ok &= (grantResult == PackageManager.PERMISSION_GRANTED);
+        }
+        return ok;
     }
 
 }
