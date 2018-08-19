@@ -40,4 +40,6 @@
     <string name="action_settings">Настройки</string>
     <string name="tab_title_record">Запись</string>
 
+    <string name="image_description_microphone_icon">Иконка микрофона</string>
+
 </resources>

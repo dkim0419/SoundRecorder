@@ -6,6 +6,9 @@
     tools:context="by.naxa.soundrecorder.fragments.FileViewerFragment">
 
     <android.support.v7.widget.RecyclerView
+        tools:listitem="@layout/card_view"
+        tools:itemCount="5"
+
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
