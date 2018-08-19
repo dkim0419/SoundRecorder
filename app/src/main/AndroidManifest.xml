@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +41,10 @@
                 android:resource="@xml/filepaths" />
         </provider>
         <service android:name=".RecordingService" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="@string/fabric_api_key"
+            />
     </application>
 
 </manifest>

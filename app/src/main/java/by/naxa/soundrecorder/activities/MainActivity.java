@@ -15,7 +15,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.fragments.FileViewerFragment;
 import by.naxa.soundrecorder.fragments.RecordFragment;
-
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(true)
+                .build();
+        Fabric.with(fabric);
         setContentView(R.layout.activity_main);
 
         pager = findViewById(R.id.pager);
@@ -35,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
         if (toolbar != null) {
+            toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
             setSupportActionBar(toolbar);
         }
     }
@@ -96,6 +102,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public MainActivity() {
-    }
 }
