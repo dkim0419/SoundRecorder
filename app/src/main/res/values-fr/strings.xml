@@ -21,9 +21,11 @@
     <string name="dialog_title_delete">Confirmation de la suppression…</string>
     <string name="dialog_text_delete">Êtes-vous sûr de vouloir supprimer ce fichier ?</string>
     <string name="dialog_title_licenses">Licences Open Source</string>
+    <string name="dialog_title_share">Partager le fichier</string>
     <string name="dialog_title_rename">Renommer le fichier</string>
     <string name="dialog_title_options">Options</string>
 
+    <string name="dialog_file_share">Partager le fichier</string>
     <string name="dialog_file_rename">Renommer le fichier</string>
     <string name="dialog_file_delete">Supprimer le fichier</string>
     <string name="dialog_action_cancel">Annuler</string>
@@ -37,5 +39,12 @@
     <string name="default_file_name">Enregistrement</string>
     <string name="record_prompt">Appuyez sur le bouton pour démarrer l\'enregistrement</string>
     <string name="record_in_progress">Enregistrement en cours</string>
+
+    <string name="send_to">Envoyer à</string>
+
+    <!-- Preferences -->
+    <string name="pref_high_quality_title">Activer l\'enregistrement Haute Qualité</string>
+    <string name="pref_high_quality_desc">Enregistrer en qualité CD</string>
+    <string name="pref_about_title">À propos</string>
 
 </resources>
