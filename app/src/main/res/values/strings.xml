@@ -16,6 +16,8 @@
     <string name="toast_recording_paused">Recording paused</string>
     <string name="toast_recording_resumed">Recording resumed</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
+    <string name="toast_file_delete_failed">Failed to delete %1$s</string>
+    <string name="toast_file_rename_failed">Failed to rename %1$s</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
 
     <!-- Notifications -->
