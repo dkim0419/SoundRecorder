@@ -4,12 +4,12 @@
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
     <string name="action_licenses">Лицензии</string>
-    <string name="tab_title_saved_recordings">Сохраненные</string>
+    <string name="tab_title_saved_recordings">Сохранённые</string>
 
     <!-- Toasts -->
     <string name="toast_recording_start">Запись началась</string>
     <string name="toast_recording_finish">Запись сохранена в </string>
-    <string name="toast_file_delete">Файл %1$s успешно удален</string>
+    <string name="toast_file_delete">Файл %1$s успешно удалён</string>
     <string name="toast_file_exists">Файл %1$s уже существует. Пожалуйста, выберите другое имя файла.</string>
 
     <!-- Notifications -->
@@ -29,7 +29,7 @@
     <string name="dialog_action_yes">Да</string>
     <string name="dialog_action_no">Нет</string>
 
-    <string name="no_saved_recordings_message">Нет сохраненных записей</string>
+    <string name="no_saved_recordings_message">Нет сохранённых записей</string>
     <string name="pause_recording_button">Пауза</string>
     <string name="resume_recording_button">Продолжить</string>
     <string name="default_file_name">Запись</string>
@@ -41,5 +41,7 @@
     <string name="tab_title_record">Запись</string>
 
     <string name="image_description_microphone_icon">Иконка микрофона</string>
+    <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>
+    <string name="error_no_permission_granted_for_playback">Не могу воспроизвести сохранённую запись без вашего разрешения.</string>
 
 </resources>

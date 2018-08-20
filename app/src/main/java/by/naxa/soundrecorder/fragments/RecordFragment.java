@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -241,6 +242,10 @@ public class RecordFragment extends Fragment {
                     final Intent intent = new Intent(getActivity(), RecordingService.class);
                     startRecording(intent);
                     mStartRecording = false;
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            R.string.error_no_permission_granted_record, Snackbar.LENGTH_SHORT)
+                            .show();
                 }
                 break;
             }
@@ -251,6 +256,10 @@ public class RecordFragment extends Fragment {
                     // permission was granted, yay!
                     resumeRecording();
                     mPauseRecording = true;
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            R.string.error_no_permission_granted_record, Snackbar.LENGTH_LONG)
+                            .show();
                 }
                 break;
             }

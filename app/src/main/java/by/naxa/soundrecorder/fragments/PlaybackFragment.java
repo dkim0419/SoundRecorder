@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
@@ -363,6 +364,10 @@ public class PlaybackFragment extends DialogFragment {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay!
                     startOrResumePlaying();
+                } else {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content),
+                            R.string.error_no_permission_granted_for_playback, Snackbar.LENGTH_LONG)
+                            .show();
                 }
                 break;
             }
