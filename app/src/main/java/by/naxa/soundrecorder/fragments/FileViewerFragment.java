@@ -1,6 +1,7 @@
 package by.naxa.soundrecorder.fragments;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.FileObserver;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,8 +15,6 @@ import android.view.ViewGroup;
 import by.naxa.soundrecorder.Paths;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.adapters.FileViewerAdapter;
-
-import static android.os.Environment.getExternalStorageDirectory;
 
 /**
  * Created by Daniel on 12/23/2014.
@@ -63,14 +62,16 @@ public class FileViewerFragment extends Fragment {
 
     private final FileObserver observer =
             new FileObserver(Paths.combine(
-                    getExternalStorageDirectory(), Paths.SOUND_RECORDER_FOLDER)) {
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                    Paths.SOUND_RECORDER_FOLDER)) {
                 // set up a file observer to watch this directory on sd card
                 @Override
                 public void onEvent(int event, String file) {
                     if (event == FileObserver.DELETE) {
                         // user deletes a recording file out of the app
 
-                        String filePath = Paths.combine(getExternalStorageDirectory(),
+                        final String filePath = Paths.combine(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                                 Paths.SOUND_RECORDER_FOLDER, file);
                         Log.d(LOG_TAG, "File deleted [" + filePath + "]");
 

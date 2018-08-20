@@ -208,20 +208,20 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         //user deletes a saved recording out of the application through another application
     }
 
+    /**
+     * rename a file
+     */
     public void rename(int position, String name) {
-        //rename a file
-
-        String mFilePath = Paths.combine(
-                Environment.getExternalStorageDirectory().getAbsolutePath(),
+        final String mFilePath = Paths.combine(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                 Paths.SOUND_RECORDER_FOLDER, name);
-        File f = new File(mFilePath);
+        final File f = new File(mFilePath);
 
         if (f.exists() && !f.isDirectory()) {
             //file name is not unique, cannot rename file.
             Toast.makeText(mContext,
                     String.format(mContext.getString(R.string.toast_file_exists), name),
                     Toast.LENGTH_SHORT).show();
-
         } else {
             //file name is unique, rename file
             File oldFilePath = new File(getItem(position).getFilePath());

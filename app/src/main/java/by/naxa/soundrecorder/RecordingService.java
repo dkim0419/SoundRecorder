@@ -84,7 +84,8 @@ public class RecordingService extends Service {
     public void setFileNameAndPath(boolean isFilePathTemp) {
         if (isFilePathTemp) {
             mFileName = getString(string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
-            mFilePath = Paths.combine(Environment.getExternalStorageDirectory().getAbsolutePath(),
+            mFilePath = Paths.combine(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     Paths.SOUND_RECORDER_FOLDER, mFileName);
         } else {
             int count = 0;
@@ -97,7 +98,7 @@ public class RecordingService extends Service {
                         getString(string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
 
                 mFilePath = Paths.combine(
-                        Environment.getExternalStorageDirectory().getAbsolutePath(),
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                         Paths.SOUND_RECORDER_FOLDER, mFileName);
 
                 f = new File(mFilePath);

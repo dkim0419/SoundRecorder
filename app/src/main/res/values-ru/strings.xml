@@ -48,5 +48,6 @@
     <string name="image_description_microphone_icon">Иконка микрофона</string>
     <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>
     <string name="error_no_permission_granted_for_playback">Не могу воспроизвести сохранённую запись без вашего разрешения.</string>
+    <string name="error_mkdir">Ошибка! Внешний накопитель (SD карта) не доступен для сохранения записи.</string>
 
 </resources>

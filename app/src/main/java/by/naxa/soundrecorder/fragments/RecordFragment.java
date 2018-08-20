@@ -130,11 +130,11 @@ public class RecordFragment extends Fragment {
         final Intent intent = new Intent(getActivity(), RecordingService.class);
 
         if (start) {
-            if (!PermissionsHelper.checkAndRequestPermissions(this,
-                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+            if (!PermissionsHelper.checkAndRequestPermissions(
+                    this, MY_PERMISSIONS_REQUEST_RECORD_AUDIO) ||
+                    !startRecording(intent)) {
                 return start;
             }
-            startRecording(intent);
         } else {
             //stop recording
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
@@ -156,17 +156,28 @@ public class RecordFragment extends Fragment {
         return !start;
     }
 
-    private void startRecording(Intent intent) {
-        // start recording
+    /**
+     * Start recording
+     */
+    private boolean startRecording(Intent intent) {
+        final File folder = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                Paths.SOUND_RECORDER_FOLDER);
+        if (!folder.exists()) {
+            // a folder for sound recordings doesn't exist -> create the folder
+            boolean ok = Paths.isExternalStorageWritable() && folder.mkdir();
+            if (!ok) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content),
+                        R.string.error_mkdir, Snackbar.LENGTH_LONG)
+                        .show();
+                return false;
+            }
+        }
+
+        // change UI
         mRecordButton.setImageResource(R.drawable.ic_media_stop);
         mPauseButton.setVisibility(View.VISIBLE);
         Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
-        File folder = new File(Environment.getExternalStorageDirectory(),
-                Paths.SOUND_RECORDER_FOLDER);
-        if (!folder.exists()) {
-            //folder /SoundRecorder doesn't exist, create the folder
-            folder.mkdir();
-        }
 
         //start Chronometer
         mChronometer.setBase(SystemClock.elapsedRealtime());
@@ -197,6 +208,7 @@ public class RecordFragment extends Fragment {
         mRecordPromptCount++;
 
         mStartRecording = false;
+        return true;
     }
 
     private boolean onPauseRecord(boolean pause) {
