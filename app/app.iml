@@ -149,7 +149,6 @@
     <orderEntry type="library" name="Gradle: com.android.support:support-core-utils:28.0.0-rc01@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:beta:1.2.9@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:viewpager:28.0.0-rc01@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.melnykov:floatingactionbutton:1.3.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.googlecode.mp4parser:isoparser:1.1.22@jar" level="project" />
     <orderEntry type="library" name="Gradle: io.fabric.sdk.android:fabric:1.4.3@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:design:28.0.0-rc01@aar" level="project" />
@@ -161,7 +160,6 @@
     <orderEntry type="library" scope="TEST" name="Gradle: com.google.code.findbugs:jsr305:2.0.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-compat:28.0.0-rc01@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:answers:1.4.2@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:runner:0.5@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:common:1.1.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.jpardogo.materialtabstrip:library:1.1.1@aar" level="project" />

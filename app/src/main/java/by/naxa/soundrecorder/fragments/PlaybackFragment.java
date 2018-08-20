@@ -7,9 +7,11 @@ import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -18,8 +20,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +112,9 @@ public class PlaybackFragment extends DialogFragment {
         ColorFilter filter = new LightingColorFilter
                 (getResources().getColor(R.color.primary), getResources().getColor(R.color.primary));
         mSeekBar.getProgressDrawable().setColorFilter(filter);
-        mSeekBar.getThumb().setColorFilter(filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mSeekBar.getThumb().setColorFilter(filter);
+        }
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
