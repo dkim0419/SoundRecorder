@@ -15,7 +15,7 @@
     <string name="toast_file_exists">La dosiero %1$s jam ekzistas. Bonvole elektu malsaman dosiernomon.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">Registrado...</string>
+    <string name="notification_recording">Registrado…</string>
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Konfirmo por forigo</string>

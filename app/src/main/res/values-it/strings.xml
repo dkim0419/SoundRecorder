@@ -15,7 +15,7 @@
     <string name="toast_file_exists">Il file %1$s già esiste. Scegliere un nome del file differente.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">Registrazione...</string>
+    <string name="notification_recording">Registrazione…</string>
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Conferma cancellazione</string>

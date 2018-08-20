@@ -15,10 +15,10 @@
     <string name="toast_file_exists">הקובץ %1$s כבר קיים. אנא בחר שם קובץ שונה.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">כעת מקליט...</string>
+    <string name="notification_recording">כעת מקליט…</string>
 
     <!-- Dialogs -->
-    <string name="dialog_title_delete">אמת מחיקה...</string>
+    <string name="dialog_title_delete">אמת מחיקה…</string>
     <string name="dialog_text_delete">האם אתה בטוח כי ברצונך למחוק את קובץ זה?</string>
     <string name="dialog_title_licenses">רשיונות קוד פתוח</string>
     <string name="dialog_title_rename">שנה שם קובץ</string>

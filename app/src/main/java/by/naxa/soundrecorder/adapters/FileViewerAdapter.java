@@ -34,7 +34,7 @@ import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
  * Created by Daniel on 12/29/2014.
  */
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
-    implements OnDatabaseChangedListener {
+        implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
 
@@ -65,11 +65,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         holder.vName.setText(item.getName());
         holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
         holder.vDateAdded.setText(
-            DateUtils.formatDateTime(
-                mContext,
-                item.getTime(),
-                DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR
-            )
+                DateUtils.formatDateTime(
+                        mContext,
+                        item.getTime(),
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_YEAR
+                )
         );
 
         // define an on click listener to open PlaybackFragment
@@ -111,7 +111,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0) {
                             shareFileDialog(holder.getPosition());
-                        } if (item == 1) {
+                        } else if (item == 1) {
                             renameFileDialog(holder.getPosition());
                         } else if (item == 2) {
                             deleteFileDialog(holder.getPosition());
@@ -197,12 +197,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         }
 
         Toast.makeText(
-            mContext,
-            String.format(
-                mContext.getString(R.string.toast_file_delete),
-                getItem(position).getName()
-            ),
-            Toast.LENGTH_SHORT
+                mContext,
+                String.format(
+                        mContext.getString(R.string.toast_file_delete),
+                        getItem(position).getName()
+                ),
+                Toast.LENGTH_SHORT
         ).show();
 
         mDatabase.removeItemWithId(getItem(position).getId());
@@ -250,7 +250,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
     }
 
-    public void renameFileDialog (final int position) {
+    public void renameFileDialog(final int position) {
         // File rename dialog
         AlertDialog.Builder renameFileBuilder = new AlertDialog.Builder(mContext);
 
@@ -276,30 +276,25 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     }
                 });
         renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                new CancelDialogListener());
 
         renameFileBuilder.setView(view);
         AlertDialog alert = renameFileBuilder.create();
         alert.show();
     }
 
-    public void deleteFileDialog (final int position) {
+    private void deleteFileDialog(final int position) {
         // File delete confirm
         AlertDialog.Builder confirmDelete = new AlertDialog.Builder(mContext);
         confirmDelete.setTitle(mContext.getString(R.string.dialog_title_delete));
         confirmDelete.setMessage(mContext.getString(R.string.dialog_text_delete));
         confirmDelete.setCancelable(true);
-        confirmDelete.setPositiveButton(mContext.getString(R.string.dialog_action_yes),
+        confirmDelete.setPositiveButton(mContext.getString(R.string.dialog_action_yes_delete),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             //remove item from database, recyclerview, and storage
                             remove(position);
-
                         } catch (Exception e) {
                             Log.e(LOG_TAG, "exception", e);
                         }
@@ -308,13 +303,16 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     }
                 });
         confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
+                new CancelDialogListener());
 
         AlertDialog alert = confirmDelete.create();
         alert.show();
+    }
+
+    static final class CancelDialogListener implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+        }
     }
 }

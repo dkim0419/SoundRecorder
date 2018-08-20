@@ -19,7 +19,7 @@
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Подтвердите удаление…</string>
-    <string name="dialog_text_delete">Вы уверены, что хотите удалить этот файл?</string>
+    <string name="dialog_text_delete">Вы уверены, что хотите удалить эту запись? \n\n Задумайтесь о последствиях.</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_rename">Переименовать файл</string>
     <string name="dialog_title_options">Опции</string>
@@ -29,6 +29,7 @@
     <string name="dialog_action_cancel">Отмена</string>
     <string name="dialog_action_ok">ОК</string>
     <string name="dialog_action_yes">Да</string>
+    <string name="dialog_action_yes_delete">Да, удалить</string>
     <string name="dialog_action_no">Нет</string>
 
     <string name="no_saved_recordings_message">Нет сохранённых записей</string>

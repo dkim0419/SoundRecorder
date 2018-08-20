@@ -9,14 +9,10 @@ import android.provider.BaseColumns;
 
 import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
 
-import java.util.Comparator;
-
 /**
  * Created by Daniel on 12/29/2014.
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private Context mContext;
-
     private static final String LOG_TAG = "DBHelper";
 
     private static OnDatabaseChangedListener mOnDatabaseChangedListener;
@@ -58,7 +54,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
     }
 
     public static void setOnDatabaseChangedListener(OnDatabaseChangedListener listener) {
@@ -101,18 +96,6 @@ public class DBHelper extends SQLiteOpenHelper {
         int count = c.getCount();
         c.close();
         return count;
-    }
-
-    public Context getContext() {
-        return mContext;
-    }
-
-    public class RecordingComparator implements Comparator<RecordingItem> {
-        public int compare(RecordingItem item1, RecordingItem item2) {
-            Long o1 = item1.getTime();
-            Long o2 = item2.getTime();
-            return o2.compareTo(o1);
-        }
     }
 
     public long addRecording(String recordingName, String filePath, long length) {

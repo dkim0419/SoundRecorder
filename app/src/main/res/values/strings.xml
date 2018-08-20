@@ -25,7 +25,7 @@
 
     <!-- Dialogs -->
     <string name="dialog_title_delete">Confirm Delete…</string>
-    <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
+    <string name="dialog_text_delete">Are you sure you would like to delete this recording? \n\nThis is permanent and cannot be undone.</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_share">Share File</string>
     <string name="dialog_title_rename">Rename File</string>
@@ -37,6 +37,7 @@
     <string name="dialog_action_cancel">Cancel</string>
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>
+    <string name="dialog_action_yes_delete">Yes, delete</string>
     <string name="dialog_action_no">No</string>
 
     <string name="no_saved_recordings_message">No saved recordings</string>

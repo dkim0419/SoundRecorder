@@ -15,10 +15,10 @@
     <string name="toast_file_exists">Tiedosto %1$s on jo olemassa. Valitse jokin toinen tiedostonimi.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">Äänitetään...</string>
+    <string name="notification_recording">Äänitetään…</string>
 
     <!-- Dialogs -->
-    <string name="dialog_title_delete">Vahvista poisto...</string>
+    <string name="dialog_title_delete">Vahvista poisto…</string>
     <string name="dialog_text_delete">Haluatko varmasti poistaa tämän tiedoston?</string>
     <string name="dialog_title_licenses">Avoimen lähdekoodin lisenssit</string>
     <string name="dialog_title_rename">Nimeä tiedosto uudelleen</string>

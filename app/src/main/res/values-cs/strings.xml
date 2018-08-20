@@ -15,10 +15,10 @@
     <string name="toast_file_exists">Soubor %1$s již existuje. Prosím, zvolte jiný název.</string>
 
     <!-- Notifications -->
-    <string name="notification_recording">Nahrávání...</string>
+    <string name="notification_recording">Nahrávání…</string>
 
     <!-- Dialogs -->
-    <string name="dialog_title_delete">Potvrdit smazání...</string>
+    <string name="dialog_title_delete">Potvrdit smazání…</string>
     <string name="dialog_text_delete">Jsi si jistí, že chcete smazat tento soubor?</string>
     <string name="dialog_title_licenses">Open Source Licence</string>
     <string name="dialog_title_rename">Přejmenovat soubor</string>
