@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Toolbar -->
-    <string name="app_name">Sound Recorder</string>
+    <string name="app_name">Диктофон</string>
     <string name="action_licenses">Лицензии</string>
     <string name="tab_title_saved_recordings">Сохранённые</string>
 
@@ -39,6 +39,11 @@
 
     <string name="action_settings">Настройки</string>
     <string name="tab_title_record">Запись</string>
+
+    <!-- Preferences -->
+    <string name="pref_high_quality_title">Включить запись высокого качества</string>
+    <string name="pref_high_quality_desc">Записывать в CD качестве</string>
+    <string name="pref_about_title">О приложении</string>
 
     <string name="image_description_microphone_icon">Иконка микрофона</string>
     <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>

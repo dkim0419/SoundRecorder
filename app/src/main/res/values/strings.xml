@@ -54,6 +54,7 @@
     <string name="pref_about_key">pref_about</string>
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
+
     <string name="image_description_microphone_icon">Microphone icon</string>
     <string name="error_no_permission_granted_record">Can not start sound recording without your permission.</string>
     <string name="error_no_permission_granted_for_playback">Can not play the recording without your permission to access the external storage.</string>
