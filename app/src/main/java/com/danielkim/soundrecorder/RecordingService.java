@@ -229,11 +229,6 @@ public class RecordingService extends Service {
                 e.printStackTrace();
             }
         }
-//        try {
-//            finalMovie.addTrack(new AppendTrack((Track) tracks));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         Container mp4file = new DefaultMp4Builder().build(finalMovie);
         FileChannel fc = null;
         try {
