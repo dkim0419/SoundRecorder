@@ -250,6 +250,7 @@ public class RecordingService extends Service {
 
     public void resumeRecording(){
         isPaused=false;
+        Toast.makeText(this, getString(R.string.toast_recording_resumed), Toast.LENGTH_LONG).show();
         startRecording();
     }
 
