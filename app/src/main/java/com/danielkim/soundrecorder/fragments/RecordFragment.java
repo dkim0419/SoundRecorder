@@ -40,7 +40,7 @@ public class RecordFragment extends Fragment {
 
     //Recording controls
     private FloatingActionButton mRecordButton = null;
-    private Button mPauseButton = null;
+    private FloatingActionButton mPauseButton = null;
 
     private TextView mRecordingPrompt;
     private int mRecordPromptCount = 0;
@@ -97,7 +97,9 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
+        mPauseButton = (FloatingActionButton) recordView.findViewById(R.id.btnPause);
+	    mPauseButton.setColorNormal(getResources().getColor(R.color.primary));
+	    mPauseButton.setColorPressed(getResources().getColor(R.color.primary_dark));
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,16 +197,14 @@ public class RecordFragment extends Fragment {
         if (pause) {
             //pause recording
             mRecordingService.pauseRecording();
-            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
+            mPauseButton.setImageResource(R.drawable.ic_media_play);
+            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button));
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
             //resume recording
             mRecordingService.resumeRecording();
-            mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                    (R.drawable.ic_media_pause ,0 ,0 ,0);
+            mPauseButton.setImageResource(R.drawable.ic_media_pause);
             mRecordingPrompt.setText((String)getString(R.string.record_in_progress).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();

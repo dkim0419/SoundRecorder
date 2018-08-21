@@ -40,12 +40,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <com.melnykov.fab.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnPause"
-        android:drawableLeft="@drawable/ic_media_pause"
-        android:text="@string/pause_recording_button"
+        android:src="@drawable/ic_media_pause"
         android:textAllCaps="true"
         android:fontFamily="sans-serif-condensed"
         android:layout_alignParentLeft="true"
