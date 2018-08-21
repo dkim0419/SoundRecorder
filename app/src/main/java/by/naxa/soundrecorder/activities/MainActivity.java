@@ -2,6 +2,7 @@ package by.naxa.soundrecorder.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -11,8 +12,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.crashlytics.android.Crashlytics;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.fragments.FileViewerFragment;
@@ -23,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private PagerSlidingTabStrip tabs;
+    private TabLayout tabs;
     private ViewPager pager;
 
     @Override
@@ -37,15 +40,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pager = findViewById(R.id.pager);
-        pager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+        setupViewPager(pager);
         tabs = findViewById(R.id.tabs);
-        tabs.setViewPager(pager);
+        tabs.setupWithViewPager(pager);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
             setSupportActionBar(toolbar);
         }
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        final MyAdapter adapter = new MyAdapter(getSupportFragmentManager());
+        adapter.addFragment(RecordFragment.newInstance(), getString(R.string.tab_title_record));
+        adapter.addFragment(FileViewerFragment.newInstance(), getString(R.string.tab_title_saved_recordings));
+        viewPager.setAdapter(adapter);
     }
 
     @Override
@@ -72,34 +82,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public class MyAdapter extends FragmentPagerAdapter {
-        private String[] titles = { getString(R.string.tab_title_record),
-                getString(R.string.tab_title_saved_recordings) };
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> titles = new ArrayList<>();
 
-        public MyAdapter(FragmentManager fm) {
+        MyAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch(position){
-                case 0:{
-                    return RecordFragment.newInstance();
-                }
-                case 1:{
-                    return FileViewerFragment.newInstance();
-                }
-            }
-            return null;
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return titles.length;
+            return titles.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return titles[position];
+            return titles.get(position);
+        }
+
+        void addFragment(Fragment fragment, String title) {
+            fragments.add(fragment);
+            titles.add(title);
         }
     }
 

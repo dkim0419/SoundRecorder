@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_gravity="center_vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    tools:context=".fragments.PlaybackFragment">
 
     <android.support.v7.widget.CardView
         android:id="@+id/mediaplayer_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:cardElevation="3dp"
-        android:transitionName="open_mediaplayer"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:transitionName="open_mediaplayer"
+        app:cardElevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,18 +27,18 @@
                 android:id="@+id/file_name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
+                android:fontFamily="sans-serif-condensed"
                 android:text="file_name.mp4"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-condensed"/>
+                android:textSize="18sp" />
 
             <SeekBar
                 android:id="@+id/seekbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -45,13 +46,13 @@
 
                 <TextView
                     android:id="@+id/current_progress_text_view"
-                    android:text="00:00"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="00:00" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fab_play"
@@ -66,13 +67,13 @@
 
                 <TextView
                     android:id="@+id/file_length_text_view"
-                    android:text="00:00"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_marginRight="10dp"
+                    android:text="00:00" />
 
             </RelativeLayout>
 
