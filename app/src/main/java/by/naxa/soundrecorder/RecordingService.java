@@ -6,6 +6,7 @@ import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class RecordingService extends Service {
     private long mStartingTimeMillis = 0;
     private long mElapsedMillis = 0;
 
-    private boolean isPaused;
+    private RecorderState state = RecorderState.STOPPED;
     private int tempFileCount = 0;
 
     private ArrayList<String> filesPaused = new ArrayList<>();
@@ -69,6 +70,7 @@ public class RecordingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startRecording();
+        // We want this service to continue running until it is explicitly stopped, so return sticky
         return START_STICKY;
     }
 
@@ -106,10 +108,17 @@ public class RecordingService extends Service {
         }
     }
 
+    /**
+     * Start or resume sound recording.
+     */
     public void startRecording() {
+        if (state == RecorderState.RECORDING)
+            return;
+
         boolean isTemporary = true;
         setFileNameAndPath(isTemporary);
 
+        // Configure the MediaRecorder for a new recording
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -124,8 +133,8 @@ public class RecordingService extends Service {
         try {
             mRecorder.prepare();
             mRecorder.start();
-            isPaused = false;
-            mStartingTimeMillis = System.currentTimeMillis();
+            state = RecorderState.RECORDING;
+            mStartingTimeMillis = SystemClock.elapsedRealtime();
         } catch (IOException e) {
             // TODO propagate this exception to MainActivity
             Crashlytics.logException(e);
@@ -134,12 +143,12 @@ public class RecordingService extends Service {
     }
 
     public void pauseRecording() {
-        if (isPaused)
+        if (state != RecorderState.RECORDING)
             return;
 
         mRecorder.stop();
-        isPaused = true;
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        state = RecorderState.PAUSED;
+        mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
         pauseDurations.add(mElapsedMillis);
         Toast.makeText(this, getString(string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
@@ -147,22 +156,22 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        if (!isPaused)
+        if (state != RecorderState.PAUSED)
             filesPaused.add(mFilePath);
 
         boolean isTemporary = false;
         setFileNameAndPath(isTemporary);
 
-        if (!isPaused) {
+        if (state == RecorderState.RECORDING) {
             mRecorder.stop();
-            mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+            mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
         }
         mRecorder.release();
+        mRecorder = null;
         Toast.makeText(this, getString(string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
-        isPaused = false;
+        state = RecorderState.STOPPED;
 
-        mRecorder = null;
         if (filesPaused != null && !filesPaused.isEmpty()) {
             if (makeSingleFile(filesPaused)) {
                 for (long duration : pauseDurations)
@@ -228,9 +237,31 @@ public class RecordingService extends Service {
 
     }
 
-    public void resumeRecording() {
-        isPaused = false;
-        startRecording();
+    public long getElapsedMillis() {
+        return mElapsedMillis;
+    }
+
+    public long getStartingTimeMillis() {
+        return mStartingTimeMillis;
+    }
+
+    public long getTotalDurationMillis() {
+        long total = 0;
+        if (pauseDurations == null || pauseDurations.isEmpty()) {
+            total += mElapsedMillis;
+        } else {
+            for (long duration : pauseDurations)
+                total += duration;
+        }
+        if (state == RecorderState.RECORDING) {
+            total += (SystemClock.elapsedRealtime() - mStartingTimeMillis);
+        }
+
+        return total;
+    }
+
+    public RecorderState getState() {
+        return state;
     }
 
     /**
