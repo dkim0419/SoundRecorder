@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import by.naxa.soundrecorder.DBHelper;
-import by.naxa.soundrecorder.Paths;
+import by.naxa.soundrecorder.util.Paths;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.fragments.PlaybackFragment;

@@ -1,4 +1,4 @@
-package by.naxa.soundrecorder;
+package by.naxa.soundrecorder.util;
 
 import android.Manifest;
 import android.content.Context;

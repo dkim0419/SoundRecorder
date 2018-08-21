@@ -1,4 +1,4 @@
-package by.naxa.soundrecorder;
+package by.naxa.soundrecorder.util;
 
 import android.os.Environment;
 
@@ -34,6 +34,12 @@ public class Paths {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
+    public static double getFreeStorageSpacePercent() {
+        long freespace = Environment.getExternalStorageDirectory().getFreeSpace();
+        long totalspace = Environment.getExternalStorageDirectory().getTotalSpace();
+        return (freespace * 100.0) / (double) totalspace;
     }
 
 }

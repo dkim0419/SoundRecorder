@@ -40,7 +40,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-        <service android:name=".RecordingService" />
+        <service android:name=".services.RecordingService" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="@string/fabric_api_key"

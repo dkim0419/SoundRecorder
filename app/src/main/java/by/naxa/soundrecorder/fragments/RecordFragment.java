@@ -26,9 +26,9 @@ import java.io.File;
 
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
-import by.naxa.soundrecorder.RecordingService;
-import by.naxa.soundrecorder.Paths;
-import by.naxa.soundrecorder.PermissionsHelper;
+import by.naxa.soundrecorder.services.RecordingService;
+import by.naxa.soundrecorder.util.Paths;
+import by.naxa.soundrecorder.util.PermissionsHelper;
 
 /**
  * A simple {@link Fragment} subclass.

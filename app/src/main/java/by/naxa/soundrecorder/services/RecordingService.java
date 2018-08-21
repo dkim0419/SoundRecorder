@@ -1,4 +1,4 @@
-package by.naxa.soundrecorder;
+package by.naxa.soundrecorder.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -26,6 +26,11 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+
+import by.naxa.soundrecorder.DBHelper;
+import by.naxa.soundrecorder.RecorderState;
+import by.naxa.soundrecorder.util.MySharedPreferences;
+import by.naxa.soundrecorder.util.Paths;
 
 import static by.naxa.soundrecorder.R.string;
 
