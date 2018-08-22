@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
 import com.crashlytics.android.Crashlytics;
-import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import by.naxa.soundrecorder.DBHelper;
 import by.naxa.soundrecorder.RecorderState;
@@ -51,7 +51,7 @@ public class RecordingService extends Service {
     private long mStartingTimeMillis = 0;
     private long mElapsedMillis = 0;
 
-    private RecorderState state = RecorderState.STOPPED;
+    private volatile RecorderState state = RecorderState.STOPPED;
     private int tempFileCount = 0;
 
     private ArrayList<String> filesPaused = new ArrayList<>();
@@ -161,21 +161,30 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        if (state != RecorderState.PAUSED)
+        if (state == RecorderState.STOPPED) {
+            Log.wtf(LOG_TAG, "stopRecording: already STOPPED.");
+            return;
+        }
+        if (state == RecorderState.RECORDING)
             filesPaused.add(mFilePath);
 
         boolean isTemporary = false;
         setFileNameAndPath(isTemporary);
 
-        if (state == RecorderState.RECORDING) {
-            mRecorder.stop();
-            mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
+        try {
+            if (state != RecorderState.PAUSED)
+                mRecorder.stop();
+            mRecorder.release();
+            Toast.makeText(this, getString(string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+        } catch (RuntimeException exc) {
+            Crashlytics.logException(exc);
+            exc.printStackTrace();
+        } finally {
+            if (state != RecorderState.PAUSED)
+                mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
+            mRecorder = null;
+            state = RecorderState.STOPPED;
         }
-        mRecorder.release();
-        mRecorder = null;
-        Toast.makeText(this, getString(string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
-
-        state = RecorderState.STOPPED;
 
         if (filesPaused != null && !filesPaused.isEmpty()) {
             if (makeSingleFile(filesPaused)) {
@@ -202,44 +211,61 @@ public class RecordingService extends Service {
         Movie finalMovie = new Movie();
         for (String filePath : filesPaused) {
             try {
-                Movie movie = MovieCreator.build(new FileDataSourceImpl(filePath));
+                Movie movie = MovieCreator.build(filePath);
                 List<Track> movieTracks = movie.getTracks();
                 tracks.addAll(movieTracks);
             } catch (IOException e) {
                 Crashlytics.logException(e);
                 e.printStackTrace();
                 return false;
+            } catch (NullPointerException exc) {
+                Crashlytics.logException(exc);
+                Log.wtf(LOG_TAG, "Caught NPE from MovieCreator#build()");
             }
         }
 
         if (tracks.size() > 0) {
             try {
-                finalMovie.addTrack(new AppendTrack(tracks.toArray(new Track[tracks.size()])));
+                finalMovie.addTrack(new AppendTrack(tracks.toArray(new Track[0])));
             } catch (IOException e) {
                 Crashlytics.logException(e);
                 e.printStackTrace();
             }
         }
 
-        Container mp4file = new DefaultMp4Builder().build(finalMovie);
-        FileChannel fc = null;
+        final Container mp4file;
+        final FileChannel fc;
         try {
+            mp4file = new DefaultMp4Builder().build(finalMovie);
             fc = new FileOutputStream(new File(mFilePath)).getChannel();
+        } catch (NoSuchElementException exc) {
+            Crashlytics.logException(exc);
+            Log.wtf(LOG_TAG, "Caught NoSuchElementException from DefaultMp4Builder#build()", exc);
+            return false;
         } catch (FileNotFoundException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
             return false;
         }
+
+        boolean ok = true;
         try {
             mp4file.writeContainer(fc);
-            fc.close();
-            return true;
         } catch (IOException e) {
             Crashlytics.logException(e);
             e.printStackTrace();
-            return false;
+            ok = false;
+        } finally {
+            try {
+                fc.close();
+            } catch (IOException exc) {
+                Crashlytics.logException(exc);
+                exc.printStackTrace();
+                ok = false;
+            }
         }
 
+        return ok;
     }
 
     public long getElapsedMillis() {
