@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,11 +22,14 @@ import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
+import by.naxa.soundrecorder.util.AudioManagerCompat;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
@@ -51,11 +55,26 @@ public class PlaybackFragment extends DialogFragment {
     private TextView mFileLengthTextView = null;
 
     //stores whether or not the mediaplayer is currently playing audio
-    private boolean isPlaying = false;
+    private volatile boolean isPlaying = false;
 
     //stores minutes and seconds of the length of the file.
     long minutes = 0;
     long seconds = 0;
+
+    /**
+     * Whether this PlaybackFragment has focus from {@link AudioManager} to play audio
+     * @see #requestAudioFocus()
+     * @see #abandonAudioFocus()
+     */
+    private boolean mFocused = false;
+    /**
+     * Whether playback should continue once {@link AudioManager} returns focus to this PlaybackFragment
+     */
+    private boolean mResumeOnFocusGain = false;
+    /**
+     * The volume scalar to set when {@link AudioManager} causes this PlaybackFragment to duck
+     */
+    private static final float DUCK_VOLUME = 0.2f;
 
     public PlaybackFragment newInstance(RecordingItem item) {
         PlaybackFragment f = new PlaybackFragment();
@@ -225,6 +244,7 @@ public class PlaybackFragment extends DialogFragment {
         } else {
             //pause the MediaPlayer
             pausePlaying();
+            abandonAudioFocus();
         }
         return !isPlaying;
     }
@@ -244,8 +264,10 @@ public class PlaybackFragment extends DialogFragment {
 
         try {
             mMediaPlayer.setDataSource(item.getFilePath());
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
             mSeekBar.setMax(mMediaPlayer.getDuration());
+            requestAudioFocus();
 
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -254,6 +276,7 @@ public class PlaybackFragment extends DialogFragment {
                 }
             });
         } catch (IOException e) {
+            Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
         }
 
@@ -277,9 +300,11 @@ public class PlaybackFragment extends DialogFragment {
 
         try {
             mMediaPlayer.setDataSource(item.getFilePath());
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.prepare();
             mSeekBar.setMax(mMediaPlayer.getDuration());
             mMediaPlayer.seekTo(progress);
+            requestAudioFocus();
 
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -289,6 +314,7 @@ public class PlaybackFragment extends DialogFragment {
             });
 
         } catch (IOException e) {
+            Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
         }
 
@@ -296,26 +322,51 @@ public class PlaybackFragment extends DialogFragment {
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    /**
+     * Pauses audio playback
+     */
     private void pausePlaying() {
+        Log.i(LOG_TAG, "pausePlaying(), isPlaying = " + isPlaying);
+        mResumeOnFocusGain = false;
         if (!isPlaying)
             return;
+
         mPlayButton.setImageResource(R.drawable.ic_media_play);
         mHandler.removeCallbacks(mRunnable);
-        if (mMediaPlayer != null)
+        if (mMediaPlayer != null) {
             mMediaPlayer.pause();
+        } else {
+            Log.wtf(LOG_TAG, "mMediaPlayer is null");
+        }
     }
 
+    /**
+     * Resumes audio playback
+     */
     private void resumePlaying() {
+        Log.i(LOG_TAG, "resumePlaying(), isPlaying = " + isPlaying);
         if (isPlaying)
             return;
+
         mPlayButton.setImageResource(R.drawable.ic_media_pause);
         mHandler.removeCallbacks(mRunnable);
-        if (mMediaPlayer != null)
-            mMediaPlayer.start();
+        if (mMediaPlayer != null) {
+            if (requestAudioFocus())
+                mMediaPlayer.start();
+        } else {
+            Log.wtf(LOG_TAG, "mMediaPlayer is null");
+        }
         updateSeekBar();
     }
 
+    /**
+     * Stops audio playback
+     */
     private void stopPlaying() {
+        Log.i(LOG_TAG, "stopPlaying()");
+        if (mMediaPlayer == null)
+            return;
+
         mPlayButton.setImageResource(R.drawable.ic_media_play);
         mHandler.removeCallbacks(mRunnable);
         mMediaPlayer.stop();
@@ -323,8 +374,9 @@ public class PlaybackFragment extends DialogFragment {
         mMediaPlayer.release();
         mMediaPlayer = null;
 
-        mSeekBar.setProgress(mSeekBar.getMax());
-        isPlaying = !isPlaying;
+        abandonAudioFocus();
+
+        isPlaying = false;
 
         mCurrentProgressTextView.setText(mFileLengthTextView.getText());
         mSeekBar.setProgress(mSeekBar.getMax());
@@ -332,6 +384,72 @@ public class PlaybackFragment extends DialogFragment {
         //allow the screen to turn off again once audio is finished playing
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+
+    /**
+     * Gain Audio focus from the system if we don't already have it
+     * @return whether we have gained focus (or already had it)
+     */
+    private boolean requestAudioFocus() {
+        if (!mFocused) {
+            mFocused = AudioManagerCompat.getInstance(getContext())
+                    .requestAudioFocus(focusChangeListener,
+                            AudioManager.STREAM_MUSIC,
+                            AudioManager.AUDIOFOCUS_GAIN);
+        }
+        return mFocused;
+    }
+
+    private int abandonAudioFocus() {
+        final int result = AudioManagerCompat.getInstance(getContext()).abandonAudioFocus(focusChangeListener);
+        mFocused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        return result;
+    }
+
+    private final AudioManager.OnAudioFocusChangeListener focusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            Log.d(LOG_TAG, "AudioManager.OnAudioFocusChangeListener#onAudioFocusChange " + focusChange);
+
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    Log.i(LOG_TAG, "AudioManager.AUDIOFOCUS_LOSS: Pausing playback.");
+                    mFocused = false;
+                    pausePlaying();
+                    isPlaying = false;
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    Log.i(LOG_TAG, "AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: Pausing playback.");
+                    boolean resume = isPlaying || mResumeOnFocusGain;
+                    mFocused = false;
+                    pausePlaying();
+                    isPlaying = false;
+                    mResumeOnFocusGain = resume;
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        Log.i(LOG_TAG, "AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: Letting system duck.");
+                    } else {
+                        Log.i(LOG_TAG, "AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: Ducking.");
+                        if (mMediaPlayer != null) {
+                            mMediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+                        }
+                    }
+                    break;
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    Log.i(LOG_TAG, "AudioManager.AUDIOFOCUS_GAIN: Increasing volume");
+                    mMediaPlayer.setVolume(1f, 1f);
+                    if (mResumeOnFocusGain) {
+                        resumePlaying();
+                        isPlaying = true;
+                    }
+                    mResumeOnFocusGain = false;
+                    break;
+                default:
+                    Log.i(LOG_TAG, "Ignoring AudioFocus state change");
+                    break;
+            }
+        }
+    };
 
     //updating mSeekBar
     private Runnable mRunnable = new Runnable() {
