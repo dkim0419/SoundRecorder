@@ -3,6 +3,9 @@ package by.naxa.soundrecorder.fragments;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
@@ -29,11 +32,20 @@ import java.util.concurrent.TimeUnit;
 
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
+import by.naxa.soundrecorder.listeners.HeadsetListener;
 import by.naxa.soundrecorder.util.AudioManagerCompat;
 
+import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
+import static android.media.AudioManager.ACTION_HEADSET_PLUG;
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 /**
+ * Implementation of a MediaPlayer inside DialogFragment.
+ *
+ * System integration is implemented by handling Audio Focus through {@link AudioManager}
+ * and with a {@link HeadsetListener} -- an implementation of
+ * {@link BroadcastReceiver} that pauses playback when headphones are disconnected.
+ *
  * Created by Daniel on 1/1/2015.
  */
 public class PlaybackFragment extends DialogFragment {
@@ -45,6 +57,7 @@ public class PlaybackFragment extends DialogFragment {
     private RecordingItem item;
 
     private Handler mHandler = new Handler();
+    private HeadsetListener mHeadsetListener;
 
     private MediaPlayer mMediaPlayer = null;
 
@@ -55,7 +68,7 @@ public class PlaybackFragment extends DialogFragment {
     private TextView mFileLengthTextView = null;
 
     //stores whether or not the mediaplayer is currently playing audio
-    private volatile boolean isPlaying = false;
+    public volatile boolean isPlaying = false;
 
     //stores minutes and seconds of the length of the file.
     long minutes = 0;
@@ -178,6 +191,8 @@ public class PlaybackFragment extends DialogFragment {
             }
         });
 
+        attachHeadsetListener();
+
         mPlayButton = view.findViewById(R.id.fab_play);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,6 +210,37 @@ public class PlaybackFragment extends DialogFragment {
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         return builder.create();
+    }
+
+    /**
+     * Attach a HeadsetListener to respond to headset events.
+     */
+    private void attachHeadsetListener() {
+        mHeadsetListener = new HeadsetListener(this);
+        IntentFilter filter = new IntentFilter();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            filter.addAction(ACTION_HEADSET_PLUG);
+        }
+        filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
+        final Context context = getContext();
+        if (context != null) {
+            context.registerReceiver(mHeadsetListener, filter);
+        } else {
+            Log.wtf(LOG_TAG, "attachHeadsetListener(): getContext() returned null.");
+        }
+    }
+
+    /**
+     * Detach a HeadsetListener to respond to headset events.
+     */
+    private void detachHeadsetListener() {
+        final Context context = getContext();
+        if (context != null) {
+            context.unregisterReceiver(mHeadsetListener);
+        } else {
+            Log.wtf(LOG_TAG, "attachHeadsetListener(): getContext() returned null.");
+        }
+        mHeadsetListener = null;
     }
 
     @Override
@@ -228,10 +274,13 @@ public class PlaybackFragment extends DialogFragment {
         if (mMediaPlayer != null) {
             stopPlaying();
         }
+        if (mHeadsetListener != null) {
+            detachHeadsetListener();
+        }
     }
 
     // Play start/stop
-    private boolean onPlay(boolean isPlaying) {
+    public boolean onPlay(boolean isPlaying) {
         if (!isPlaying) {
             if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted -> request the permission
@@ -400,8 +449,17 @@ public class PlaybackFragment extends DialogFragment {
     }
 
     private int abandonAudioFocus() {
-        final int result = AudioManagerCompat.getInstance(getContext()).abandonAudioFocus(focusChangeListener);
+        final int result;
+
+        final Context context = getContext();
+        if (context == null) {
+            Log.wtf(LOG_TAG, "abandonAudioFocus(): getContext() returned null.");
+            result = AudioManager.AUDIOFOCUS_REQUEST_FAILED;
+        } else {
+            result = AudioManagerCompat.getInstance(context).abandonAudioFocus(focusChangeListener);
+        }
         mFocused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+
         return result;
     }
 
