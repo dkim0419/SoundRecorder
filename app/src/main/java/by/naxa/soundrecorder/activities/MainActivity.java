@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
-            toolbar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light);
             setSupportActionBar(toolbar);
         }
     }

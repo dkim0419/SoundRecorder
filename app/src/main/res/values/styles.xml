@@ -12,4 +12,11 @@
     <style name="AppTheme" parent="AppTheme.Base">
     </style>
 
+    <style name="Widget.AppTheme.Toolbar.Solid" parent="Widget.AppCompat.ActionBar">
+    </style>
+
+    <style name="ThemeOverlay.AppTheme.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
 </resources>

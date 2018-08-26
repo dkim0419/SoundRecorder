@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/prefs_section_record" />
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/pref_high_quality_key"
         android:title="@string/pref_high_quality_title"
         android:summary="@string/pref_high_quality_desc"/>
+
+    <PreferenceCategory
+        android:title="@string/prefs_section_advanced"/>
     <Preference
         android:key="@string/pref_about_key"
         android:title="@string/pref_about_title"
         android:summary="@string/pref_about_desc"/>
+
 </PreferenceScreen>

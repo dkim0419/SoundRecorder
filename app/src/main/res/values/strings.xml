@@ -57,6 +57,8 @@
     <string name="pref_about_key" translatable="false">pref_about</string>
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
+    <string name="prefs_section_record">Record</string>
+    <string name="prefs_section_advanced">Advanced</string>
 
     <string name="image_description_microphone_icon">Microphone icon</string>
     <string name="error_no_permission_granted_record">Can not start sound recording without your permission.</string>
