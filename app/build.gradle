@@ -29,6 +29,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.+'
     implementation 'com.android.support:design:28.0.+'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+    implementation 'com.budiyev.android:circular-progress-bar:1.2.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

@@ -22,6 +22,8 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.budiyev.android.circularprogressbar.CircularProgressBar;
+
 import java.io.File;
 
 import by.naxa.soundrecorder.R;
@@ -47,6 +49,9 @@ public class RecordFragment extends Fragment {
     private Button mPauseButton = null;
     private boolean isRecordButtonInState1 = true;  // true = record, false = stop
     private boolean isPauseButtonInState1 = true;   // true = pause, false = resume
+
+    // ProgressBar around Chronometer
+    private CircularProgressBar mProgressBar;
 
     private TextView mRecordingPrompt;
     private int mRecordPromptCount = 0;
@@ -95,6 +100,7 @@ public class RecordFragment extends Fragment {
         mRecordButton = recordView.findViewById(R.id.btnRecord);
         mRecordButton.setOnClickListener(createRecordButtonClickListener());
 
+        mProgressBar = recordView.findViewById(R.id.recordProgressBar);
         mPauseButton = recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
         mPauseButton.setOnClickListener(createPauseButtonClickListener());
@@ -179,6 +185,8 @@ public class RecordFragment extends Fragment {
                 mChronometer.setOnChronometerTickListener(null);
                 mChronometer.setBase(SystemClock.elapsedRealtime());
                 mChronometer.stop();
+
+                mProgressBar.setIndeterminate(false);
                 break;
 
             case RECORDING:
@@ -195,6 +203,8 @@ public class RecordFragment extends Fragment {
                 mChronometer.setBase(chronometerBaseTime);
                 mChronometer.setOnChronometerTickListener(listener);
                 mChronometer.start();
+
+                mProgressBar.setIndeterminate(true);
                 break;
 
             case PAUSED:
@@ -211,6 +221,8 @@ public class RecordFragment extends Fragment {
                 mChronometer.setOnChronometerTickListener(null);
                 mChronometer.setBase(chronometerBaseTime);
                 mChronometer.stop();
+
+                mProgressBar.setIndeterminate(false);
                 break;
         }
     }

@@ -21,28 +21,37 @@
         app:srcCompat="@drawable/ic_mic_white_36dp" />
 
     <Chronometer
+        android:id="@+id/chronometer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/chronometer"
-        android:textSize="60sp"
-        android:fontFamily="sans-serif-light"
         android:layout_alignBottom="@+id/recordProgressBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="64dp" />
+        android:layout_marginBottom="57dp"
+        android:fontFamily="sans-serif-light"
+        android:textSize="60sp" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
+    <com.budiyev.android.circularprogressbar.CircularProgressBar
         android:id="@+id/recordProgressBar"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:progressDrawable="@drawable/record_progress_bar"
-        android:background="@drawable/record_progress_bar_background"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
+        app:indeterminate="false"
+        app:maximum="100"
+        app:progress="100"
         android:layout_marginTop="27dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        app:animateProgress="true"
+        app:backgroundStrokeColor="@color/white"
+        app:backgroundStrokeWidth="5dp"
+        app:drawBackgroundStroke="true"
+        app:foregroundStrokeCap="round"
+        app:foregroundStrokeColor="@color/primary"
+        app:foregroundStrokeWidth="2.5dp"
+        app:indeterminateMinimumAngle="45"
+        app:indeterminateRotationAnimationDuration="60000"
+        app:indeterminateSweepAnimationDuration="1000"
+        app:progressAnimationDuration="100"
+        app:startAngle="270" />
 
     <Button
         android:layout_width="wrap_content"
@@ -60,16 +69,17 @@
         android:layout_marginStart="16dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/recording_status_text"
-        android:text="@string/record_prompt"
-        android:textStyle="bold"
-        android:textSize="17sp"
-        android:textColor="#000000"
-        android:fontFamily="sans-serif-condensed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/btnRecord"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp" />
+        android:layout_below="@+id/recordProgressBar"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/record_prompt"
+        android:textColor="#000000"
+        android:textSize="17sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>
