@@ -22,9 +22,7 @@
             android:layout_height="wrap_content"
             android:elevation="4dp"
             app:tabIndicatorColor="@color/tab_strip"
-            app:tabIndicatorHeight="@dimen/tab_indicator_height"
-            app:tabGravity="fill"
-            app:tabMode="fixed" />
+            app:tabIndicatorHeight="@dimen/tab_indicator_height" />
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
