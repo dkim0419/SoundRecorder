@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="by.naxa.soundrecorder" >
+    package="by.naxa.soundrecorder">
 
     <uses-feature android:name="android.hardware.microphone" android:required="true"/>
     <uses-feature android:name="android.hardware.audio.output" android:required="false"/>
@@ -14,11 +14,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -29,15 +28,15 @@
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
-            android:screenOrientation="portrait"
             android:label="@string/action_settings"
+            android:exported="false"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="by.naxa.soundrecorder.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
@@ -45,11 +44,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
         <service android:name=".services.RecordingService" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="@string/fabric_api_key"
-            />
+            android:value="@string/fabric_api_key" />
     </application>
 
 </manifest>

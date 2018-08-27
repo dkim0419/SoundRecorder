@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import by.naxa.soundrecorder.BuildConfig;
 import by.naxa.soundrecorder.DBHelper;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
@@ -243,15 +245,19 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         }
     }
 
-    public void shareFileDialog(int position) {
+    private void shareFileDialog(int position) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(getItem(position).getFilePath())));
+        final Uri uri = FileProvider.getUriForFile(mContext,
+                BuildConfig.APPLICATION_ID + ".fileprovider",
+                new File(getItem(position).getFilePath()));
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         shareIntent.setType("audio/mp4");
         mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
     }
 
-    public void renameFileDialog(final int position) {
+    private void renameFileDialog(final int position) {
         // File rename dialog
         AlertDialog.Builder renameFileBuilder = new AlertDialog.Builder(mContext);
 
