@@ -12,9 +12,6 @@
     <style name="AppTheme" parent="AppTheme.Base">
     </style>
 
-    <style name="Widget.AppTheme.Toolbar.Solid" parent="Widget.MaterialComponents.Toolbar">
-    </style>
-
     <style name="ThemeOverlay.AppTheme.ActionBar" parent="ThemeOverlay.MaterialComponents.ActionBar">
         <item name="android:textColorPrimary">@color/white</item>
     </style>

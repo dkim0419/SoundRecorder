@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import by.naxa.soundrecorder.BuildConfig;
 import by.naxa.soundrecorder.R;

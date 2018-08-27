@@ -9,7 +9,7 @@ import java.util.List;
 
 import by.naxa.soundrecorder.fragments.RecordFragment;
 
-import static android.support.v4.content.ContextCompat.checkSelfPermission;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class PermissionsHelper {
     public static boolean checkAndRequestPermissions(RecordFragment fragment, int permissionsRequestId) {

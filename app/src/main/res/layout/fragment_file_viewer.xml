@@ -5,7 +5,7 @@
     android:layout_height="fill_parent"
     tools:context=".fragments.FileViewerFragment">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         tools:listitem="@layout/card_view"
         tools:itemCount="5"
 
