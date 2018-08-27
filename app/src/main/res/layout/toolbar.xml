@@ -9,4 +9,4 @@
     app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
     android:theme="@style/ThemeOverlay.AppTheme.ActionBar"
     style="@style/Widget.AppTheme.Toolbar.Solid"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />

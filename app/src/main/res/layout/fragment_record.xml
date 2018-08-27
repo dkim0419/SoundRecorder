@@ -12,11 +12,12 @@
         android:id="@+id/btnRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/primary"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        app:backgroundTint="@color/primary"
+        app:elevation="6dp"
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_mic_white_36dp" />
 
@@ -53,20 +54,21 @@
         app:progressAnimationDuration="100"
         app:startAngle="270" />
 
-    <Button
+    <android.support.design.button.MaterialButton
+        android:id="@+id/btnPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnPause"
-        android:drawableLeft="@drawable/ic_media_pause"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="16dp"
+        android:icon="@drawable/ic_media_pause"
+        android:fontFamily="sans-serif-condensed"
         android:text="@string/pause_recording_button"
         android:textAllCaps="true"
-        android:fontFamily="sans-serif-condensed"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"/>
+        app:elevation="2dp" />
 
     <TextView
         android:id="@+id/recording_status_text"

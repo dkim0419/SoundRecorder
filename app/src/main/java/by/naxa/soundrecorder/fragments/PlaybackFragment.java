@@ -1,7 +1,6 @@
 package by.naxa.soundrecorder.fragments;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,7 +16,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -48,7 +48,7 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
  *
  * Created by Daniel on 1/1/2015.
  */
-public class PlaybackFragment extends DialogFragment {
+public class PlaybackFragment extends AppCompatDialogFragment {
 
     private static final String LOG_TAG = "PlaybackFragment";
     private static final String ARG_ITEM = "recording_item";
