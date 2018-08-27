@@ -78,7 +78,7 @@
         android:layout_below="@+id/recordProgressBar"
         android:layout_margin="16dp"
         android:fontFamily="sans-serif-condensed"
-        android:gravity="center"
+        android:gravity="center|bottom"
         android:text="@string/record_prompt"
         android:textAlignment="center"
         android:textColor="@color/primary_text"

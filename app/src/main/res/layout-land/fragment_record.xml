@@ -78,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/btnRecord"
+        android:layout_alignParentRight="true"
         android:layout_toRightOf="@+id/recordProgressBar"
         android:gravity="center"
         android:textAlignment="center"

@@ -19,13 +19,24 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
+            style="@style/Widget.MaterialComponents.TabLayout.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary"
             app:elevation="4dp"
+            app:tabGravity="fill"
             app:tabIndicatorColor="@color/tab_strip"
             app:tabIndicatorHeight="@dimen/tab_indicator_height"
-            app:tabTextColor="@color/white" />
+            app:tabMode="fixed">
+
+            <!-- TabItem is a special 'view' which allows you to declare tab items for a TabLayout
+                within a layout. This view is not actually added to TabLayout, it is just a dummy
+                which allows setting of a tab items's text, icon and custom layout. -->
+            <com.google.android.material.tabs.TabItem
+                android:text="@string/tab_title_record" />
+            <com.google.android.material.tabs.TabItem
+                android:text="@string/tab_title_saved_recordings" />
+        </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
