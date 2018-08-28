@@ -12,10 +12,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:inputType="text"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:focusedByDefault="true"
         android:maxLines="1" />
 
     <TextView
         android:text=".mp4"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
