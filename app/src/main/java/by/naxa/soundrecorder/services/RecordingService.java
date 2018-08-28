@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import by.naxa.soundrecorder.DBHelper;
+import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
+import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.MySharedPreferences;
 import by.naxa.soundrecorder.util.Paths;
-
-import static by.naxa.soundrecorder.R.string;
 
 /**
  * Created by Daniel on 12/28/2014.
@@ -90,7 +90,7 @@ public class RecordingService extends Service {
 
     public void setFileNameAndPath(boolean isFilePathTemp) {
         if (isFilePathTemp) {
-            mFileName = getString(string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
+            mFileName = getString(R.string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
             mFilePath = Paths.combine(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     Paths.SOUND_RECORDER_FOLDER, mFileName);
@@ -102,7 +102,7 @@ public class RecordingService extends Service {
                 ++count;
 
                 mFileName =
-                        getString(string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
+                        getString(R.string.default_file_name) + "_" + (mDatabase.getCount() + count) + ".mp4";
 
                 mFilePath = Paths.combine(
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
@@ -139,11 +139,16 @@ public class RecordingService extends Service {
             mRecorder.prepare();
             mRecorder.start();
             state = RecorderState.RECORDING;
+            Toast.makeText(this, R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
             mStartingTimeMillis = SystemClock.elapsedRealtime();
         } catch (IOException e) {
-            // TODO propagate this exception to MainActivity
             Crashlytics.logException(e);
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, "prepare() failed", e);
+            EventBroadcaster.send(this, getString(R.string.error_unknown));
+        } catch (IllegalStateException e) {
+            Crashlytics.logException(e);
+            Log.e(LOG_TAG, "start() failed", e);
+            EventBroadcaster.send(this, getString(R.string.error_mic_is_busy));
         }
     }
 
@@ -155,7 +160,7 @@ public class RecordingService extends Service {
         state = RecorderState.PAUSED;
         mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
         pauseDurations.add(mElapsedMillis);
-        Toast.makeText(this, getString(string.toast_recording_paused), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
         filesPaused.add(mFilePath);
     }
@@ -175,7 +180,7 @@ public class RecordingService extends Service {
             if (state != RecorderState.PAUSED)
                 mRecorder.stop();
             mRecorder.release();
-            Toast.makeText(this, getString(string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
         } catch (RuntimeException exc) {
             Crashlytics.logException(exc);
             exc.printStackTrace();

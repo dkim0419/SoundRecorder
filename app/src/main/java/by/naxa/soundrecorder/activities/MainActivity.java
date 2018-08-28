@@ -1,11 +1,17 @@
 package by.naxa.soundrecorder.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -16,10 +22,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.fragments.FileViewerFragment;
 import by.naxa.soundrecorder.fragments.RecordFragment;
+import by.naxa.soundrecorder.util.EventBroadcaster;
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TabLayout tabs;
     private ViewPager pager;
+
+    private BroadcastReceiver mMessageReceiver = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +58,15 @@ public class MainActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
+        final View root = findViewById(R.id.main_activity);
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String message = intent.getStringExtra(EventBroadcaster.MESSAGE);
+                Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+            }
+        };
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -106,6 +125,24 @@ public class MainActivity extends AppCompatActivity {
         void addFragment(Fragment fragment, String title) {
             fragments.add(fragment);
             titles.add(title);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter(EventBroadcaster.SHOW_SNACKBAR));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        } catch (Exception exc) {
+            Crashlytics.logException(exc);
+            Log.e(LOG_TAG, "Error unregistering MessageReceiver", exc);
         }
     }
 

@@ -9,10 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.SystemClock;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +16,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.budiyev.android.circularprogressbar.CircularProgressBar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 
+import androidx.fragment.app.Fragment;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
 import by.naxa.soundrecorder.services.RecordingService;
@@ -268,11 +267,9 @@ public class RecordFragment extends Fragment {
             }
         }
 
-        Toast.makeText(getActivity(), R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
         updateUI(RecorderState.RECORDING, SystemClock.elapsedRealtime());
 
         //start RecordingService
-        //intent.putExtra("start_recording_immediately", true);
         getActivity().startService(intent);
         getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         //keep screen on while recording
