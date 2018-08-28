@@ -13,9 +13,11 @@ A simple sound recording Android app implementing <a href="https://material.io/"
 ![Imgur](https://i.imgur.com/KCODDi8l.png) ![Imgur](https://i.imgur.com/rxeQUDIl.png)
 ![Imgur](https://i.imgur.com/U6w7dnXl.png) ![Imgur](https://i.imgur.com/ZGRnroNl.png)
 
-## IDE
+## Dev environment
 
-- Use [Android Studio](https://developer.android.com/studio/preview/) 3.3 to build this project.
+- [Android Studio](https://developer.android.com/studio/preview/) 3.3 is used for development
+- [Gradle](https://gradle.org/install/) 4.10 is used to build the project
+- [Android SDK 9.0](https://developer.android.com/studio/releases/platforms#9.0) (Pie), API level 28
 
 ## Permissions needed for the app are:
 
@@ -23,6 +25,8 @@ A simple sound recording Android app implementing <a href="https://material.io/"
 - write to external storage (to store recordings)
 - read from external storage (to playback recordings)
 - internet access (for stats collection)
+
+Since February 2017 Google enforces a strict privacy policy requirement for apps using sensitive permissions (the RECORD_AUDIO permission). See [Privacy Policy](https://soundrecorder.bitbucket.io/privacy_policy.html) of Easy Sound Recorder 2.
 
 ## Credits / Libraries used:
 
