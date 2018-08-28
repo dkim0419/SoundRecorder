@@ -45,7 +45,7 @@
     <!-- Preferences -->
     <string name="pref_high_quality_title">Įgalinti aukštos kokybės įrašymą</string>
     <string name="pref_high_quality_desc">CD kokybės įrašymas</string>
-    <string name="pref_about_title">Apie</string>
+    <string name="pref_section_about">Apie</string>
     <string name="pref_licenses_title">Atvirojo šaltinio licencijos</string>
     <string name="pref_licenses_desc">Išsami atvirojo šaltinio programinės įrangos licencijos informacija</string>
 

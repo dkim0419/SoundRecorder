@@ -43,7 +43,7 @@
     <!-- Preferences -->
     <string name="pref_high_quality_title">Habilitar Grabación en Alta Calidad</string>
     <string name="pref_high_quality_desc">Grabar en calidad CD</string>
-    <string name="pref_about_title">Acerca de</string>
+    <string name="pref_section_about">Acerca de</string>
     <string name="pref_licenses_title">Licencias de software libre</string>
     <string name="pref_licenses_desc">Detalles de las licencias de software libre</string>
 

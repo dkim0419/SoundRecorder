@@ -45,7 +45,7 @@
     <!-- Preferences -->
     <string name="pref_high_quality_title">Aktivieren Sie die Aufnahme in Hoher Qualität</string>
     <string name="pref_high_quality_desc">Aufnehmen in CD Qualität</string>
-    <string name="pref_about_title">Über</string>
+    <string name="pref_section_about">Über</string>
     <string name="pref_licenses_title">Open-Source-Lizenzen</string>
     <string name="pref_licenses_desc">Lizenzdetails für Open-Source-Software</string>
 

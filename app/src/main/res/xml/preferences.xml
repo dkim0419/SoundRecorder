@@ -10,10 +10,10 @@
         android:summary="@string/pref_high_quality_desc"/>
 
     <PreferenceCategory
-        android:title="@string/prefs_section_advanced"/>
+        android:title="@string/pref_section_about"/>
     <Preference
         android:key="pref_about"
-        android:title="@string/pref_about_title"
+        android:title="@string/pref_appversion_title"
         android:summary="@string/pref_about_desc"/>
     <Preference
         android:key="pref_licenses"

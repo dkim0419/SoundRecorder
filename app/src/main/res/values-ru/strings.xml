@@ -48,11 +48,11 @@
     <!-- Preferences -->
     <string name="pref_high_quality_title">Включить запись высокого качества</string>
     <string name="pref_high_quality_desc">Записывать в CD качестве</string>
-    <string name="pref_about_title">О приложении</string>
+    <string name="pref_section_about">О приложении</string>
+    <string name="pref_appversion_title">Версия</string>
     <string name="pref_licenses_title">Лицензии открытого ПО</string>
     <string name="pref_licenses_desc">Сведения о лицензиях на ПО с открытым исходным кодом</string>
     <string name="prefs_section_record">Запись</string>
-    <string name="prefs_section_advanced">Дополнительно</string>
 
     <string name="image_description_microphone_icon">Иконка микрофона</string>
     <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>
