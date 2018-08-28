@@ -1,20 +1,31 @@
-Easy Sound Recorder
-=============
+# Easy Sound Recorder 2
 
-<p>A simple sound recording app implementing Material Design.</p>
+A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>.
 
-[![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder) [![Android app on F-Droid](https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Get_it_on_F-Droid.svg/200px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/repository/browse/?fdid=com.danielkim.soundrecorder)
+![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/drawable-hdpi/ic_launcher.png)
 
-Screenshots:
+[![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder) [![Android app on F-Droid](https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Get_it_on_F-Droid.svg/200px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/repository/browse/?fdid=by.naxa.soundrecorder)
 
-![alt tag](http://i.imgur.com/4W5fj0Il.png) ![alt tag](http://i.imgur.com/7ggcFQzl.png) ![alt tag](http://i.imgur.com/RqD8S3Il.png) ![alt tag](http://i.imgur.com/H6ScO21l.png)
+## Screenshots
 
+![Imgur](https://i.imgur.com/wxCXesJl.png) ![Imgur](https://i.imgur.com/86sehcjl.png)
+![Imgur](https://i.imgur.com/p9Pn9Qgl.png) ![Imgur](https://i.imgur.com/LthDOjHl.png)
+![Imgur](https://i.imgur.com/KCODDi8l.png) ![Imgur](https://i.imgur.com/rxeQUDIl.png)
+![Imgur](https://i.imgur.com/U6w7dnXl.png) ![Imgur](https://i.imgur.com/ZGRnroNl.png)
 
-Credits / Libraries used:
+## IDE
 
-https://github.com/makovkastar/FloatingActionButton
+- Use [Android Studio](https://developer.android.com/studio/preview/) 3.3 to build this project.
 
-https://github.com/MohammadAG/Android-SoundRecorder
+## Permissions needed for the app are:
 
-https://github.com/astuetz/PagerSlidingTabStrip
+- record audio
+- write to external storage (to store recordings)
+- read from external storage (to playback recordings)
+- internet access (for stats collection)
 
+## Credits / Libraries used:
+
+- [Java MP4 Parser](https://github.com/sannies/mp4parser)
+- [Circular Progress Bar](https://github.com/yuriy-budiyev/circular-progress-bar)
+- [Material Components for Android](https://github.com/material-components/material-components-android)
