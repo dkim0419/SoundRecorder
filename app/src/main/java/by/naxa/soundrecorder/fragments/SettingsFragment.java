@@ -25,19 +25,12 @@ public class SettingsFragment extends PreferenceFragment {
         final CheckBoxPreference highQualityPref = (CheckBoxPreference) findPreference(
                 getResources().getString(R.string.pref_high_quality_key));
         highQualityPref.setChecked(MySharedPreferences.getPrefHighQuality(getActivity()));
-        /*
-        highQualityPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                MySharedPreferences.setPrefHighQuality(getActivity(), (boolean) newValue);
-                return true;
-            }
-        });
-        */
 
-        final Preference aboutPref = findPreference(getString(R.string.pref_about_key));
+        final Preference aboutPref = findPreference("pref_about");
         aboutPref.setSummary(getString(R.string.pref_about_desc, BuildConfig.VERSION_NAME));
-        aboutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+        final Preference licensesPref = findPreference("pref_licenses");
+        licensesPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new LicensesFragment().show(

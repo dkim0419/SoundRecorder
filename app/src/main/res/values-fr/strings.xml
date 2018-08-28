@@ -46,5 +46,7 @@
     <string name="pref_high_quality_title">Activer l\'enregistrement Haute Qualité</string>
     <string name="pref_high_quality_desc">Enregistrer en qualité CD</string>
     <string name="pref_about_title">À propos</string>
+    <string name="pref_licenses_title">Licences Open Source</string>
+    <string name="pref_licenses_desc">Informations sur les licences de logiciels Open Source</string>
 
 </resources>

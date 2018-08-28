@@ -38,4 +38,7 @@
     <string name="record_prompt">Klepněte na tlačítko pro spuštění nahrávání</string>
     <string name="record_in_progress">Záznam</string>
 
+    <string name="pref_licenses_title">Licence open source</string>
+    <string name="pref_licenses_desc">Podrobnosti o licencích pro software open source</string>
+
 </resources>

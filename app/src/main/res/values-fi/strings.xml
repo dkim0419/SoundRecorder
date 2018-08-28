@@ -38,5 +38,8 @@
     <string name="record_prompt">Napauta painiketta aloittaaksesi äänittämisen</string>
     <string name="record_in_progress">Äänitetään</string>
 
+    <string name="pref_licenses_title">Avoimen lähdekoodin käyttöoikeudet</string>
+    <string name="pref_licenses_desc">Avoimen lähdekoodin ohjelmiston käyttöoikeustiedot</string>
+
 </resources>
 

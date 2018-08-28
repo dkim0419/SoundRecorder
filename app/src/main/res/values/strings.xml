@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- About -->
-    <string name="link" translatable="false">Website: https://github.com/naXa777/SoundRecorder</string>
+    <string name="link" translatable="false">Sound Recorder 2 Website: https://github.com/naXa777/SoundRecorder</string>
 
     <!-- Toolbar -->
     <string name="app_name">Sound Recorder</string>
@@ -57,6 +57,8 @@
     <string name="pref_about_key" translatable="false">pref_about</string>
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
+    <string name="pref_licenses_title">Open source licenses</string>
+    <string name="pref_licenses_desc">License details for open source software</string>
     <string name="prefs_section_record">Record</string>
     <string name="prefs_section_advanced">Advanced</string>
 
