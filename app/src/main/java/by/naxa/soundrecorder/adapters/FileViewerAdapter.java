@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.Editable;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
@@ -33,6 +35,7 @@ import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.fragments.PlaybackFragment;
 import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
+import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.Paths;
 
 /**
@@ -274,11 +277,15 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
-                            String value = input.getText().toString().trim() + ".mp4";
+                            final Editable editable = input.getText();
+                            if (editable == null)
+                                return;
+                            final String value = editable.toString().trim() + ".mp4";
                             rename(position, value);
-
                         } catch (Exception e) {
+                            Crashlytics.logException(e);
                             Log.e(LOG_TAG, "exception", e);
+                            EventBroadcaster.send(mContext, mContext.getString(R.string.error_rename_file));
                         }
 
                         dialog.cancel();

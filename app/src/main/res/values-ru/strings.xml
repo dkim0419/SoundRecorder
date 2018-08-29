@@ -60,7 +60,8 @@
     <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>
     <string name="error_no_permission_granted_for_playback">Не могу воспроизвести сохранённую запись без вашего разрешения.</string>
     <string name="error_mkdir">Ошибка! Внешний накопитель (SD карта) не доступен для сохранения записи.</string>
-    <string name="error_mic_is_busy">Ошибка! Не могу начать запись, так как другое приложение использует микрофон.</string>
+    <string name="error_mic_is_busy">Ошибка! Не могу начать запись, так как другое приложение использует микрофон. Перезагрузите устройство, если эта проблема возникнет снова.</string>
     <string name="error_unknown">Неизвестная ошибка =(</string>
+    <string name="error_rename_file">Не удалось переименовать файл.</string>
 
 </resources>

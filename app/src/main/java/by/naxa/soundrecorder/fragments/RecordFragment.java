@@ -13,23 +13,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
 import com.budiyev.android.circularprogressbar.CircularProgressBar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
 import by.naxa.soundrecorder.services.RecordingService;
+import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.Paths;
 import by.naxa.soundrecorder.util.PermissionsHelper;
+import by.naxa.soundrecorder.util.ScreenLock;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -82,8 +83,11 @@ public class RecordFragment extends Fragment {
 
     private void tryBindService() {
         if (mRecordingService == null) {
-            final Intent intent = new Intent(getActivity(), RecordingService.class);
-            getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            final Context context = getContext();
+            if (context == null)
+                return;
+            final Intent intent = new Intent(context, RecordingService.class);
+            context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -156,19 +160,27 @@ public class RecordFragment extends Fragment {
                     }
                 } else {
                     // stop recording
-                    getActivity().stopService(intent);
-                    getActivity().unbindService(mConnection);
+                    final FragmentActivity activity = getActivity();
+                    if (activity == null) {
+                        Log.wtf(LOG_TAG, "RecordFragment failed to stop recording, getActivity() returns null.");
+                        return;
+                    }
+                    activity.stopService(intent);
+                    activity.unbindService(mConnection);
 
                     updateUI(RecorderState.STOPPED, SystemClock.elapsedRealtime());
 
-                    //allow the screen to turn off again once recording is finished
-                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    ScreenLock.allowScreenTurnOff(activity);
                 }
             }
         };
     }
 
     private void updateUI(RecorderState state, long chronometerBaseTime) {
+        if (getActivity() == null || !isAdded()) {
+            Log.i(LOG_TAG, "RecordFragment#updateUI: RecordFragment is not attached to an Activity");
+            return;
+        }
         Log.i(LOG_TAG, "RecordFragment#updateUI: new state is " + state + ", time is " + chronometerBaseTime + " ms");
 
         switch (state) {
@@ -260,20 +272,23 @@ public class RecordFragment extends Fragment {
             // a folder for sound recordings doesn't exist -> create the folder
             boolean ok = Paths.isExternalStorageWritable() && folder.mkdir();
             if (!ok) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content),
-                        R.string.error_mkdir, Snackbar.LENGTH_LONG)
-                        .show();
+                EventBroadcaster.send(getContext(), R.string.error_mkdir);
                 return false;
             }
         }
 
         updateUI(RecorderState.RECORDING, SystemClock.elapsedRealtime());
 
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            Log.wtf(LOG_TAG, "RecordFragment#startRecording(): failed to start recording, getActivity() returns null.");
+            return false;
+        }
+
         //start RecordingService
-        getActivity().startService(intent);
-        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        //keep screen on while recording
-        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        activity.startService(intent);
+        activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        ScreenLock.keepScreenOn(activity);
 
         return true;
     }
@@ -295,9 +310,7 @@ public class RecordFragment extends Fragment {
                     final Intent intent = new Intent(getActivity(), RecordingService.class);
                     startRecording(intent);
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            R.string.error_no_permission_granted_record, Snackbar.LENGTH_SHORT)
-                            .show();
+                    EventBroadcaster.send(getContext(), R.string.error_no_permission_granted_record);
                 }
                 break;
             }
@@ -308,9 +321,7 @@ public class RecordFragment extends Fragment {
                     // permission was granted, yay!
                     resumeRecording();
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            R.string.error_no_permission_granted_record, Snackbar.LENGTH_LONG)
-                            .show();
+                    EventBroadcaster.send(getContext(), R.string.error_no_permission_granted_record);
                 }
                 break;
             }

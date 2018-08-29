@@ -13,27 +13,27 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.listeners.HeadsetListener;
 import by.naxa.soundrecorder.util.AudioManagerCompat;
+import by.naxa.soundrecorder.util.EventBroadcaster;
+import by.naxa.soundrecorder.util.ScreenLock;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 import static android.media.AudioManager.ACTION_HEADSET_PLUG;
@@ -115,6 +115,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         }
 
         item = args.getParcelable(ARG_ITEM);
+        if (item == null)
+            return;
 
         long itemDuration = item.getLength();
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
@@ -133,8 +135,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
 
         Dialog dialog = super.onCreateDialog(savedInstanceState);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_media_playback, null);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        final View view = requireActivity().getLayoutInflater().inflate(R.layout.fragment_media_playback, null);
 
         mFileNameTextView = view.findViewById(R.id.file_name_text_view);
         mFileLengthTextView = view.findViewById(R.id.file_length_text_view);
@@ -207,7 +209,10 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         builder.setView(view);
 
         // request a window without the title
-        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        final Window window = dialog.getWindow();
+        if (window != null) {
+            window.requestFeature(Window.FEATURE_NO_TITLE);
+        }
 
         return builder.create();
     }
@@ -249,7 +254,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
 
         //set transparent background
         Window window = getDialog().getWindow();
-        window.setBackgroundDrawableResource(android.R.color.transparent);
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+        }
 
         //disable buttons from dialog
         AlertDialog alertDialog = (AlertDialog) getDialog();
@@ -282,7 +289,12 @@ public class PlaybackFragment extends AppCompatDialogFragment {
     // Play start/stop
     public boolean onPlay(boolean isPlaying) {
         if (!isPlaying) {
-            if (checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (getContext() == null) {
+                // PlaybackFragment is not attached to a Context
+                return isPlaying;
+            }
+
+            if (checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted -> request the permission
                 this.requestPermissions(
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -337,9 +349,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         });
 
         updateSeekBar();
-
-        //keep screen on while playing audio
-        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ScreenLock.keepScreenOn(getActivity());
     }
 
     private void prepareMediaPlayerFromPoint(int progress) {
@@ -367,8 +377,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
             Log.e(LOG_TAG, "prepare() failed");
         }
 
-        //keep screen on while playing audio
-        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ScreenLock.keepScreenOn(getActivity());
     }
 
     /**
@@ -430,8 +439,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         mCurrentProgressTextView.setText(mFileLengthTextView.getText());
         mSeekBar.setProgress(mSeekBar.getMax());
 
-        //allow the screen to turn off again once audio is finished playing
-        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ScreenLock.allowScreenTurnOff(getActivity());
     }
 
     /**
@@ -439,12 +447,15 @@ public class PlaybackFragment extends AppCompatDialogFragment {
      * @return whether we have gained focus (or already had it)
      */
     private boolean requestAudioFocus() {
-        if (!mFocused) {
+        if (!mFocused && getContext() != null) {
             mFocused = AudioManagerCompat.getInstance(getContext())
                     .requestAudioFocus(focusChangeListener,
                             AudioManager.STREAM_MUSIC,
                             AudioManager.AUDIOFOCUS_GAIN);
         }
+        Log.i(LOG_TAG, mFocused
+                ? "PlaybackFragment gained audio focus."
+                : "PlaybackFragment did not gain audio focus.");
         return mFocused;
     }
 
@@ -460,6 +471,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         }
         mFocused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
 
+        Log.i(LOG_TAG, mFocused
+                ? "PlaybackFragment did not abandon audio focus."
+                : "PlaybackFragment abandoned audio focus.");
         return result;
     }
 
@@ -543,9 +557,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                     // permission was granted, yay!
                     startOrResumePlaying();
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content),
-                            R.string.error_no_permission_granted_for_playback, Snackbar.LENGTH_LONG)
-                            .show();
+                    EventBroadcaster.send(getContext(),
+                            R.string.error_no_permission_granted_for_playback);
                 }
                 break;
             }

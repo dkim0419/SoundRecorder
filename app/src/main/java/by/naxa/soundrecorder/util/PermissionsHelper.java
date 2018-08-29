@@ -7,13 +7,16 @@ import android.content.pm.PackageManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import by.naxa.soundrecorder.fragments.RecordFragment;
+import androidx.fragment.app.Fragment;
 
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class PermissionsHelper {
-    public static boolean checkAndRequestPermissions(RecordFragment fragment, int permissionsRequestId) {
-        final Context context = fragment.getActivity();
+    public static boolean checkAndRequestPermissions(Fragment fragment, int permissionsRequestId) {
+        final Context context = fragment.getContext();
+        if (context == null) {
+            return false;
+        }
         int permissionRecordAudio = checkSelfPermission(context, Manifest.permission.RECORD_AUDIO);
         int permissionWriteStorage = checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         List<String> listPermissionsNeeded = new ArrayList<>();
