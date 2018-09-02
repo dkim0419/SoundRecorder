@@ -13,6 +13,10 @@ A simple sound recording Android app implementing <a href="https://material.io/"
 ![Imgur](https://i.imgur.com/KCODDi8l.png) ![Imgur](https://i.imgur.com/rxeQUDIl.png)
 ![Imgur](https://i.imgur.com/U6w7dnXl.png) ![Imgur](https://i.imgur.com/ZGRnroNl.png)
 
+## Contributing
+Contributors are more than welcome. Just open a Pull Request with a description of your changes.  
+File Github Issues for anything that is unexpectedly broken. Please attach a screenshot and/or log file to your issue.
+
 ## Dev environment
 
 - [Android Studio](https://developer.android.com/studio/preview/) 3.3 is used for development
