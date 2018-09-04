@@ -21,8 +21,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
@@ -37,6 +37,7 @@ import by.naxa.soundrecorder.fragments.PlaybackFragment;
 import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.Paths;
+import by.naxa.soundrecorder.util.TimeUtils;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -48,9 +49,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     private DBHelper mDatabase;
 
-    RecordingItem item;
-    Context mContext;
-    LinearLayoutManager llm;
+    private RecordingItem item;
+    private Context mContext;
+    private LinearLayoutManager llm;
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
@@ -61,17 +62,13 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     @Override
-    public void onBindViewHolder(final RecordingsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecordingsViewHolder holder, int position) {
 
         item = getItem(position);
         long itemDuration = item.getLength();
 
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
-
         holder.vName.setText(item.getName());
-        holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
+        holder.vLength.setText(TimeUtils.formatDuration(itemDuration));
         holder.vDateAdded.setText(
                 DateUtils.formatDateTime(
                         mContext,
@@ -104,12 +101,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public boolean onLongClick(View v) {
 
-                ArrayList<String> entrys = new ArrayList<String>();
-                entrys.add(mContext.getString(R.string.dialog_file_share));
-                entrys.add(mContext.getString(R.string.dialog_file_rename));
-                entrys.add(mContext.getString(R.string.dialog_file_delete));
+                final ArrayList<String> entries = new ArrayList<>();
+                entries.add(mContext.getString(R.string.dialog_file_share));
+                entries.add(mContext.getString(R.string.dialog_file_rename));
+                entries.add(mContext.getString(R.string.dialog_file_delete));
 
-                final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
+                final CharSequence[] items = entries.toArray(new CharSequence[entries.size()]);
 
 
                 // File delete confirm

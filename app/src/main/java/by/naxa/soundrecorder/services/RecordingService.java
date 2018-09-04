@@ -244,8 +244,11 @@ public class RecordingService extends Service {
             mRecorder.release();
             Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
         } catch (RuntimeException exc) {
+            // RuntimeException is thrown when stop() is called immediately after start().
+            // In this case the output file is not properly constructed ans should be deleted.
+            Log.e(LOG_TAG, "RuntimeException: stop() is called immediately after start()", exc);
             Crashlytics.logException(exc);
-            exc.printStackTrace();
+            // TODO delete temporary output file
         } finally {
             mRecorder = null;
             state = RecorderState.STOPPED;

@@ -23,7 +23,6 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -34,6 +33,7 @@ import by.naxa.soundrecorder.listeners.HeadsetListener;
 import by.naxa.soundrecorder.util.AudioManagerCompat;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.ScreenLock;
+import by.naxa.soundrecorder.util.TimeUtils;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 import static android.media.AudioManager.ACTION_HEADSET_PLUG;
@@ -70,9 +70,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
     //stores whether or not the mediaplayer is currently playing audio
     public volatile boolean isPlaying = false;
 
-    //stores minutes and seconds of the length of the file.
-    long minutes = 0;
-    long seconds = 0;
+    // Stores the length of the file in milliseconds
+    private long itemDurationMs = 0;
 
     /**
      * Whether this PlaybackFragment has focus from {@link AudioManager} to play audio
@@ -118,10 +117,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         if (item == null)
             return;
 
-        long itemDuration = item.getLength();
-        minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
+        itemDurationMs = item.getLength();
     }
 
     @Override
@@ -157,13 +153,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                     mMediaPlayer.seekTo(progress);
                     mHandler.removeCallbacks(mRunnable);
 
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
-                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
-
+                    final int currentPosition = mMediaPlayer.getCurrentPosition();
+                    mCurrentProgressTextView.setText(TimeUtils.formatDuration(currentPosition));
                     updateSeekBar();
-
                 } else if (mMediaPlayer == null && fromUser) {
                     prepareMediaPlayerFromPoint(progress);
                     updateSeekBar();
@@ -184,10 +176,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                     mHandler.removeCallbacks(mRunnable);
                     mMediaPlayer.seekTo(seekBar.getProgress());
 
-                    long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
-                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
+                    final int currentPosition = mMediaPlayer.getCurrentPosition();
+                    mCurrentProgressTextView.setText(TimeUtils.formatDuration(currentPosition));
                     updateSeekBar();
                 }
             }
@@ -204,7 +194,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         });
 
         mFileNameTextView.setText(item.getName());
-        mFileLengthTextView.setText(String.format("%02d:%02d", minutes, seconds));
+        mFileLengthTextView.setText(TimeUtils.formatDuration(itemDurationMs));
 
         builder.setView(view);
 
@@ -529,15 +519,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         @Override
         public void run() {
             if (mMediaPlayer != null) {
-
-                int mCurrentPosition = mMediaPlayer.getCurrentPosition();
-                mSeekBar.setProgress(mCurrentPosition);
-
-                long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
-                long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
-                        - TimeUnit.MINUTES.toSeconds(minutes);
-                mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
-
+                int currentPosition = mMediaPlayer.getCurrentPosition();
+                mSeekBar.setProgress(currentPosition);
+                mCurrentProgressTextView.setText(TimeUtils.formatDuration(currentPosition));
                 updateSeekBar();
             }
         }
@@ -549,7 +533,8 @@ public class PlaybackFragment extends AppCompatDialogFragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
@@ -567,7 +552,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ARG_ITEM, item);
     }

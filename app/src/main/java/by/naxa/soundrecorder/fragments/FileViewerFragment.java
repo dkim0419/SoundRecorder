@@ -3,18 +3,20 @@ package by.naxa.soundrecorder.fragments;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileObserver;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import by.naxa.soundrecorder.util.Paths;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.adapters.FileViewerAdapter;
+import by.naxa.soundrecorder.util.Paths;
 
 /**
  * Created by Daniel on 12/23/2014.
@@ -39,16 +41,15 @@ public class FileViewerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_file_viewer, container, false);
 
         RecyclerView mRecyclerView = v.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-
         //newest to oldest order (database stores from oldest to newest)
-        llm.setReverseLayout(true);
+        final LinearLayoutManager llm = new LinearLayoutManager(
+                getActivity(), RecyclerView.VERTICAL, true);
         llm.setStackFromEnd(true);
 
         mRecyclerView.setLayoutManager(llm);
