@@ -64,6 +64,13 @@
 
     <string name="image_description_microphone_icon">Microphone icon</string>
 
+    <!-- Notification -->
+    <string name="action_stop">Stop</string>
+    <string name="notification_title">Recording in progress</string>
+    <string name="notification_content">Tap me</string>
+    <string name="notification_channel_recorder">Recording in progress</string>
+    <string name="notification_channel_description">Persistent notification</string>
+
     <!-- Errors -->
     <string name="error_no_permission_granted_record">Can not start sound recording without your permission.</string>
     <string name="error_no_permission_granted_for_playback">Can not play the recording without your permission to access the external storage.</string>
@@ -71,5 +78,6 @@
     <string name="error_mic_is_busy">Error! Could not start recording, another app is using the microphone. Restart the device if the problem persists.</string>
     <string name="error_unknown">Unknown error =(</string>
     <string name="error_rename_file">Failed to rename file.</string>
+    <string name="error_prepare_playback">Error! Sorry, this audio cannot be played.</string>
 
 </resources>

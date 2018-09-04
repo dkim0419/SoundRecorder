@@ -1,10 +1,13 @@
 package by.naxa.soundrecorder.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -17,17 +20,22 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 
 import com.budiyev.android.circularprogressbar.CircularProgressBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
 import by.naxa.soundrecorder.services.RecordingService;
+import by.naxa.soundrecorder.util.Command;
 import by.naxa.soundrecorder.util.EventBroadcaster;
+import by.naxa.soundrecorder.util.MyIntentBuilder;
 import by.naxa.soundrecorder.util.Paths;
 import by.naxa.soundrecorder.util.PermissionsHelper;
 import by.naxa.soundrecorder.util.ScreenLock;
@@ -60,6 +68,7 @@ public class RecordFragment extends Fragment {
     long timeWhenPaused = 0; //stores time when user clicks pause button
 
     private RecordingService mRecordingService;
+    private BroadcastReceiver mMessageReceiver = null;
 
     /**
      * Use this factory method to create a new instance of
@@ -79,6 +88,15 @@ public class RecordFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         tryBindService();
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final RecorderState newState = (RecorderState) intent.getSerializableExtra(
+                        EventBroadcaster.NEW_STATE);
+                if (RecorderState.STOPPED.equals(newState))
+                    updateUI(newState, SystemClock.elapsedRealtime());
+            }
+        };
     }
 
     private void tryBindService() {
@@ -151,29 +169,30 @@ public class RecordFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent intent = new Intent(getActivity(), RecordingService.class);
                 if (isRecordButtonInState1) {
-                    // start recording
                     if (PermissionsHelper.checkAndRequestPermissions(
                             RecordFragment.this, MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {
-                        startRecording(intent);
+                        startRecording();
                     }
                 } else {
-                    // stop recording
-                    final FragmentActivity activity = getActivity();
-                    if (activity == null) {
-                        Log.wtf(LOG_TAG, "RecordFragment failed to stop recording, getActivity() returns null.");
-                        return;
-                    }
-                    activity.stopService(intent);
-                    activity.unbindService(mConnection);
-
-                    updateUI(RecorderState.STOPPED, SystemClock.elapsedRealtime());
-
-                    ScreenLock.allowScreenTurnOff(activity);
+                    stopRecording();
                 }
             }
         };
+    }
+
+    private Intent getStartServiceIntent() {
+        return MyIntentBuilder
+                .getInstance(requireActivity(), RecordingService.class)
+                .setCommand(Command.START)
+                .build();
+    }
+
+    private Intent getStopServiceIntent() {
+        return MyIntentBuilder
+                .getInstance(requireActivity(), RecordingService.class)
+                .setCommand(Command.STOP)
+                .build();
     }
 
     private void updateUI(RecorderState state, long chronometerBaseTime) {
@@ -262,9 +281,26 @@ public class RecordFragment extends Fragment {
     };
 
     /**
+     * Stop recording
+     */
+    private void stopRecording() {
+        final FragmentActivity activity = getActivity();
+        if (activity == null) {
+            Log.wtf(LOG_TAG, "RecordFragment failed to stop recording, getActivity() returns null.");
+            return;
+        }
+        activity.startService(getStopServiceIntent());
+        if (mConnection != null) {
+            activity.unbindService(mConnection);
+        }
+
+        ScreenLock.allowScreenTurnOff(activity);
+    }
+
+    /**
      * Start recording
      */
-    private boolean startRecording(Intent intent) {
+    private boolean startRecording() {
         final File folder = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                 Paths.SOUND_RECORDER_FOLDER);
@@ -277,22 +313,33 @@ public class RecordFragment extends Fragment {
             }
         }
 
-        updateUI(RecorderState.RECORDING, SystemClock.elapsedRealtime());
-
         final FragmentActivity activity = getActivity();
         if (activity == null) {
             Log.wtf(LOG_TAG, "RecordFragment#startRecording(): failed to start recording, getActivity() returns null.");
             return false;
         }
 
-        //start RecordingService
-        activity.startService(intent);
+        // start RecordingService in foreground
+        final Intent intent = getStartServiceIntent();
+        final ComponentName componentName;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            componentName = activity.startForegroundService(intent);
+        } else {
+            componentName = activity.startService(intent);
+        }
         activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         ScreenLock.keepScreenOn(activity);
+
+        if (componentName != null) {
+            updateUI(RecorderState.RECORDING, SystemClock.elapsedRealtime());
+        }
 
         return true;
     }
 
+    /**
+     * Resume recording
+     */
     private void resumeRecording() {
         long chronometerTime = SystemClock.elapsedRealtime() - mRecordingService.getTotalDurationMillis();
         mRecordingService.startRecording();
@@ -300,15 +347,33 @@ public class RecordFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter(EventBroadcaster.CHANGE_STATE));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(mMessageReceiver);
+        } catch (Exception exc) {
+            Crashlytics.logException(exc);
+            Log.e(LOG_TAG, "Error unregistering MessageReceiver", exc);
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
                 if (allPermissionsGranted(grantResults)) {
                     // permissions were granted, yay!
-                    final Intent intent = new Intent(getActivity(), RecordingService.class);
-                    startRecording(intent);
+                    startRecording();
                 } else {
                     EventBroadcaster.send(getContext(), R.string.error_no_permission_granted_record);
                 }

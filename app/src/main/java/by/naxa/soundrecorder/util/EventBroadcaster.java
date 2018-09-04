@@ -7,10 +7,13 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import by.naxa.soundrecorder.RecorderState;
 
 public class EventBroadcaster {
     public static final String SHOW_SNACKBAR = "SHOW_SNACKBAR";
     public static final String MESSAGE = "MESSAGE";
+    public static final String CHANGE_STATE = "CHANGE_STATE";
+    public static final String NEW_STATE = "NEW_STATE";
 
     public static void send(@NonNull Context context, String message) {
         final Intent it = new Intent(EventBroadcaster.SHOW_SNACKBAR);
@@ -23,5 +26,13 @@ public class EventBroadcaster {
         if (context == null)
             return;
         send(context, context.getString(stringId));
+    }
+
+    public static void stopRecording(@Nullable Context context) {
+        if (context == null)
+            return;
+        final Intent it = new Intent(EventBroadcaster.CHANGE_STATE);
+        it.putExtra(EventBroadcaster.NEW_STATE, RecorderState.STOPPED);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(it);
     }
 }

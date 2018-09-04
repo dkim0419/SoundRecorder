@@ -56,6 +56,13 @@
 
     <string name="image_description_microphone_icon">Иконка микрофона</string>
 
+    <!-- Notification -->
+    <string name="action_stop">Стоп</string>
+    <string name="notification_title">Идёт запись звука</string>
+    <string name="notification_content">Жмяк</string>
+    <string name="notification_channel_recorder">Идёт запись звука</string>
+    <string name="notification_channel_description">Постоянное уведомление</string>
+
     <!-- Errors -->
     <string name="error_no_permission_granted_record">Не могу начать запись без вашего разрешения.</string>
     <string name="error_no_permission_granted_for_playback">Не могу воспроизвести сохранённую запись без вашего разрешения.</string>
@@ -63,5 +70,6 @@
     <string name="error_mic_is_busy">Ошибка! Не могу начать запись, так как другое приложение использует микрофон. Перезагрузите устройство, если эта проблема возникнет снова.</string>
     <string name="error_unknown">Неизвестная ошибка =(</string>
     <string name="error_rename_file">Не удалось переименовать файл.</string>
+    <string name="error_prepare_playback">Ошибка! Простите, не могу воспроизвести эту запись.</string>
 
 </resources>

@@ -27,11 +27,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import androidx.annotation.Nullable;
 import by.naxa.soundrecorder.DBHelper;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
+import by.naxa.soundrecorder.util.Command;
 import by.naxa.soundrecorder.util.EventBroadcaster;
+import by.naxa.soundrecorder.util.MyIntentBuilder;
 import by.naxa.soundrecorder.util.MySharedPreferences;
+import by.naxa.soundrecorder.util.NotificationCompatPie;
 import by.naxa.soundrecorder.util.Paths;
 
 /**
@@ -74,9 +78,63 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startRecording();
+        boolean containsCommand = MyIntentBuilder.containsCommand(intent);
+        Log.d(LOG_TAG, String.format(
+                "Service in [%s] state. cmdId: [%s]. startId: [%d]",
+                state,
+                containsCommand ? MyIntentBuilder.getCommand(intent) : "N/A",
+                startId));
+        routeIntentToCommand(intent);
+
         // We want this service to continue running until it is explicitly stopped, so return sticky
         return START_STICKY;
+    }
+
+    private void routeIntentToCommand(@Nullable Intent intent) {
+        if (intent != null) {
+            // process command
+            if (MyIntentBuilder.containsCommand(intent)) {
+                processCommand(MyIntentBuilder.getCommand(intent));
+            }
+            // process message
+            if (MyIntentBuilder.containsMessage(intent)) {
+                processMessage(MyIntentBuilder.getMessage(intent));
+            }
+        }
+    }
+
+    private void processMessage(String message) {
+        try {
+            Log.d(LOG_TAG, String.format("doMessage: message from client: '%s'", message));
+            // TODO
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "processMessage: exception", e);
+        }
+    }
+
+    private void processCommand(@Command int command) {
+        try {
+            switch (command) {
+                case Command.START:
+                    startRecording();
+                    break;
+                case Command.PAUSE:
+                    pauseRecording();
+                    break;
+                case Command.STOP:
+                    stopService();
+                    break;
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "processCommand: exception", e);
+        }
+    }
+
+    public void stopService() {
+        Log.d(LOG_TAG, "RecordingService#stopService()");
+        stopRecording();
+        stopForeground(true);
+        stopSelf();
     }
 
     @Override
@@ -138,6 +196,8 @@ public class RecordingService extends Service {
         try {
             mRecorder.prepare();
             mRecorder.start();
+            if (state != RecorderState.PAUSED)
+                NotificationCompatPie.createNotification(this);
             state = RecorderState.RECORDING;
             Toast.makeText(this, R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
             mStartingTimeMillis = SystemClock.elapsedRealtime();
@@ -156,10 +216,10 @@ public class RecordingService extends Service {
         if (state != RecorderState.RECORDING)
             return;
 
-        mRecorder.stop();
-        state = RecorderState.PAUSED;
         mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
         pauseDurations.add(mElapsedMillis);
+        mRecorder.stop();
+        state = RecorderState.PAUSED;
         Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
         filesPaused.add(mFilePath);
@@ -177,18 +237,19 @@ public class RecordingService extends Service {
         setFileNameAndPath(isTemporary);
 
         try {
-            if (state != RecorderState.PAUSED)
+            if (state != RecorderState.PAUSED) {
+                mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
                 mRecorder.stop();
+            }
             mRecorder.release();
             Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
         } catch (RuntimeException exc) {
             Crashlytics.logException(exc);
             exc.printStackTrace();
         } finally {
-            if (state != RecorderState.PAUSED)
-                mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
             mRecorder = null;
             state = RecorderState.STOPPED;
+            EventBroadcaster.stopRecording(this);
         }
 
         if (filesPaused != null && !filesPaused.isEmpty()) {

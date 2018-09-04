@@ -339,6 +339,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         } catch (IOException e) {
             Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
+            EventBroadcaster.send(getContext(), R.string.error_prepare_playback);
         }
 
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
