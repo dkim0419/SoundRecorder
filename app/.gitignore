@@ -1,1 +1,4 @@
 /build
+/release
+# Fabric plugin
+fabric.properties
