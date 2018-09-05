@@ -17,12 +17,13 @@ android:
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943
     - build-tools-28.0.2
     - android-28  # Compile SDK version
-    - android-23
+    - android-27
+    - extra-android-support # Support library
     - extra-google-m2repository
     - extra-android-m2repository  # for design library
-    - addon-google_apis-google-28 # google play services
-    - sys-img-armeabi-v7a-addon-google_apis-google-28
-    - sys-img-armeabi-v7a-addon-google_apis-google-23
+    - extra-google-google_play_services # google play services
+    - sys-img-armeabi-v7a-google_apis-28
+    - sys-img-armeabi-v7a-google_apis-27
   licenses:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
@@ -36,7 +37,7 @@ before_install:
 
 # Emulator Management: Create, Start and Wait
 before_script:
-  - echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t "Google Inc.:Google APIs:27" --abi armeabi-v7a --tag google_apis
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
