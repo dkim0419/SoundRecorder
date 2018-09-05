@@ -1,4 +1,4 @@
-# Easy Sound Recorder 2 [![Build Status](https://travis-ci.com/naXa777/SoundRecorder.svg?branch=master)](https://travis-ci.com/naXa777/SoundRecorder)
+# Easy Sound Recorder 2 [![Build Status](https://travis-ci.com/naXa777/SoundRecorder.svg?branch=master)](https://travis-ci.com/naXa777/SoundRecorder) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1b4c1e2546784537b6bef070769c34bb)](https://www.codacy.com/app/naXa777/SoundRecorder?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=naXa777/SoundRecorder&amp;utm_campaign=Badge_Grade)
 
 A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>.
 
