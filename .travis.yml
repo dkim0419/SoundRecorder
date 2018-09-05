@@ -1,4 +1,7 @@
 language: android
+env:
+  global:
+  - ADB_INSTALL_TIMEOUT=10 # minutes (2 minutes by default)
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -32,6 +35,7 @@ before_script:
   - export QEMU_AUDIO_DRV=none && emulator -avd test -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
+  - adb wait-for-device get-serialno
 
 script:
    - "./gradlew build connectedCheck -PdisablePreDex --stacktrace"
