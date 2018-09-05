@@ -73,9 +73,10 @@ script:
 # Run only tests, marked with a special annotation:
 # See https://d.android.com/reference/android/support/test/runner/AndroidJUnitRunner
 # For testing one method only:
-# - adb shell am instrument -w -r -e debug false -e coverage true -e class by.naxa.soundrecorder.MainActivityTests#testGreet by.naxa.soundrecorder/android.support.test.runner.AndroidJUnitRunner
+# - adb shell am instrument -w -r -e debug false -e coverage true -e class by.naxa.soundrecorder.MainActivityTests#testGreet by.naxa.soundrecorder/androidx.test.runner.AndroidJUnitRunner
+  - adb shell pm list instrumentation
   - |
-    adb shell am instrument -w -r -e executionMode travisTest -e coverage true by.naxa.soundrecorder/android.support.test.runner.AndroidJUnitRunner |& tee build/adb-test.log
+    adb shell am instrument -w -r -e executionMode travisTest -e coverage true by.naxa.soundrecorder/androidx.test.runner.AndroidJUnitRunner |& tee build/adb-test.log
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error in adb, exit code: "$retval
