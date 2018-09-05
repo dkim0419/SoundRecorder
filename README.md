@@ -1,10 +1,8 @@
-# Easy Sound Recorder 2
+# Easy Sound Recorder 2 [![Build Status](https://travis-ci.com/naXa777/SoundRecorder.svg?branch=master)](https://travis-ci.com/naXa777/SoundRecorder)
 
-A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>. [![Build Status](https://travis-ci.com/naXa777/SoundRecorder.svg?branch=master)](https://travis-ci.com/naXa777/SoundRecorder)
+A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>.
 
-![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png)
-
-[![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder)
+![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png) [![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder)
 
 ## Screenshots
 
