@@ -4,17 +4,41 @@ A simple sound recording Android app implementing <a href="https://material.io/"
 
 ![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png) [![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder)
 
+## Contributing
+
+Contributors are more than welcome. How can you contribute?
+
+### Report bugs
+
+We want our app to be as stable as possible thus your bug reports are immensely valuable. File [GitHub Issues](https://github.com/naXa777/SoundRecorder/issues) for anything that is unexpectedly broken.
+
+* App version
+* Device model
+* Android version
+* Steps to reproduce the bug
+* Expected behavior
+* Actual behavior (a screenshot and/or log file may be helpful)
+
+### Contribute Code
+
+We have labeled tasks you can help with as [help wanted](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [good first issue](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
+
+### Commit Messages
+
+See Chris Beams' guide to writing good commit messages - [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/).
+
+### Translate
+
+You can translate SoundRecorder at [POEditor](https://poeditor.com/join/project/IuPsne4VcJ). Add a translation in your own language or improve other translations.
+
+[![POEditor](https://poeditor.com/public/images/logo_small.png)](https://poeditor.com/join/project/IuPsne4VcJ)
+
 ## Screenshots
 
 ![Imgur](https://i.imgur.com/wxCXesJl.png) ![Imgur](https://i.imgur.com/86sehcjl.png)
 ![Imgur](https://i.imgur.com/p9Pn9Qgl.png) ![Imgur](https://i.imgur.com/LthDOjHl.png)
 ![Imgur](https://i.imgur.com/KCODDi8l.png) ![Imgur](https://i.imgur.com/rxeQUDIl.png)
 ![Imgur](https://i.imgur.com/U6w7dnXl.png) ![Imgur](https://i.imgur.com/ZGRnroNl.png)
-
-## Contributing
-
-Contributors are more than welcome. Just open a Pull Request with a description of your changes.  
-File Github Issues for anything that is unexpectedly broken. Please attach a screenshot and/or log file to your issue.
 
 ## Building
 
