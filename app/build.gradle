@@ -11,6 +11,7 @@ android {
         targetSdkVersion 28
         versionCode 202
         versionName "2.0.2"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -55,9 +56,16 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.+'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'com.budiyev.android:circular-progress-bar:1.2.0'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
+
+    androidTestImplementation 'androidx.annotation:annotation:1.0.+'
+    androidTestImplementation 'androidx.test:runner:1.1.+'
+    androidTestImplementation 'androidx.test:rules:1.1.+'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.+', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'androidx.annotation', module: 'annotation'
     })
+
+    // tracking
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true
     }
