@@ -1,4 +1,14 @@
 language: android
+sudo: required
+
+before_cache:
+  -rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  -rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  -$HOME/.gradle/caches/
+  -$HOME/.gradle/wrapper/
+
 android:
   components:
     - tools # to get the new `repository-11.xml`
@@ -6,8 +16,28 @@ android:
     - platform-tools
     - build-tools-28.0.2
     - android-28
+    - android-23
+    - extra-google-m2repository
+    - extra-android-m2repository  # for design library
+    - addon-google_apis-google-19 # google play services
+    - sys-img-armeabi-v7a-addon-google_apis-google-28
+    - sys-img-armeabi-v7a-addon-google_apis-google-23
+  licenses:
+    - android-sdk-preview-license-.+
+    - android-sdk-license-.+
+    - google-gdk-license-.+
+
 before_install:
-  - yes | sdkmanager "platforms;android-28"
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+  - chmod +x gradlew
+before_script:
+  - echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 script:
-   - ./gradlew build connectedCheck
+   - "./gradlew build connectedCheck -PdisablePreDex --stacktrace"
+
 after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"
