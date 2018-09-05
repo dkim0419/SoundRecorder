@@ -1,6 +1,6 @@
 # Easy Sound Recorder 2
 
-A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>.
+A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>. [![Build Status](https://travis-ci.com/naXa777/SoundRecorder.svg?branch=master)](https://travis-ci.com/naXa777/SoundRecorder)
 
 ![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png)
 
