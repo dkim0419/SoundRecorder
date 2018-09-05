@@ -20,7 +20,7 @@ We want our app to be as stable as possible thus your bug reports are immensely 
 * Expected behavior
 * Actual behavior (a screenshot and/or log file may be helpful)
 
-### Contribute Code
+### Contribute Code [![Open Source Helpers](https://www.codetriage.com/naxa777/soundrecorder/badges/users.svg)](https://www.codetriage.com/naxa777/soundrecorder)
 
 We have labeled tasks you can help with as [help wanted](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [good first issue](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
 
