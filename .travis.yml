@@ -1,5 +1,4 @@
 language: android
-sudo: required
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -17,28 +16,20 @@ android:
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943
     - build-tools-28.0.2
     - android-28  # Compile SDK version
-    - android-21
+    - android-22
     - extra-android-support # Support library
     - extra-google-m2repository
     - extra-android-m2repository  # for design library
     - extra-google-google_play_services # google play services
-    - sys-img-armeabi-v7a-google_apis-28
-    - sys-img-armeabi-v7a-google_apis-21
-  licenses:
-    - android-sdk-preview-license-.+
-    - android-sdk-license-.+
-    - google-gdk-license-.+
+    - sys-img-armeabi-v7a-google_apis-22
 
 before_install:
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
-  - chmod +x gradlew
+  - yes | sdkmanager "platforms;android-28"
 
 # Emulator Management: Create, Start and Wait
 before_script:
-  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a --tag google_apis
-  - emulator -avd test -no-skin -no-audio -no-window &
+  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a --tag google_apis
+  - export QEMU_AUDIO_DRV=none && emulator -avd test -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
