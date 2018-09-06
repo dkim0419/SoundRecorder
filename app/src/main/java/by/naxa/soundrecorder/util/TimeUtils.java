@@ -6,12 +6,12 @@ import java.util.concurrent.TimeUnit;
 public class TimeUtils {
 
     public static String formatDuration(long millis) {
-        String format;
+        final String sign;
         if (millis < 0) {
-            format = "-";
+            sign = "-";
             millis = -millis;
         } else {
-            format = "";
+            sign = "";
         }
 
         long hours = TimeUnit.MILLISECONDS.toHours(millis);
@@ -19,12 +19,10 @@ public class TimeUtils {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.HOURS.toSeconds(hours)
                 - TimeUnit.MINUTES.toSeconds(minutes);
         if (hours > 0) {
-            format += "%d:%02d:%02d";
+            return String.format(Locale.ENGLISH, sign + "%d:%02d:%02d", hours, minutes, seconds);
         } else {
-            format += "%02d:%02d";
+            return String.format(Locale.ENGLISH, sign + "%02d:%02d", minutes, seconds);
         }
-
-        return String.format(Locale.ENGLISH, format, hours, minutes, seconds);
     }
 
 }
