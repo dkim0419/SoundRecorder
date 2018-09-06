@@ -99,12 +99,12 @@ script:
     adb shell "rm /sdcard/Download/coverage.ec"
     adb shell "run-as by.naxa.soundrecorder cp /data/user/0/by.naxa.soundrecorder/files/coverage.ec /sdcard/Download"
 # copy to "build" folder, where it will be found by Sonar scanner
-#  - cd app/build
-#  - adb pull "/sdcard/Download/coverage.ec"
-#  - cd ../..
+  - cd app/build
+  - adb pull "/sdcard/Download/coverage.ec"
+  - cd ../..
 
 notifications:
   email: false
 
-#after_success:
-#  - ./gradlew sonarqube -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN -Dsonar.verbose=true
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
