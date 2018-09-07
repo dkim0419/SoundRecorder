@@ -3,7 +3,7 @@
 
 A simple sound recording Android app implementing <a href="https://material.io/">Material Design</a>.
 
-![Icon](https://github.com/naXa777/SoundRecorder/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png) [![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder)
+![Icon](/app/src/main/res/mipmap-hdpi/ic_launcher.png) [![Android app on Google Play](https://d.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=by.naxa.soundrecorder)
 
 ## Contributing
 
@@ -24,15 +24,24 @@ We want our app to be as stable as possible thus your bug reports are immensely 
 
 We have labeled tasks you can help with as [help wanted](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [good first issue](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
 
-### Commit Messages
-
-See Chris Beams' guide to writing good commit messages - [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/).
+A quick note: See Chris Beams' guide to writing good commit messages - [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/).
 
 ### Translate
 
-You can translate SoundRecorder at [POEditor](https://poeditor.com/join/project/IuPsne4VcJ). Add a translation in your own language or improve other translations.
+You don't have to be a programmer if you want to translate this application in your own language or improve existing translations.
+You can translate SoundRecorder using [POEditor](https://poeditor.com/join/project/IuPsne4VcJ) - a collaborative translation platform.
 
 [![POEditor](https://poeditor.com/public/images/logo_small.png)](https://poeditor.com/join/project/IuPsne4VcJ)
+
+### Automate Testing
+
+Testing is imperative to the health of the project. There's a configured CI pipeline ([Travis CI](https://travis-ci.com/naXa777/SoundRecorder)) intended for running unit tests and instrumented tests on every commit to the repository, but unfortunately, there're very few tests at the moment.
+
+Please follow standard guidelines if you want to contribute a test:
+
+1. Android Developers - [Test apps on Android](https://d.android.com/training/testing/)
+2. Android Studio - [Test your app](https://d.android.com/studio/test/)
+3. GitHub - [Android testing samples](https://github.com/googlesamples/android-testing)
 
 ## Screenshots
 
@@ -58,9 +67,9 @@ See [Crashlytics Kit Setup Demo](https://github.com/plastiv/CrashlyticsDemo) if 
 
 ## Dev environment
 
-- [Android Studio](https://developer.android.com/studio/preview/) 3.3 is used for development
+- [Android Studio](https://d.android.com/studio/preview/) 3.3 is used for development
 - [Gradle](https://gradle.org/install/) 4.10 is used to build the project
-- [Android SDK 9.0](https://developer.android.com/studio/releases/platforms#9.0) (Pie), API level 28
+- [Android SDK 9.0](https://d.android.com/studio/releases/platforms#9.0) (Pie), API level 28
 
 ## Permissions needed for the app are:
 
