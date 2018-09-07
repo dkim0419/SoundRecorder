@@ -22,7 +22,7 @@ We want our app to be as stable as possible thus your bug reports are immensely 
 
 ### Contribute Code [![Open Source Helpers](https://www.codetriage.com/naxa777/soundrecorder/badges/users.svg)](https://www.codetriage.com/naxa777/soundrecorder)
 
-We have labeled tasks you can help with as [help wanted](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [good first issue](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
+We have labeled tasks you can help with as [![GitHub issues by-label](https://img.shields.io/github/issues/naXa777/SoundRecorder/help%20wanted.svg)](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [![GitHub issues by-label](https://img.shields.io/github/issues/naXa777/SoundRecorder/good%20first%20issue.svg)](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
 
 A quick note: See Chris Beams' guide to writing good commit messages - [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/).
 
@@ -67,9 +67,10 @@ See [Crashlytics Kit Setup Demo](https://github.com/plastiv/CrashlyticsDemo) if 
 
 ## Dev environment
 
-- [Android Studio](https://d.android.com/studio/preview/) 3.3 is used for development
+- [Android Studio](https://d.android.com/studio/preview/) 3.3 (Canary) is used for development
 - [Gradle](https://gradle.org/install/) 4.10 is used to build the project
 - [Android SDK 9.0](https://d.android.com/studio/releases/platforms#9.0) (Pie), API level 28
+- Java 1.6
 
 ## Permissions needed for the app are:
 
