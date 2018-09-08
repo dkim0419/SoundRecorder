@@ -94,8 +94,13 @@ public class RecordFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 final RecorderState newState = (RecorderState) intent.getSerializableExtra(
                         EventBroadcaster.NEW_STATE);
-                if (RecorderState.STOPPED.equals(newState))
+                if (RecorderState.STOPPED.equals(newState)) {
                     updateUI(newState, SystemClock.elapsedRealtime());
+                } else if (RecorderState.RECORDING.equals(newState)) {
+                    long chronometerTime = intent.getLongExtra(EventBroadcaster.CHRONOMETER_TIME,
+                            SystemClock.elapsedRealtime());
+                    updateUI(newState, chronometerTime);
+                }
             }
         };
     }
@@ -205,6 +210,7 @@ public class RecordFragment extends Fragment {
 
         switch (state) {
             case STOPPED:
+                mRecordButton.show();
                 mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
                 mPauseButton.setVisibility(View.GONE);
                 timeWhenPaused = 0;
@@ -218,6 +224,11 @@ public class RecordFragment extends Fragment {
                 mChronometer.stop();
 
                 mProgressBar.setIndeterminate(false);
+                break;
+
+            case PREPARING:
+                mRecordingPrompt.setText(getString(R.string.wait));
+                mProgressBar.setIndeterminate(true);
                 break;
 
             case RECORDING:
@@ -332,7 +343,7 @@ public class RecordFragment extends Fragment {
         ScreenLock.keepScreenOn(activity);
 
         if (componentName != null) {
-            updateUI(RecorderState.RECORDING, SystemClock.elapsedRealtime());
+            updateUI(RecorderState.PREPARING, SystemClock.elapsedRealtime());
         }
 
         return true;
@@ -344,7 +355,7 @@ public class RecordFragment extends Fragment {
     private void resumeRecording() {
         long chronometerTime = SystemClock.elapsedRealtime() - mRecordingService.getTotalDurationMillis();
         mRecordingService.startRecording();
-        updateUI(RecorderState.RECORDING, chronometerTime);
+        updateUI(RecorderState.PREPARING, chronometerTime);
     }
 
     @Override

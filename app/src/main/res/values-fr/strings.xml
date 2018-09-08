@@ -44,6 +44,7 @@
     <string name="record_prompt">Appuyez sur le bouton pour démarrer l\'enregistrement</string>
     <string name="record_in_progress">Enregistrement en cours</string>
     <string name="record_paused">En pause</string>
+    <string name="wait">S\'il vous plaît attendre</string>
     <string name="send_to">Envoyer à</string>
 
     <!-- Preferences -->

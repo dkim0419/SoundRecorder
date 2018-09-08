@@ -43,6 +43,7 @@
     <string name="record_prompt">Нажмите на кнопку, чтобы начать запись</string>
     <string name="record_in_progress">Запись</string>
     <string name="record_paused">Запись приостановлена</string>
+    <string name="wait">Подождите</string>
     <string name="send_to">Отправить</string>
 
     <!-- Preferences -->

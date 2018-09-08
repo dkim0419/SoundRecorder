@@ -47,6 +47,7 @@
     <string name="record_prompt">Tap the button to start recording</string>
     <string name="record_in_progress">Recording</string>
     <string name="record_paused">Paused</string>
+    <string name="wait">Wait</string>
 
     <string name="send_to">Send to</string>
 

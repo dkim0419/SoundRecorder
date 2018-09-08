@@ -195,6 +195,7 @@ public class RecordingService extends Service {
         }
 
         try {
+            final long totalDurationMillis = getTotalDurationMillis();
             mRecorder.prepare();
             mRecorder.start();
             if (state != RecorderState.PAUSED)
@@ -202,13 +203,16 @@ public class RecordingService extends Service {
             state = RecorderState.RECORDING;
             Toast.makeText(this, R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
             mStartingTimeMillis = SystemClock.elapsedRealtime();
+            EventBroadcaster.startRecording(this, mStartingTimeMillis - totalDurationMillis);
         } catch (IOException e) {
             state = RecorderState.STOPPED;
+            EventBroadcaster.stopRecording(this);
             Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_unknown));
         } catch (IllegalStateException e) {
             state = RecorderState.STOPPED;
+            EventBroadcaster.stopRecording(this);
             Crashlytics.logException(e);
             Log.e(LOG_TAG, "start() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_mic_is_busy));

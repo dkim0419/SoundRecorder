@@ -43,6 +43,7 @@
     <string name="record_prompt">Націсніце на кнопку, каб пачаць запіс</string>
     <string name="record_in_progress">Ідзе запіс</string>
     <string name="record_paused">Прыпынены</string>
+    <string name="wait">Пачакайце</string>
     <string name="send_to">Адправіць</string>
 
     <!-- Preferences -->

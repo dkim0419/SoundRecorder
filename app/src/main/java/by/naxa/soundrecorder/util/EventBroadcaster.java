@@ -14,6 +14,7 @@ public class EventBroadcaster {
     public static final String MESSAGE = "MESSAGE";
     public static final String CHANGE_STATE = "CHANGE_STATE";
     public static final String NEW_STATE = "NEW_STATE";
+    public static final String CHRONOMETER_TIME = "CHRONOMETER_TIME";
 
     public static void send(@NonNull Context context, String message) {
         final Intent it = new Intent(EventBroadcaster.SHOW_SNACKBAR);
@@ -33,6 +34,15 @@ public class EventBroadcaster {
             return;
         final Intent it = new Intent(EventBroadcaster.CHANGE_STATE);
         it.putExtra(EventBroadcaster.NEW_STATE, RecorderState.STOPPED);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(it);
+    }
+
+    public static void startRecording(@Nullable Context context, long chronometerTime) {
+        if (context == null)
+            return;
+        final Intent it = new Intent(EventBroadcaster.CHANGE_STATE);
+        it.putExtra(EventBroadcaster.NEW_STATE, RecorderState.RECORDING);
+        it.putExtra(EventBroadcaster.CHRONOMETER_TIME, chronometerTime);
         LocalBroadcastManager.getInstance(context).sendBroadcast(it);
     }
 }
