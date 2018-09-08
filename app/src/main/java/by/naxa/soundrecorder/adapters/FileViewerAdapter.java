@@ -35,6 +35,7 @@ import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.fragments.PlaybackFragment;
 import by.naxa.soundrecorder.listeners.OnDatabaseChangedListener;
+import by.naxa.soundrecorder.listeners.OnSingleClickListener;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.Paths;
 import by.naxa.soundrecorder.util.TimeUtils;
@@ -49,9 +50,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     private DBHelper mDatabase;
 
-    private RecordingItem item;
     private Context mContext;
-    private LinearLayoutManager llm;
+    private final LinearLayoutManager llm;
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
@@ -64,7 +64,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     @Override
     public void onBindViewHolder(@NonNull final RecordingsViewHolder holder, int position) {
 
-        item = getItem(position);
+        RecordingItem item = getItem(position);
         long itemDuration = item.getLength();
 
         holder.vName.setText(item.getName());
@@ -78,9 +78,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         );
 
         // define an on click listener to open PlaybackFragment
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        holder.cardView.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 try {
                     PlaybackFragment playbackFragment =
                             new PlaybackFragment().newInstance(getItem(holder.getPosition()));
@@ -140,7 +140,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     @Override
-    public RecordingsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecordingsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.
                 from(parent.getContext()).

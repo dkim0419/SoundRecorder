@@ -33,9 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private TabLayout tabs;
-    private ViewPager pager;
-
     private BroadcastReceiver mMessageReceiver = null;
 
     @Override
@@ -43,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pager = findViewById(R.id.pager);
+        final ViewPager pager = findViewById(R.id.pager);
         setupViewPager(pager);
-        tabs = findViewById(R.id.tabs);
+        final TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(pager);
 
         Toolbar toolbar = findViewById(R.id.toolbar);

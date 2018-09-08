@@ -41,6 +41,12 @@ public class FileViewerFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        observer.stopWatching();
+        super.onDestroy();
+    }
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_file_viewer, container, false);
@@ -59,6 +65,12 @@ public class FileViewerFragment extends Fragment {
         mRecyclerView.setAdapter(mFileViewerAdapter);
 
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mFileViewerAdapter = null;
     }
 
     private final FileObserver observer =
