@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
+import by.naxa.soundrecorder.listeners.OnSingleClickListener;
 import by.naxa.soundrecorder.services.RecordingService;
 import by.naxa.soundrecorder.util.Command;
 import by.naxa.soundrecorder.util.EventBroadcaster;
@@ -146,9 +147,9 @@ public class RecordFragment extends Fragment {
     };
 
     private View.OnClickListener createPauseButtonClickListener() {
-        return new View.OnClickListener() {
+        return new OnSingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (isPauseButtonInState1) {
                     // pause recording
                     mRecordingService.pauseRecording();
@@ -166,9 +167,9 @@ public class RecordFragment extends Fragment {
     }
 
     private View.OnClickListener createRecordButtonClickListener() {
-        return new View.OnClickListener() {
+        return new OnSingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 if (isRecordButtonInState1) {
                     if (PermissionsHelper.checkAndRequestPermissions(
                             RecordFragment.this, MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {

@@ -175,8 +175,9 @@ public class RecordingService extends Service {
      * Start or resume sound recording.
      */
     public void startRecording() {
-        if (state == RecorderState.RECORDING)
+        if (state == RecorderState.RECORDING || state == RecorderState.PREPARING)
             return;
+        state = RecorderState.PREPARING;
 
         boolean isTemporary = true;
         setFileNameAndPath(isTemporary);
@@ -202,10 +203,12 @@ public class RecordingService extends Service {
             Toast.makeText(this, R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
             mStartingTimeMillis = SystemClock.elapsedRealtime();
         } catch (IOException e) {
+            state = RecorderState.STOPPED;
             Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_unknown));
         } catch (IllegalStateException e) {
+            state = RecorderState.STOPPED;
             Crashlytics.logException(e);
             Log.e(LOG_TAG, "start() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_mic_is_busy));
@@ -215,14 +218,21 @@ public class RecordingService extends Service {
     public void pauseRecording() {
         if (state != RecorderState.RECORDING)
             return;
+        state = RecorderState.PREPARING;
 
-        mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
-        pauseDurations.add(mElapsedMillis);
-        mRecorder.stop();
-        state = RecorderState.PAUSED;
-        Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
+        try {
+            mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
+            pauseDurations.add(mElapsedMillis);
+            mRecorder.stop();
+            state = RecorderState.PAUSED;
+            Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
-        filesPaused.add(mFilePath);
+            filesPaused.add(mFilePath);
+        } catch (IllegalStateException exc) {
+            state = RecorderState.RECORDING;
+            Crashlytics.logException(exc);
+            Log.e(LOG_TAG, "stop() failed", exc);
+        }
     }
 
     public void stopRecording() {
@@ -230,14 +240,18 @@ public class RecordingService extends Service {
             Log.wtf(LOG_TAG, "stopRecording: already STOPPED.");
             return;
         }
-        if (state == RecorderState.RECORDING)
+        if (state == RecorderState.PREPARING)
+            return;
+        final RecorderState stateBefore = state;
+        state = RecorderState.PREPARING;
+        if (stateBefore == RecorderState.RECORDING)
             filesPaused.add(mFilePath);
 
         boolean isTemporary = false;
         setFileNameAndPath(isTemporary);
 
         try {
-            if (state != RecorderState.PAUSED) {
+            if (stateBefore != RecorderState.PAUSED) {
                 mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
                 mRecorder.stop();
             }

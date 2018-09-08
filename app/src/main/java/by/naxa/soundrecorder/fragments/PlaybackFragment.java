@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecordingItem;
 import by.naxa.soundrecorder.listeners.HeadsetListener;
+import by.naxa.soundrecorder.listeners.OnSingleClickListener;
 import by.naxa.soundrecorder.util.AudioManagerCompat;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.ScreenLock;
@@ -186,9 +187,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         attachHeadsetListener();
 
         mPlayButton = view.findViewById(R.id.fab_play);
-        mPlayButton.setOnClickListener(new View.OnClickListener() {
+        mPlayButton.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onSingleClick(View v) {
                 isPlaying = onPlay(isPlaying);
             }
         });
