@@ -39,6 +39,7 @@ import by.naxa.soundrecorder.listeners.OnSingleClickListener;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.Paths;
 import by.naxa.soundrecorder.util.TimeUtils;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -90,9 +91,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             .beginTransaction();
 
                     playbackFragment.show(transaction, "dialog_playback");
-
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "exception", e);
+                    Crashlytics.logException(e);
                 }
             }
         });
@@ -140,6 +141,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     @Override
+    @NonNull
     public RecordingsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.
@@ -151,13 +153,13 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         return new RecordingsViewHolder(itemView);
     }
 
-    public static class RecordingsViewHolder extends RecyclerView.ViewHolder {
-        protected TextView vName;
-        protected TextView vLength;
-        protected TextView vDateAdded;
-        protected View cardView;
+    static class RecordingsViewHolder extends RecyclerView.ViewHolder {
+        TextView vName;
+        TextView vLength;
+        TextView vDateAdded;
+        View cardView;
 
-        public RecordingsViewHolder(View v) {
+        RecordingsViewHolder(View v) {
             super(v);
             vName = v.findViewById(R.id.file_name_text);
             vLength = v.findViewById(R.id.file_length_text);
@@ -280,7 +282,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             final String value = editable.toString().trim() + ".mp4";
                             rename(position, value);
                         } catch (Exception e) {
-                            Crashlytics.logException(e);
+                            if (Fabric.isInitialized()) Crashlytics.logException(e);
                             Log.e(LOG_TAG, "exception", e);
                             EventBroadcaster.send(mContext, mContext.getString(R.string.error_rename_file));
                         }

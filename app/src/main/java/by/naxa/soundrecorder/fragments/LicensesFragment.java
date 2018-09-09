@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
@@ -16,6 +17,7 @@ import by.naxa.soundrecorder.R;
 public class LicensesFragment extends AppCompatDialogFragment {
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         final LayoutInflater dialogInflater = requireActivity().getLayoutInflater();
         View openSourceLicensesView = dialogInflater.inflate(R.layout.fragment_licenses, null);

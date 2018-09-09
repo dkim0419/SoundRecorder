@@ -37,6 +37,7 @@ import by.naxa.soundrecorder.util.MyIntentBuilder;
 import by.naxa.soundrecorder.util.MySharedPreferences;
 import by.naxa.soundrecorder.util.NotificationCompatPie;
 import by.naxa.soundrecorder.util.Paths;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Daniel on 12/28/2014.
@@ -74,6 +75,8 @@ public class RecordingService extends Service {
     public void onCreate() {
         super.onCreate();
         mDatabase = new DBHelper(getApplicationContext());
+        if (Fabric.isInitialized())
+            Crashlytics.setString("recorder_state", state.toString());
     }
 
     @Override
@@ -177,7 +180,7 @@ public class RecordingService extends Service {
     public void startRecording() {
         if (state == RecorderState.RECORDING || state == RecorderState.PREPARING)
             return;
-        state = RecorderState.PREPARING;
+        changeStateTo(RecorderState.PREPARING);
 
         boolean isTemporary = true;
         setFileNameAndPath(isTemporary);
@@ -200,20 +203,20 @@ public class RecordingService extends Service {
             mRecorder.start();
             if (state != RecorderState.PAUSED)
                 NotificationCompatPie.createNotification(this);
-            state = RecorderState.RECORDING;
+            changeStateTo(RecorderState.RECORDING);
             Toast.makeText(this, R.string.toast_recording_start, Toast.LENGTH_SHORT).show();
             mStartingTimeMillis = SystemClock.elapsedRealtime();
             EventBroadcaster.startRecording(this, mStartingTimeMillis - totalDurationMillis);
         } catch (IOException e) {
-            state = RecorderState.STOPPED;
+            changeStateTo(RecorderState.STOPPED);
             EventBroadcaster.stopRecording(this);
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_unknown));
         } catch (IllegalStateException e) {
-            state = RecorderState.STOPPED;
+            changeStateTo(RecorderState.STOPPED);
             EventBroadcaster.stopRecording(this);
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             Log.e(LOG_TAG, "start() failed", e);
             EventBroadcaster.send(this, getString(R.string.error_mic_is_busy));
         }
@@ -222,18 +225,18 @@ public class RecordingService extends Service {
     public void pauseRecording() {
         if (state != RecorderState.RECORDING)
             return;
-        state = RecorderState.PREPARING;
+        changeStateTo(RecorderState.PREPARING);
 
         try {
             mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
             pauseDurations.add(mElapsedMillis);
             mRecorder.stop();
-            state = RecorderState.PAUSED;
+            changeStateTo(RecorderState.PAUSED);
             Toast.makeText(this, getString(R.string.toast_recording_paused), Toast.LENGTH_LONG).show();
 
             filesPaused.add(mFilePath);
         } catch (IllegalStateException exc) {
-            state = RecorderState.RECORDING;
+            changeStateTo(RecorderState.RECORDING);
             Crashlytics.logException(exc);
             Log.e(LOG_TAG, "stop() failed", exc);
         }
@@ -247,7 +250,7 @@ public class RecordingService extends Service {
         if (state == RecorderState.PREPARING)
             return;
         final RecorderState stateBefore = state;
-        state = RecorderState.PREPARING;
+        changeStateTo(RecorderState.PREPARING);
         if (stateBefore == RecorderState.RECORDING)
             filesPaused.add(mFilePath);
 
@@ -269,7 +272,7 @@ public class RecordingService extends Service {
             // TODO delete temporary output file
         } finally {
             mRecorder = null;
-            state = RecorderState.STOPPED;
+            changeStateTo(RecorderState.STOPPED);
             EventBroadcaster.stopRecording(this);
         }
 
@@ -283,7 +286,7 @@ public class RecordingService extends Service {
         try {
             mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             Log.e(LOG_TAG, "exception", e);
         }
     }
@@ -302,7 +305,7 @@ public class RecordingService extends Service {
                 List<Track> movieTracks = movie.getTracks();
                 tracks.addAll(movieTracks);
             } catch (IOException e) {
-                Crashlytics.logException(e);
+                if (Fabric.isInitialized()) Crashlytics.logException(e);
                 e.printStackTrace();
                 return false;
             } catch (NullPointerException exc) {
@@ -315,7 +318,7 @@ public class RecordingService extends Service {
             try {
                 finalMovie.addTrack(new AppendTrack(tracks.toArray(new Track[0])));
             } catch (IOException e) {
-                Crashlytics.logException(e);
+                if (Fabric.isInitialized()) Crashlytics.logException(e);
                 e.printStackTrace();
             }
         }
@@ -330,7 +333,7 @@ public class RecordingService extends Service {
             Log.wtf(LOG_TAG, "Caught NoSuchElementException from DefaultMp4Builder#build()", exc);
             return false;
         } catch (FileNotFoundException e) {
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             e.printStackTrace();
             return false;
         }
@@ -339,7 +342,7 @@ public class RecordingService extends Service {
         try {
             mp4file.writeContainer(fc);
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             e.printStackTrace();
             ok = false;
         } finally {
@@ -380,6 +383,14 @@ public class RecordingService extends Service {
 
     public RecorderState getState() {
         return state;
+    }
+
+    private void changeStateTo(RecorderState newState) {
+        if (state == RecorderState.PREPARING && newState == RecorderState.PREPARING)
+            throw new IllegalStateException();
+        state = newState;
+        if (Fabric.isDebuggable())
+            Crashlytics.setString("recorder_state", state.toString());
     }
 
     /**

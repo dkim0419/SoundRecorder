@@ -35,6 +35,7 @@ import by.naxa.soundrecorder.util.AudioManagerCompat;
 import by.naxa.soundrecorder.util.EventBroadcaster;
 import by.naxa.soundrecorder.util.ScreenLock;
 import by.naxa.soundrecorder.util.TimeUtils;
+import io.fabric.sdk.android.Fabric;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 import static android.media.AudioManager.ACTION_HEADSET_PLUG;
@@ -65,11 +66,10 @@ public class PlaybackFragment extends AppCompatDialogFragment {
     private SeekBar mSeekBar = null;
     private FloatingActionButton mPlayButton = null;
     private TextView mCurrentProgressTextView = null;
-    private TextView mFileNameTextView = null;
     private TextView mFileLengthTextView = null;
 
     //stores whether or not the mediaplayer is currently playing audio
-    public volatile boolean isPlaying = false;
+    private volatile boolean isPlaying = false;
 
     // Stores the length of the file in milliseconds
     private long itemDurationMs = 0;
@@ -119,6 +119,13 @@ public class PlaybackFragment extends AppCompatDialogFragment {
             return;
 
         itemDurationMs = item.getLength();
+        if (Fabric.isInitialized()) {
+            Crashlytics.setLong("recording_item_duration", itemDurationMs);
+            Crashlytics.setString("recording_item_name", item.getName());
+            Crashlytics.setString("recording_item_file_path", item.getFilePath());
+            Crashlytics.setBool("is_playing", isPlaying);
+            Crashlytics.setBool("holding_audio_focus", mFocused);
+        }
     }
 
     @Override
@@ -135,7 +142,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         final AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         final View view = requireActivity().getLayoutInflater().inflate(R.layout.fragment_media_playback, null);
 
-        mFileNameTextView = view.findViewById(R.id.file_name_text_view);
+        final TextView fileNameTextView = view.findViewById(R.id.file_name_text_view);
         mFileLengthTextView = view.findViewById(R.id.file_length_text_view);
         mCurrentProgressTextView = view.findViewById(R.id.current_progress_text_view);
 
@@ -191,10 +198,13 @@ public class PlaybackFragment extends AppCompatDialogFragment {
             @Override
             public void onSingleClick(View v) {
                 isPlaying = onPlay(isPlaying);
+                if (Fabric.isInitialized()) {
+                    Crashlytics.setBool("is_playing", isPlaying);
+                }
             }
         });
 
-        mFileNameTextView.setText(item.getName());
+        fileNameTextView.setText(item.getName());
         mFileLengthTextView.setText(TimeUtils.formatDuration(itemDurationMs));
 
         builder.setView(view);
@@ -277,8 +287,22 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         }
     }
 
+    public void tapStartButton() {
+        isPlaying = onPlay(false);
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("is_playing", isPlaying);
+        }
+    }
+
+    public void tapStopButton() {
+        isPlaying = onPlay(true);
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("is_playing", isPlaying);
+        }
+    }
+
     // Play start/stop
-    public boolean onPlay(boolean isPlaying) {
+    private boolean onPlay(boolean isPlaying) {
         if (!isPlaying) {
             if (getContext() == null) {
                 // PlaybackFragment is not attached to a Context
@@ -328,7 +352,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                 }
             });
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
             EventBroadcaster.send(getContext(), R.string.error_prepare_playback);
         }
@@ -365,7 +389,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
             });
 
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            if (Fabric.isInitialized()) Crashlytics.logException(e);
             Log.e(LOG_TAG, "prepare() failed");
         }
 
@@ -427,6 +451,9 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         abandonAudioFocus();
 
         isPlaying = false;
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("is_playing", isPlaying);
+        }
 
         mCurrentProgressTextView.setText(mFileLengthTextView.getText());
         mSeekBar.setProgress(mSeekBar.getMax());
@@ -445,9 +472,12 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                             AudioManager.STREAM_MUSIC,
                             AudioManager.AUDIOFOCUS_GAIN);
         }
-        Log.i(LOG_TAG, mFocused
-                ? "PlaybackFragment gained audio focus."
-                : "PlaybackFragment did not gain audio focus.");
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("holding_audio_focus", mFocused);
+            Crashlytics.log(Log.INFO, LOG_TAG, mFocused
+                    ? "PlaybackFragment gained audio focus."
+                    : "PlaybackFragment did not gain audio focus.");
+        }
         return mFocused;
     }
 
@@ -463,9 +493,12 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         }
         mFocused = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
 
-        Log.i(LOG_TAG, mFocused
-                ? "PlaybackFragment did not abandon audio focus."
-                : "PlaybackFragment abandoned audio focus.");
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("holding_audio_focus", mFocused);
+            Crashlytics.log(Log.INFO, LOG_TAG, mFocused
+                    ? "PlaybackFragment did not abandon audio focus."
+                    : "PlaybackFragment abandoned audio focus.");
+        }
         return result;
     }
 
@@ -511,6 +544,10 @@ public class PlaybackFragment extends AppCompatDialogFragment {
                 default:
                     Log.i(LOG_TAG, "Ignoring AudioFocus state change");
                     break;
+            }
+            if (Fabric.isInitialized()) {
+                Crashlytics.setBool("holding_audio_focus", mFocused);
+                Crashlytics.setBool("is_playing", isPlaying);
             }
         }
     };

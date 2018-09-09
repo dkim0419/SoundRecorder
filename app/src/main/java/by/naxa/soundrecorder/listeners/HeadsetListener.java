@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import by.naxa.soundrecorder.fragments.PlaybackFragment;
+import io.fabric.sdk.android.Fabric;
 
 import static android.content.Intent.ACTION_HEADSET_PLUG;
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
@@ -28,13 +31,11 @@ public class HeadsetListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (isInitialStickyBroadcast()) {
-            return;
-        }
+        if (isInitialStickyBroadcast()) return;
 
         Log.i(LOG_TAG, "onReceive: " + intent.toString());
 
-        boolean plugged, unplugged;
+        final boolean plugged, unplugged;
 
         if (ACTION_HEADSET_PLUG.equals(intent.getAction())) {
             plugged = intent.getIntExtra("state", -1) == 1;
@@ -43,12 +44,18 @@ public class HeadsetListener extends BroadcastReceiver {
             plugged = unplugged = false;
         }
 
-        boolean becomingNoisy = ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction());
+        final boolean becomingNoisy = ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction());
+
+        if (Fabric.isInitialized()) {
+            Crashlytics.setBool("plugged", plugged);
+            Crashlytics.setBool("unplugged", unplugged);
+            Crashlytics.setBool("becoming_noisy", becomingNoisy);
+        }
 
         if (unplugged || becomingNoisy) {
-            mInstance.isPlaying = mInstance.onPlay(true);
+            mInstance.tapStopButton();
         } else if (plugged && shouldResumeOnHeadphonesConnect) {
-            mInstance.isPlaying = mInstance.onPlay(false);
+            mInstance.tapStartButton();
         }
     }
 }
