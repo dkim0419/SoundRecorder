@@ -27,6 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -68,6 +69,8 @@ public class RecordFragment extends Fragment {
     private Chronometer mChronometer = null;
     long timeWhenPaused = 0; //stores time when user clicks pause button
 
+    // Defines callbacks for service binding, passed to bindService()
+    private ServiceConnection mConnection;
     private RecordingService mRecordingService;
     private BroadcastReceiver mMessageReceiver = null;
 
@@ -88,7 +91,6 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tryBindService();
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -105,19 +107,58 @@ public class RecordFragment extends Fragment {
         };
     }
 
-    private void tryBindService() {
-        if (mRecordingService == null) {
-            final Context context = getContext();
-            if (context == null)
-                return;
-            final Intent intent = new Intent(context, RecordingService.class);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        final Intent intent = new Intent(context, RecordingService.class);
+        tryBindService(context, intent);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        tryUnbindService(getContext());
+    }
+
+    private void tryBindService(Context context, Intent intent) {
+        if (mConnection == null) {
+            mConnection = new ServiceConnection() {
+
+                @Override
+                public void onServiceConnected(ComponentName className, IBinder service) {
+                    // We've bound to LocalService, cast the IBinder and get LocalService instance
+                    RecordingService.LocalBinder binder = (RecordingService.LocalBinder) service;
+                    mRecordingService = binder.getService();
+                    Log.i(LOG_TAG, "RecordFragment ServiceConnection#onServiceConnected");
+
+                    long chronometerTime = SystemClock.elapsedRealtime() - mRecordingService.getTotalDurationMillis();
+                    updateUI(mRecordingService.getState(), chronometerTime);
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName arg0) {
+                    Log.i(LOG_TAG, "RecordFragment ServiceConnection#onServiceDisconnected");
+                    mRecordingService = null;
+                }
+            };
+
             context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
+    private void tryUnbindService(Context context) {
+        if (context == null)
+            Log.w(LOG_TAG, "tryUnbindService: context is null");
+        if (mConnection != null) {
+            context.unbindService(mConnection);
+            mConnection = null;
+        }
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    @Nullable
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
         mChronometer = recordView.findViewById(R.id.chronometer);
@@ -270,29 +311,6 @@ public class RecordFragment extends Fragment {
     }
 
     /**
-     * Defines callbacks for service binding, passed to bindService()
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            RecordingService.LocalBinder binder = (RecordingService.LocalBinder) service;
-            mRecordingService = binder.getService();
-            Log.i(LOG_TAG, "RecordFragment ServiceConnection#onServiceConnected");
-
-            long chronometerTime = SystemClock.elapsedRealtime() - mRecordingService.getTotalDurationMillis();
-            updateUI(mRecordingService.getState(), chronometerTime);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.i(LOG_TAG, "RecordFragment ServiceConnection#onServiceDisconnected");
-            mRecordingService = null;
-        }
-    };
-
-    /**
      * Stop recording
      */
     private void stopRecording() {
@@ -302,9 +320,7 @@ public class RecordFragment extends Fragment {
             return;
         }
         activity.startService(getStopServiceIntent());
-        if (mConnection != null) {
-            activity.unbindService(mConnection);
-        }
+        tryUnbindService(activity);
 
         ScreenLock.allowScreenTurnOff(activity);
     }
@@ -339,7 +355,7 @@ public class RecordFragment extends Fragment {
         } else {
             componentName = activity.startService(intent);
         }
-        activity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        tryBindService(activity, intent);
         ScreenLock.keepScreenOn(activity);
 
         if (componentName != null) {

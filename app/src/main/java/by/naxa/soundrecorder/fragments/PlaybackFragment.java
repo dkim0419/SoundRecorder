@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -191,8 +192,6 @@ public class PlaybackFragment extends AppCompatDialogFragment {
             }
         });
 
-        attachHeadsetListener();
-
         mPlayButton = view.findViewById(R.id.fab_play);
         mPlayButton.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -221,18 +220,17 @@ public class PlaybackFragment extends AppCompatDialogFragment {
     /**
      * Attach a HeadsetListener to respond to headset events.
      */
-    private void attachHeadsetListener() {
+    private void attachHeadsetListener(Context context) {
         mHeadsetListener = new HeadsetListener(this);
         IntentFilter filter = new IntentFilter();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             filter.addAction(ACTION_HEADSET_PLUG);
         }
         filter.addAction(ACTION_AUDIO_BECOMING_NOISY);
-        final Context context = getContext();
         if (context != null) {
             context.registerReceiver(mHeadsetListener, filter);
         } else {
-            Log.wtf(LOG_TAG, "attachHeadsetListener(): getContext() returned null.");
+            Log.wtf(LOG_TAG, "attachHeadsetListener(): context is null.");
         }
     }
 
@@ -244,7 +242,7 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         if (context != null) {
             context.unregisterReceiver(mHeadsetListener);
         } else {
-            Log.wtf(LOG_TAG, "attachHeadsetListener(): getContext() returned null.");
+            Log.wtf(LOG_TAG, "detachHeadsetListener(): getContext() returned null.");
         }
         mHeadsetListener = null;
     }
@@ -282,6 +280,26 @@ public class PlaybackFragment extends AppCompatDialogFragment {
         if (mMediaPlayer != null) {
             stopPlaying();
         }
+    }
+
+    /**
+     * @param context a reference to the newly created Activity after each configuration change.
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (mHeadsetListener == null) {
+            attachHeadsetListener(context);
+        }
+    }
+
+    /**
+     * Set the MediaPlayer and Headset listener to null so we don't accidentally
+     * leak the Activity instance.
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
         if (mHeadsetListener != null) {
             detachHeadsetListener();
         }
@@ -375,7 +393,15 @@ public class PlaybackFragment extends AppCompatDialogFragment {
 
         try {
             mMediaPlayer.setDataSource(item.getFilePath());
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final AudioAttributes attributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                        .build();
+                mMediaPlayer.setAudioAttributes(attributes);
+            } else {
+                mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            }
             mMediaPlayer.prepare();
             mSeekBar.setMax(mMediaPlayer.getDuration());
             mMediaPlayer.seekTo(progress);
