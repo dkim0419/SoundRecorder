@@ -17,7 +17,7 @@ We want our app to be as stable as possible thus your bug reports are immensely 
 
 We have labeled tasks you can help with as [![GitHub issues by-label](https://img.shields.io/github/issues/naXa777/SoundRecorder/help%20wanted.svg)](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) and [![GitHub issues by-label](https://img.shields.io/github/issues/naXa777/SoundRecorder/good%20first%20issue.svg)](https://github.com/naXa777/SoundRecorder/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). Just pick up an issue that you're interested in and start coding. If you have a great idea you really want to implement, start by logging an issue for us. We'll let you know if it fits with our product direction and then you can start development. When you're ready open a Pull Request with a description of your changes.
 
-See [Git Essentials](#Git-Essentials) for a simple bugfix workflow.
+See [Git Essentials](#git-essentials) for a simple bugfix workflow.
 
 ### Translate
 
@@ -37,8 +37,7 @@ Please follow standard guidelines if you want to contribute a test:
 3. GitHub - [Android testing samples](https://github.com/googlesamples/android-testing)
 
 
-Git Essentials
---------------------------------------
+## Git Essentials
 
 Workflows can vary, but here is a very simple workflow for contributing a bug fix:
 
