@@ -7,6 +7,8 @@ Easy Sound Recorder
 
 Screenshots:
 
+<!-- please make it work in screen lock mode --!>
+
 ![alt tag](http://i.imgur.com/4W5fj0Il.png) ![alt tag](http://i.imgur.com/7ggcFQzl.png) ![alt tag](http://i.imgur.com/RqD8S3Il.png) ![alt tag](http://i.imgur.com/H6ScO21l.png)
 
 
