@@ -49,6 +49,7 @@ public class PlaybackFragment extends DialogFragment{
     //stores minutes and seconds of the length of the file.
     long minutes = 0;
     long seconds = 0;
+    long milliseconds = 0;
 
     public PlaybackFragment newInstance(RecordingItem item) {
         PlaybackFragment f = new PlaybackFragment();
@@ -68,6 +69,8 @@ public class PlaybackFragment extends DialogFragment{
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
         seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
+        milliseconds = itemDuration - TimeUnit.MINUTES.toMillis(minutes)
+                - TimeUnit.SECONDS.toMillis(seconds);
     }
 
     @Override
@@ -104,7 +107,10 @@ public class PlaybackFragment extends DialogFragment{
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
+                    long milliseconds = mMediaPlayer.getCurrentPosition() - TimeUnit.MINUTES.toMillis(minutes)
+                            - TimeUnit.SECONDS.toMillis(seconds);
+
+                    mCurrentProgressTextView.setText(String.format("%02d:%02d:%02d", minutes, seconds, milliseconds/10));
 
                     updateSeekBar();
 
@@ -131,7 +137,10 @@ public class PlaybackFragment extends DialogFragment{
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
                             - TimeUnit.MINUTES.toSeconds(minutes);
-                    mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
+                    long milliseconds = mMediaPlayer.getCurrentPosition() - TimeUnit.MINUTES.toMillis(minutes)
+                            - TimeUnit.SECONDS.toMillis(seconds);
+
+                    mCurrentProgressTextView.setText(String.format("%02d:%02d:%02d", minutes, seconds, milliseconds/10));
                     updateSeekBar();
                 }
             }
@@ -147,7 +156,7 @@ public class PlaybackFragment extends DialogFragment{
         });
 
         mFileNameTextView.setText(item.getName());
-        mFileLengthTextView.setText(String.format("%02d:%02d", minutes,seconds));
+        mFileLengthTextView.setText(String.format("%02d:%02d:%02d", minutes, seconds, milliseconds/10));
 
         builder.setView(view);
 
@@ -307,7 +316,10 @@ public class PlaybackFragment extends DialogFragment{
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
                 long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
                         - TimeUnit.MINUTES.toSeconds(minutes);
-                mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
+                long milliseconds = mCurrentPosition - TimeUnit.MINUTES.toMillis(minutes)
+                        - TimeUnit.SECONDS.toMillis(seconds);
+
+                mCurrentProgressTextView.setText(String.format("%02d:%02d:%02d", minutes, seconds, milliseconds/10));
 
                 updateSeekBar();
             }
@@ -315,6 +327,6 @@ public class PlaybackFragment extends DialogFragment{
     };
 
     private void updateSeekBar() {
-        mHandler.postDelayed(mRunnable, 1000);
+        mHandler.postDelayed(mRunnable, 50);
     }
 }

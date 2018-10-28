@@ -61,9 +61,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
                 - TimeUnit.MINUTES.toSeconds(minutes);
+        long milliseconds = itemDuration - TimeUnit.MINUTES.toMillis(minutes)
+                - TimeUnit.SECONDS.toMillis(seconds);
 
         holder.vName.setText(item.getName());
-        holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
+        holder.vLength.setText(String.format("%02d:%02d:%03d", minutes, seconds, milliseconds));
         holder.vDateAdded.setText(
             DateUtils.formatDateTime(
                 mContext,
