@@ -121,19 +121,10 @@ public class RecordingService extends Service {
     }
 
     public void stopRecording() {
-        try {
-            mRecorder.stop();
-            mRecorder.release();
-
-            mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-            Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
-
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
-
-        } catch (Exception e) {
-            mRecorder.release();
-            Log.e(LOG_TAG, "exception", e);
-        }
+        mRecorder.stop();
+        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
+        mRecorder.release();
+        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
 
         //remove notification
         if (mIncrementTimerTask != null) {
@@ -142,6 +133,13 @@ public class RecordingService extends Service {
         }
 
         mRecorder = null;
+
+        try {
+            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
+
+        } catch (Exception e){
+            Log.e(LOG_TAG, "exception", e);
+        }
     }
 
     private void startTimer() {
