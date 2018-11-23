@@ -20,7 +20,7 @@ import com.danielkim.soundrecorder.fragments.LicensesFragment;
 import com.danielkim.soundrecorder.fragments.RecordFragment;
 
 
-public class MainActivity extends ActionBarActivity{
+public class MainActivity extends AppCompatActivity{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
