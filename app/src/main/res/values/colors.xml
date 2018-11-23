@@ -6,6 +6,7 @@
     <color name="primary_text">#212121</color>
     <color name="accent">#FFC107</color>
     <color name="secondary_text">#727272</color>
+    <color name="ripple">#C0C0C0</color>
     <color name="divider">#FFFFFF</color>
     <color name="text">#FFFFFF</color>
     <color name="white">#FFFFFF</color>

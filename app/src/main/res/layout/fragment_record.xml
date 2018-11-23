@@ -1,20 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_record"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/btnRecord"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:fab_colorNormal="@color/primary"
-        android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_mic_white_36dp" />
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRecord"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_mic_white_36dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnPause"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_media_pause"/>
+
+    </LinearLayout>
+
+
 
     <Chronometer
         android:layout_width="wrap_content"
@@ -39,21 +61,6 @@
         android:layout_marginTop="27dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnPause"
-        android:drawableLeft="@drawable/ic_media_pause"
-        android:text="@string/pause_recording_button"
-        android:textAllCaps="true"
-        android:fontFamily="sans-serif-condensed"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
