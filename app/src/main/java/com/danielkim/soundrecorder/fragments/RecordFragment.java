@@ -1,10 +1,10 @@
 package com.danielkim.soundrecorder.fragments;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingService;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
 
@@ -81,8 +80,6 @@ public class RecordFragment extends Fragment {
         mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
 
         mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
-        mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
-        mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +93,6 @@ public class RecordFragment extends Fragment {
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(),mPauseRecording + "",Toast.LENGTH_SHORT).show();
                 onPauseRecord(mPauseRecording);
                 mPauseRecording = !mPauseRecording;
             }
@@ -106,7 +102,6 @@ public class RecordFragment extends Fragment {
     }
 
     // Recording Start/Stop
-    //TODO: recording pause
     private void onRecord(boolean start){
 
         Intent intent = new Intent(getActivity(), RecordingService.class);
@@ -166,23 +161,17 @@ public class RecordFragment extends Fragment {
         }
     }
 
-    //TODO: implement pause recording
+
     private void onPauseRecord(boolean pause) {
         if (pause) {
             //pause recording
             mPauseButton.setImageResource(R.drawable.ic_media_play);
-            mPauseButton.setColorNormal(Color.parseColor("#FFC107"));
-            mPauseButton.setColorRipple(Color.parseColor("#C0C0C0"));
-            mPauseButton.setColorPressed(Color.parseColor("#727272"));
             mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
             //resume recording
-            mPauseButton.setImageResource(R.drawable.ic_media_pause);
-            mPauseButton.setColorNormal(Color.parseColor("#F44336"));
-            mPauseButton.setColorRipple(Color.parseColor("#C0C0C0"));
-            mPauseButton.setColorPressed(Color.parseColor("#727272"));
+            mPauseButton.setImageResource(R.drawable.ic_media_pause);;
             mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
