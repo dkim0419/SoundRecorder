@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +19,6 @@ import android.widget.TextView;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
-import com.melnykov.fab.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
