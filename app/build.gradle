@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.danielkim.soundrecorder"
@@ -10,6 +10,7 @@ android {
         targetSdkVersion 21
         versionCode 130
         versionName "1.3.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -23,9 +24,12 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.+'
-    compile 'com.android.support:cardview-v7:21.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'com.melnykov:floatingactionbutton:1.1.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'com.android.support:appcompat-v7:21.0.3'
+    implementation 'com.android.support:cardview-v7:21.0.3'
+    implementation 'com.android.support:recyclerview-v7:21.0.3'
+    implementation 'com.melnykov:floatingactionbutton:1.1.0'
+    implementation 'com.jpardogo.materialtabstrip:library:1.0.6'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 }
