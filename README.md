@@ -1,20 +1,24 @@
-Easy Sound Recorder
-=============
+# Easy Sound Recorder UI Tests with Espresso
 
-<p>A simple sound recording app implementing Material Design.</p>
+<p>UI tests for Sound Recorder with Espresso.</p>
 
-[![Android app on Google Play](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.danielkim.soundrecorder) [![Android app on F-Droid](https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Get_it_on_F-Droid.svg/200px-Get_it_on_F-Droid.svg.png)](https://f-droid.org/repository/browse/?fdid=com.danielkim.soundrecorder)
+## Test Cases
 
-Screenshots:
+- User can start recording
+- User can stop recording
+- User should see the chronometer's increment
+- User should be notified when recording starts
+- User should be notified when recording ends
 
-![alt tag](http://i.imgur.com/4W5fj0Il.png) ![alt tag](http://i.imgur.com/7ggcFQzl.png) ![alt tag](http://i.imgur.com/RqD8S3Il.png) ![alt tag](http://i.imgur.com/H6ScO21l.png)
+- User can share a recorded sound file
+- User can rename a recorded sound file
+- User can delete a recorded sound file
+- User can confirm deleting
+- User can deny deleting
+- User can play recorded sound files
+- User can pause while playing the recorded sound file
+- User can resume playing the recorded sound file
+- User can have more than one recorded sound file
 
-
-Credits / Libraries used:
-
-https://github.com/makovkastar/FloatingActionButton
-
-https://github.com/MohammadAG/Android-SoundRecorder
-
-https://github.com/astuetz/PagerSlidingTabStrip
-
+- User should see settings when main menu is tapped
+- User can enable high quality recording
