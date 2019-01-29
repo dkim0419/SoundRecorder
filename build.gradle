@@ -5,7 +5,7 @@ buildscript {
             'compileSdk'            : 21,
             'minSdk'                : 16,
             'targetSdk'             : 21,
-            'buildTools'            : '25.0.0',
+            'buildTools'            : '28.0.3',
             'support'               : '21.0.+',
             'floatingActionButton'  : '1.1.0',
             'materialTabStrip'      : '1.0.6'
