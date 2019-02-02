@@ -3,7 +3,6 @@
 
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- remove action bar, using toolbar -->
-        <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
 
         <!-- colors -->
