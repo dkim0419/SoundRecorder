@@ -20,6 +20,11 @@ android {
     lintOptions{
         disable 'MissingTranslation'
     }
+    configurations.all {
+        resolutionStrategy {
+            force "com.android.support:support-v4:${versions.support}"
+        }
+    }
 }
 
 dependencies {
