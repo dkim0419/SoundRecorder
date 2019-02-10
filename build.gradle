@@ -2,11 +2,11 @@
 
 buildscript {
     ext.versions = [
-            'compileSdk'            : 24,
+            'compileSdk'            : 25,
             'minSdk'                : 16,
-            'targetSdk'             : 24,
+            'targetSdk'             : 25,
             'buildTools'            : '28.0.3',
-            'support'               : '24.2.1',
+            'support'               : '25.4.0',
             'floatingActionButton'  : '1.1.0',
             'materialTabStrip'      : '1.0.6'
     ]
