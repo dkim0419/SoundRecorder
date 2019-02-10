@@ -34,7 +34,7 @@ import java.io.File;
  */
 public class RecordFragment extends Fragment {
 
-    public static final int REQUEST_AUDIO_AND_STORAGE = 0;
+    public static final int REQUEST_MIC_AND_WRITE_STORAGE = 0;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_POSITION = "position";
@@ -97,10 +97,7 @@ public class RecordFragment extends Fragment {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
                         ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_AND_STORAGE);
-
-                        onRecord(mStartRecording);
-                        mStartRecording = !mStartRecording;
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_MIC_AND_WRITE_STORAGE);
                     } else {
                         onRecord(mStartRecording);
                         mStartRecording = !mStartRecording;
@@ -203,14 +200,13 @@ public class RecordFragment extends Fragment {
     @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_AUDIO_AND_STORAGE) {
+        if (requestCode == REQUEST_MIC_AND_WRITE_STORAGE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED &&
                 grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
                 onRecord(mStartRecording);
                 mStartRecording = !mStartRecording;
             }
-        } else {
-            // TODO - Put a Toast explaining the need for permissions
         }
     }
 }
