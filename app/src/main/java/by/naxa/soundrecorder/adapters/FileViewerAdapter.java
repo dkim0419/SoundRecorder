@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,46 +99,56 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             }
         });
 
+        holder.options.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View view) {
+                presentFileOptions(holder);
+            }
+        });
+
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
-                final ArrayList<String> entries = new ArrayList<>();
-                entries.add(mContext.getString(R.string.dialog_file_share));
-                entries.add(mContext.getString(R.string.dialog_file_rename));
-                entries.add(mContext.getString(R.string.dialog_file_delete));
-
-                final CharSequence[] items = entries.toArray(new CharSequence[entries.size()]);
-
-
-                // File delete confirm
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(mContext.getString(R.string.dialog_title_options));
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        if (item == 0) {
-                            shareFileDialog(holder.getPosition());
-                        } else if (item == 1) {
-                            renameFileDialog(holder.getPosition());
-                        } else if (item == 2) {
-                            deleteFileDialog(holder.getPosition());
-                        }
-                    }
-                });
-                builder.setCancelable(true);
-                builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-                return false;
+                return presentFileOptions(holder);
             }
         });
+    }
+
+    private boolean presentFileOptions(@NonNull final RecordingsViewHolder holder) {
+        final ArrayList<String> entries = new ArrayList<>();
+        entries.add(mContext.getString(R.string.dialog_file_share));
+        entries.add(mContext.getString(R.string.dialog_file_rename));
+        entries.add(mContext.getString(R.string.dialog_file_delete));
+
+        final CharSequence[] items = entries.toArray(new CharSequence[entries.size()]);
+
+
+        // File delete confirm
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle(mContext.getString(R.string.dialog_title_options));
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                if (item == 0) {
+                    shareFileDialog(holder.getPosition());
+                } else if (item == 1) {
+                    renameFileDialog(holder.getPosition());
+                } else if (item == 2) {
+                    deleteFileDialog(holder.getPosition());
+                }
+            }
+        });
+        builder.setCancelable(true);
+        builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        return false;
     }
 
     @Override
@@ -158,6 +169,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         TextView vLength;
         TextView vDateAdded;
         View cardView;
+        ImageView options;
 
         RecordingsViewHolder(View v) {
             super(v);
@@ -165,6 +177,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             vLength = v.findViewById(R.id.file_length_text);
             vDateAdded = v.findViewById(R.id.file_date_added_text);
             cardView = v.findViewById(R.id.card_view);
+            options = v.findViewById(R.id.optionsImageView);
         }
     }
 

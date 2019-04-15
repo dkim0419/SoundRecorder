@@ -64,4 +64,12 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/optionsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:layout_gravity="center|end"
+        android:src="@drawable/dots"/>
+
 </com.google.android.material.card.MaterialCardView>
