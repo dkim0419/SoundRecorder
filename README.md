@@ -35,8 +35,8 @@ See [Crashlytics Kit Setup Demo](https://github.com/plastiv/CrashlyticsDemo) if 
 
 ## Dev environment
 
-- [Android Studio](https://d.android.com/studio/preview/) 3.3 (Canary) is used for development
-- [Gradle](https://gradle.org/install/) 4.10 is used to build the project
+- [Android Studio](https://d.android.com/studio/preview/) 3.4 is used for development
+- [Gradle](https://gradle.org/install/) 5.4 is used to build the project
 - [Android SDK 9.0](https://d.android.com/studio/releases/platforms#9.0) (Pie), API level 28
 - Java 1.6
 
