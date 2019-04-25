@@ -148,7 +148,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         AlertDialog alert = builder.create();
         alert.show();
 
-        return false;
+        return true;
     }
 
     @Override
