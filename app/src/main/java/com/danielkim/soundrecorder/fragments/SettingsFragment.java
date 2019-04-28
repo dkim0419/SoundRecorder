@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.danielkim.soundrecorder.BuildConfig;
 import com.danielkim.soundrecorder.MySharedPreferences;

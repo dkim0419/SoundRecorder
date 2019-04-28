@@ -7,8 +7,9 @@ import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -84,11 +85,11 @@ public class PlaybackFragment extends DialogFragment{
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_media_playback, null);
 
-        mFileNameTextView = (TextView) view.findViewById(R.id.file_name_text_view);
-        mFileLengthTextView = (TextView) view.findViewById(R.id.file_length_text_view);
-        mCurrentProgressTextView = (TextView) view.findViewById(R.id.current_progress_text_view);
+        mFileNameTextView = view.findViewById(R.id.file_name_text_view);
+        mFileLengthTextView = view.findViewById(R.id.file_length_text_view);
+        mCurrentProgressTextView = view.findViewById(R.id.current_progress_text_view);
 
-        mSeekBar = (SeekBar) view.findViewById(R.id.seekbar);
+        mSeekBar = view.findViewById(R.id.seekbar);
         ColorFilter filter = new LightingColorFilter
                 (getResources().getColor(R.color.primary), getResources().getColor(R.color.primary));
         mSeekBar.getProgressDrawable().setColorFilter(filter);
@@ -137,7 +138,7 @@ public class PlaybackFragment extends DialogFragment{
             }
         });
 
-        mPlayButton = (FloatingActionButton) view.findViewById(R.id.fab_play);
+        mPlayButton = view.findViewById(R.id.fab_play);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,11 +77,11 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
-        mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
+        mChronometer = recordView.findViewById(R.id.chronometer);
         //update recording prompt text
-        mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
+        mRecordingPrompt = recordView.findViewById(R.id.recording_status_text);
 
-        mRecordButton = (FloatingActionButton) recordView.findViewById(R.id.btnRecord);
+        mRecordButton = recordView.findViewById(R.id.btnRecord);
         mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
         mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
         mRecordButton.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +92,7 @@ public class RecordFragment extends Fragment {
             }
         });
 
-        mPauseButton = (Button) recordView.findViewById(R.id.btnPause);
+        mPauseButton = recordView.findViewById(R.id.btnPause);
         mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,14 +170,14 @@ public class RecordFragment extends Fragment {
             //pause recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_play ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
+            mRecordingPrompt.setText(getString(R.string.resume_recording_button).toUpperCase());
             timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
             mChronometer.stop();
         } else {
             //resume recording
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds
                     (R.drawable.ic_media_pause ,0 ,0 ,0);
-            mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
+            mRecordingPrompt.setText(getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
             mChronometer.start();
         }
