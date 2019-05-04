@@ -6,15 +6,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/btnRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fab_colorNormal="@color/primary"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_mic_white_36dp" />
 
     <Chronometer
         android:layout_width="wrap_content"
@@ -40,20 +31,20 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnPause"
-        android:drawableLeft="@drawable/ic_media_pause"
-        android:text="@string/pause_recording_button"
-        android:textAllCaps="true"
-        android:fontFamily="sans-serif-condensed"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"/>
+   <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/btnPause"-->
+        <!--android:drawableLeft="@drawable/ic_media_pause"-->
+        <!--android:text="@string/pause_recording_button"-->
+        <!--android:textAllCaps="true"-->
+        <!--android:fontFamily="sans-serif-condensed"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginStart="10dp"/>-->
 
     <TextView
         android:layout_width="wrap_content"
@@ -61,11 +52,64 @@
         android:id="@+id/recording_status_text"
         android:text="@string/record_prompt"
         android:textStyle="bold"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textColor="#000000"
         android:fontFamily="sans-serif-condensed"
-        android:layout_above="@+id/btnRecord"
+        android:layout_above="@+id/buttonsPanel"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp" />
+        android:layout_marginBottom="16dp" />
 
+    <!--<com.melnykov.fab.FloatingActionButton-->
+        <!--android:id="@+id/btnRecord"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:fab_colorNormal="@color/primary"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:src="@drawable/ic_mic_white_36dp" />&ndash;&gt;-->
+
+    <LinearLayout
+        android:id="@+id/buttonsPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/circular_border"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        >
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnStop"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:srcCompat="@drawable/ic_stop"
+            app:tint="@color/primary"
+            android:padding="8dp"
+            android:visibility="visible"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnRecord"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:srcCompat="@drawable/ic_mic"
+            app:tint="@color/primary"
+            android:padding="8dp"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnPause"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:srcCompat="@drawable/ic_pause"
+            app:tint="@color/primary"
+            android:padding="8dp"
+            android:visibility="visible"
+            />
+
+
+    </LinearLayout>
 </RelativeLayout>

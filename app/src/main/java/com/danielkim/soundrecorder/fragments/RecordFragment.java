@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -17,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
@@ -39,25 +42,20 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
     private int position;
 
     //Recording controls
-    private FloatingActionButton mRecordButton = null;
-    private Button mPauseButton = null;
+    private View mRecordButton = null;
+    private AppCompatImageView mPauseButton = null;
+    private View mStopButton = null;
 
     private TextView mRecordingPrompt;
     private int mRecordPromptCount = 0;
 
-    private boolean isRecording = false;
     private boolean isPaused = false;
     private Intent intent;
 
     private Chronometer mChronometer = null;
     long timeWhenPaused = 0; //stores time when user clicks pause button
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment Record_Fragment.
-     */
+
     public static RecordFragment newInstance(int position) {
         RecordFragment f = new RecordFragment();
         Bundle b = new Bundle();
@@ -65,9 +63,6 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         f.setArguments(b);
 
         return f;
-    }
-
-    public RecordFragment() {
     }
 
     @Override
@@ -84,15 +79,16 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         mChronometer = recordView.findViewById(R.id.chronometer);
         //update recording prompt text
         mRecordingPrompt = recordView.findViewById(R.id.recording_status_text);
-
         mRecordButton = recordView.findViewById(R.id.btnRecord);
-        mRecordButton.setColorNormal(getResources().getColor(R.color.primary));
-        mRecordButton.setColorPressed(getResources().getColor(R.color.primary_dark));
-        mRecordButton.setOnClickListener(this);
-
         mPauseButton = recordView.findViewById(R.id.btnPause);
-        mPauseButton.setVisibility(View.GONE); //hide pause button before recording starts
+        mStopButton = recordView.findViewById(R.id.btnStop);
+
+        mRecordButton.setOnClickListener(this);
         mPauseButton.setOnClickListener(this);
+        mStopButton.setOnClickListener(this);
+
+        mStopButton.setVisibility(View.GONE);
+        mPauseButton.setVisibility(View.GONE);
 
         return recordView;
     }
@@ -101,14 +97,21 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnRecord:
-                if(isRecording){
-                    stopRecording();
-                }else {
-                   startRecording();
-                }
+                startRecording();
                 break;
 
             case R.id.btnPause:
+                if (isPaused){
+                    resumeRecording();
+
+                }else{
+                    pauseRecording();
+
+                }
+                break;
+
+            case R.id.btnStop:
+                stopRecording();
                 break;
         }
     }
@@ -124,15 +127,12 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         }else if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL);
         }else{
-            Log.i("RECORD","STARTED");
+
             if(intent == null){
                 intent = new Intent(getContext(),RecordingService.class);
             }
 
-            // start recording
-            mRecordButton.setImageResource(R.drawable.ic_media_stop);
-            //mPauseButton.setVisibility(View.VISIBLE);
-            Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(),R.string.toast_recording_start,Toast.LENGTH_SHORT).show();
             File folder = new File(Environment.getExternalStorageDirectory() + "/SoundRecorder");
             if (!folder.exists()) {
                 //folder /SoundRecorder doesn't exist, create the folder
@@ -165,15 +165,17 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
 
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
             mRecordPromptCount++;
-            isRecording = true;
+
+            expand(mPauseButton);
+            expand(mStopButton);
+            collapse(mRecordButton);
+
         }
 
 
     }
     private void stopRecording(){
         //stop recording
-        mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
-        //mPauseButton.setVisibility(View.GONE);
         mChronometer.stop();
         mChronometer.setBase(SystemClock.elapsedRealtime());
         timeWhenPaused = 0;
@@ -182,25 +184,31 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
         getActivity().stopService(intent);
         //allow the screen to turn off again once recording is finished
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        isRecording = false;
+        isPaused = false;
+        expand(mRecordButton);
+        collapse(mPauseButton);
+        collapse(mStopButton);
+
     }
 
     private void pauseRecording(){
         //pause recording
-        mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                (R.drawable.ic_media_play ,0 ,0 ,0);
         mRecordingPrompt.setText(getString(R.string.resume_recording_button).toUpperCase());
         timeWhenPaused = mChronometer.getBase() - SystemClock.elapsedRealtime();
         mChronometer.stop();
+        isPaused = true;
+        mPauseButton.setImageResource(R.drawable.ic_play);
+        mPauseButton.setColorFilter(ContextCompat.getColor(getContext(), R.color.primary), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     private void resumeRecording(){
         //resume recording
-        mPauseButton.setCompoundDrawablesWithIntrinsicBounds
-                (R.drawable.ic_media_pause ,0 ,0 ,0);
         mRecordingPrompt.setText(getString(R.string.pause_recording_button).toUpperCase());
         mChronometer.setBase(SystemClock.elapsedRealtime() + timeWhenPaused);
         mChronometer.start();
+        isPaused = false;
+        mPauseButton.setImageResource(R.drawable.ic_pause);
+        mPauseButton.setColorFilter(ContextCompat.getColor(getContext(), R.color.primary), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
 
@@ -228,5 +236,54 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
         }
+    }
+
+
+    public void expand(final View v) {
+        v.measure(getResources().getDimensionPixelOffset(R.dimen.button_size), getResources().getDimensionPixelOffset(R.dimen.button_size));
+        final int targetwidth = v.getMeasuredWidth();
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        v.getLayoutParams().width = 1;
+        v.setVisibility(View.VISIBLE);
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                v.getLayoutParams().width = interpolatedTime == 1
+                        ? getResources().getDimensionPixelOffset(R.dimen.button_size)
+                        : (int) (targetwidth * interpolatedTime);
+                v.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // 1dp/ms
+        a.setDuration(500);
+        v.startAnimation(a);
+    }
+
+    public static void collapse(final View v) {
+        final int initalWidth = v.getMeasuredWidth();
+
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (interpolatedTime == 1) {
+                    v.setVisibility(View.GONE);
+                } else {
+                    v.getLayoutParams().width = initalWidth - (int) (initalWidth * interpolatedTime);
+                    v.requestLayout();
+                }
+            }
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+        a.setDuration(500);
+        v.startAnimation(a);
     }
 }
