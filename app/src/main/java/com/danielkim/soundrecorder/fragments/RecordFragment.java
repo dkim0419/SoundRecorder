@@ -165,7 +165,7 @@ public class RecordFragment extends Fragment implements View.OnClickListener {
 
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
             mRecordPromptCount++;
-
+            isPaused = false;
             expand(mPauseButton);
             expand(mStopButton);
             collapse(mRecordButton);
