@@ -42,4 +42,11 @@ public class Paths {
         return (freespace * 100.0) / (double) totalspace;
     }
 
+    public static void createDirectory(File parent, String... children){
+        String cacheFileString = combine(parent, children);
+        File cacheFile = new File(cacheFileString);
+        if(!cacheFile.exists()){
+            cacheFile.mkdirs();
+        }
+    }
 }

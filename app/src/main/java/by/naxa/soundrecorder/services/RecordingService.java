@@ -10,6 +10,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.coremedia.iso.boxes.Container;
 import com.crashlytics.android.Crashlytics;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -27,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import androidx.annotation.Nullable;
 import by.naxa.soundrecorder.DBHelper;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
@@ -152,8 +153,9 @@ public class RecordingService extends Service {
     public void setFileNameAndPath(boolean isFilePathTemp) {
         if (isFilePathTemp) {
             mFileName = getString(R.string.default_file_name) + (++tempFileCount) + "_" + ".tmp";
+            Paths.createDirectory(getExternalCacheDir(), Paths.SOUND_RECORDER_FOLDER);
             mFilePath = Paths.combine(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                    getExternalCacheDir(),
                     Paths.SOUND_RECORDER_FOLDER, mFileName);
         } else {
             int count = 0;
