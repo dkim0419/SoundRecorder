@@ -81,7 +81,6 @@
         android:gravity="center|bottom"
         android:text="@string/record_prompt"
         android:textAlignment="center"
-        android:textColor="@color/primary_text"
         android:textSize="17sp"
         android:textStyle="bold" />
 

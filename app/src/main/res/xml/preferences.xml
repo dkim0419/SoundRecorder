@@ -20,4 +20,9 @@
         android:title="@string/pref_licenses_title"
         android:summary="@string/pref_licenses_desc"/>
 
+    <SwitchPreference
+        android:key="@string/pref_dark_mode_key"
+        android:title="Dark Mode"
+        android:defaultValue="false"/>
+
 </PreferenceScreen>
