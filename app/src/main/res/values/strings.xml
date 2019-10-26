@@ -81,5 +81,6 @@
     <string name="error_unknown">Unknown error =(</string>
     <string name="error_rename_file">Failed to rename file.</string>
     <string name="error_prepare_playback">Error! Sorry, this audio cannot be played.</string>
+    <string name="no_recordings">No recordings</string>
 
 </resources>
