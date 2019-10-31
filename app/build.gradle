@@ -33,7 +33,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.+'
     implementation 'androidx.cardview:cardview:1.0.+'
     implementation 'androidx.recyclerview:recyclerview:1.0.+'
-    implementation 'com.google.android.material:material:1.0.+'
+    implementation 'com.google.android.material:material:1.1.0-beta01'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'com.budiyev.android:circular-progress-bar:1.2.0'
 

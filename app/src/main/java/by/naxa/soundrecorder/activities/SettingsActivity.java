@@ -5,9 +5,11 @@ import android.preference.PreferenceActivity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import by.naxa.soundrecorder.R;
+import by.naxa.soundrecorder.SoundRecorderApplication;
 import by.naxa.soundrecorder.fragments.SettingsFragment;
 
 /**
@@ -26,6 +28,11 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (SoundRecorderApplication.getInstance().isNightModeEnabled()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); //For night mode theme
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); //For day mode theme
+        }
         setContentView(R.layout.activity_preferences);
         setupActionBar();
 

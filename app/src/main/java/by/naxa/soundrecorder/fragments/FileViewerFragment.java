@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,9 @@ public class FileViewerFragment extends Fragment {
     private static final String LOG_TAG = "FileViewerFragment";
 
     private FileViewerAdapter mFileViewerAdapter;
+    private RecyclerView mRecyclerView;
+    private TextView mTextView;
+    private RecyclerView.AdapterDataObserver adapterDataObserver;
 
     public static FileViewerFragment newInstance() {
         FileViewerFragment f = new FileViewerFragment();
@@ -51,7 +55,9 @@ public class FileViewerFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_file_viewer, container, false);
 
-        RecyclerView mRecyclerView = v.findViewById(R.id.recyclerView);
+        mRecyclerView = v.findViewById(R.id.recyclerView);
+        mTextView = v.findViewById(R.id.noRecordView);
+
         mRecyclerView.setHasFixedSize(true);
         //newest to oldest order (database stores from oldest to newest)
         final LinearLayoutManager llm = new LinearLayoutManager(
@@ -63,13 +69,45 @@ public class FileViewerFragment extends Fragment {
 
         mFileViewerAdapter = new FileViewerAdapter(getActivity(), llm);
         mRecyclerView.setAdapter(mFileViewerAdapter);
+        changeVisibilityRecycleView();
+        adapterDataObserver = new RecyclerView.AdapterDataObserver() {
 
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                changeVisibilityRecycleView();
+                super.onItemRangeInserted(positionStart, itemCount);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                changeVisibilityRecycleView();
+                super.onItemRangeRemoved(positionStart, itemCount);
+            }
+        };
+
+        mFileViewerAdapter.registerAdapterDataObserver(adapterDataObserver);
         return v;
+    }
+
+    /**
+     *   Change visibility of RecycleView if no item is present(from {@link FileViewerAdapter})
+     *   and show TextView with information about no available item. If any item is present,
+     *   visibility for RecycleView is set to visible and for TextView to gone.
+     */
+    private void changeVisibilityRecycleView() {
+        if (mFileViewerAdapter.getItemCount() == 0) {
+            mRecyclerView.setVisibility(View.GONE);
+            mTextView.setVisibility(View.VISIBLE);
+        } else if(mRecyclerView.getVisibility() != View.VISIBLE) {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mFileViewerAdapter.unregisterAdapterDataObserver(adapterDataObserver);
         mFileViewerAdapter = null;
     }
 
@@ -82,7 +120,6 @@ public class FileViewerFragment extends Fragment {
                 public void onEvent(int event, String file) {
                     if (event == FileObserver.DELETE) {
                         // user deletes a recording file out of the app
-
                         final String filePath = Paths.combine(
                                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                                 Paths.SOUND_RECORDER_FOLDER, file);

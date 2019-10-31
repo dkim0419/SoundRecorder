@@ -55,6 +55,7 @@
     <string name="pref_high_quality_key" translatable="false">pref_high_quality</string>
     <string name="pref_high_quality_title">Enable High Quality Recording</string>
     <string name="pref_high_quality_desc">Record in CD Quality</string>
+    <string name="pref_dark_mode_key">pref_dark_mode</string>
     <string name="pref_about_key" translatable="false">pref_about</string>
     <string name="pref_about_desc">v%s</string>
     <string name="pref_licenses_title">Open source licenses</string>
@@ -80,5 +81,6 @@
     <string name="error_unknown">Unknown error =(</string>
     <string name="error_rename_file">Failed to rename file.</string>
     <string name="error_prepare_playback">Error! Sorry, this audio cannot be played.</string>
+    <string name="no_recordings">No recordings</string>
 
 </resources>

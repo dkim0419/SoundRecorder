@@ -22,4 +22,5 @@
     <style name="ThemeOverlay.AppTheme.ActionBar" parent="ThemeOverlay.MaterialComponents.ActionBar">
         <item name="android:textColorPrimary">@color/white</item>
     </style>
+
 </resources>
