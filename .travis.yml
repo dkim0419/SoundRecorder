@@ -62,7 +62,7 @@ script:
 # - ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace --debug
 # run:
   - |
-    ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true' -Pbuild=dev
+    ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error on install, exit code: "$retval
