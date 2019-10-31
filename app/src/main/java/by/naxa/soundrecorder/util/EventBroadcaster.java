@@ -15,6 +15,7 @@ public class EventBroadcaster {
     public static final String CHANGE_STATE = "CHANGE_STATE";
     public static final String NEW_STATE = "NEW_STATE";
     public static final String CHRONOMETER_TIME = "CHRONOMETER_TIME";
+    public static final String LAST_AUDIO_LOCATION = "LAST_AUDIO_LOCATION";
 
     public static void send(@NonNull Context context, String message) {
         final Intent it = new Intent(EventBroadcaster.SHOW_SNACKBAR);
@@ -34,6 +35,15 @@ public class EventBroadcaster {
             return;
         final Intent it = new Intent(EventBroadcaster.CHANGE_STATE);
         it.putExtra(EventBroadcaster.NEW_STATE, RecorderState.STOPPED);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(it);
+    }
+
+    public static void stopRecording(@Nullable Context context,String filePath) {
+        if (context == null)
+            return;
+        final Intent it = new Intent(EventBroadcaster.CHANGE_STATE);
+        it.putExtra(EventBroadcaster.NEW_STATE, RecorderState.STOPPED);
+        it.putExtra(EventBroadcaster.LAST_AUDIO_LOCATION, filePath);
         LocalBroadcastManager.getInstance(context).sendBroadcast(it);
     }
 

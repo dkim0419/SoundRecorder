@@ -258,24 +258,26 @@ public class RecordingService extends Service {
 
         boolean isTemporary = false;
         setFileNameAndPath(isTemporary);
-
+        String pathToSend = "";
         try {
             if (stateBefore != RecorderState.PAUSED) {
                 mElapsedMillis = (SystemClock.elapsedRealtime() - mStartingTimeMillis);
                 mRecorder.stop();
             }
             mRecorder.release();
+            pathToSend = mFilePath;
             Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
         } catch (RuntimeException exc) {
             // RuntimeException is thrown when stop() is called immediately after start().
             // In this case the output file is not properly constructed ans should be deleted.
             Log.e(LOG_TAG, "RuntimeException: stop() is called immediately after start()", exc);
+            pathToSend = null;
             Crashlytics.logException(exc);
             // TODO delete temporary output file
         } finally {
             mRecorder = null;
             changeStateTo(RecorderState.STOPPED);
-            EventBroadcaster.stopRecording(this);
+            EventBroadcaster.stopRecording(this, pathToSend);
         }
 
         if (filesPaused != null && !filesPaused.isEmpty()) {

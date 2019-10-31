@@ -1,5 +1,6 @@
 package by.naxa.soundrecorder.fragments;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +21,12 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.budiyev.android.circularprogressbar.CircularProgressBar;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.material.button.MaterialButton;
@@ -26,13 +34,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import by.naxa.soundrecorder.R;
 import by.naxa.soundrecorder.RecorderState;
+import by.naxa.soundrecorder.activities.MainActivity;
 import by.naxa.soundrecorder.listeners.OnSingleClickListener;
 import by.naxa.soundrecorder.services.RecordingService;
 import by.naxa.soundrecorder.util.Command;
@@ -98,9 +102,18 @@ public class RecordFragment extends Fragment {
                         EventBroadcaster.NEW_STATE);
                 if (RecorderState.STOPPED.equals(newState)) {
                     updateUI(newState, SystemClock.elapsedRealtime());
+                    // Recorder was successful and started via a request for audio; set result and finish
+                    if (intent.getStringExtra(EventBroadcaster.LAST_AUDIO_LOCATION) != null && MainActivity.REQUEST_INTENTS.contains(requireActivity().getIntent().getAction())) {
+
+                        getActivity().setResult(Activity.RESULT_OK, new Intent().setData(Uri.fromFile(new File(intent.getStringExtra(EventBroadcaster.LAST_AUDIO_LOCATION)))));
+                        getActivity().finish();
+
+                    }
                 } else if (RecorderState.RECORDING.equals(newState)) {
-                    long chronometerTime = intent.getLongExtra(EventBroadcaster.CHRONOMETER_TIME,
-                            SystemClock.elapsedRealtime());
+                    long chronometerTime = intent.getLongExtra(
+                            EventBroadcaster.CHRONOMETER_TIME,
+                            SystemClock.elapsedRealtime()
+                    );
                     updateUI(newState, chronometerTime);
                 }
             }
@@ -147,8 +160,9 @@ public class RecordFragment extends Fragment {
     }
 
     private void tryUnbindService(Context context) {
-        if (context == null)
+        if (context == null) {
             Log.w(LOG_TAG, "tryUnbindService: context is null");
+        }
         if (mConnection != null) {
             context.unbindService(mConnection);
             mConnection = null;
@@ -202,8 +216,10 @@ public class RecordFragment extends Fragment {
                     long chronometerTime = SystemClock.elapsedRealtime() - mRecordingService.getTotalDurationMillis();
                     updateUI(RecorderState.PAUSED, chronometerTime);
                 } else {
-                    if (PermissionsHelper.checkAndRequestPermissions(RecordFragment.this,
-                            MY_PERMISSIONS_REQUEST_RECORD_AUDIO)) {
+                    if (PermissionsHelper.checkAndRequestPermissions(
+                            RecordFragment.this,
+                            MY_PERMISSIONS_REQUEST_RECORD_AUDIO
+                    )) {
                         resumeRecording();
                     }
                 }
@@ -331,7 +347,8 @@ public class RecordFragment extends Fragment {
     private boolean startRecording() {
         final File folder = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                Paths.SOUND_RECORDER_FOLDER);
+                Paths.SOUND_RECORDER_FOLDER
+        );
         if (!folder.exists()) {
             // a folder for sound recordings doesn't exist -> create the folder
             boolean ok = Paths.isExternalStorageWritable() && folder.mkdir();
@@ -377,8 +394,10 @@ public class RecordFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver,
-                new IntentFilter(EventBroadcaster.CHANGE_STATE));
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+                mMessageReceiver,
+                new IntentFilter(EventBroadcaster.CHANGE_STATE)
+        );
     }
 
     @Override
@@ -422,8 +441,9 @@ public class RecordFragment extends Fragment {
     }
 
     private boolean allPermissionsGranted(int[] grantResults) {
-        if (grantResults == null || grantResults.length == 0)
+        if (grantResults == null || grantResults.length == 0) {
             return false;
+        }
 
         boolean ok = true;
         for (int grantResult : grantResults) {
