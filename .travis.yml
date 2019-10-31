@@ -46,11 +46,11 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x gradlew
   - ./gradlew --version
-  - ./gradlew clean -Pbuild=dev
+  - ./gradlew clean
 
 script:
   - |
-    ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true' -Pbuild=dev
+    ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true'
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error on assembling, exit code: "$retval

@@ -22,10 +22,6 @@ android {
         debug {
             testCoverageEnabled = true
         }
-        dev {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
     lintOptions {
         disable 'MissingTranslation'
@@ -44,7 +40,6 @@ dependencies {
     // detect memory leaks
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
-    devImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
     debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
 
     androidTestImplementation 'androidx.annotation:annotation:1.0.+'
@@ -58,22 +53,4 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-}
-
-def build_param = "${build}"
-
-if (build_param != "dev") {
-    // exclude production build
-    android.variantFilter { variant ->
-        if (variant.buildType.name == 'dev') {
-            variant.setIgnore(true)
-        }
-    }
-} else {
-    // exclude all except production build
-    android.variantFilter { variant ->
-        if (variant.buildType.name != 'dev') {
-            variant.setIgnore(true)
-        }
-    }
 }
