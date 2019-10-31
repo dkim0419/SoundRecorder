@@ -10,7 +10,7 @@
     <color name="text">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="tab_strip">@color/white</color>
-   <!-- <color name="daynight_textColor">#F44336</color>
-    <color name="switch_color">#911DEE</color>-->
+   <!-- <color name="daynight_textColor">#FF8222</color>
+    <color name="switch_color">#BC2F1D</color>-->
 
 </resources>
