@@ -1,9 +1,9 @@
 language: android
 env:
   global:
-    - ANDROID_API=28
+    - ANDROID_API=29
     - EMULATOR_API=24
-    - ANDROID_BUILD_TOOLS=29.0.0
+    - ANDROID_BUILD_TOOLS=29.0.2
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock

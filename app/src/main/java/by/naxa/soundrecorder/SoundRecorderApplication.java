@@ -4,11 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.squareup.leakcanary.LeakCanary;
 
-import io.fabric.sdk.android.Fabric;
 
 public class SoundRecorderApplication extends Application {
 
@@ -17,7 +14,7 @@ public class SoundRecorderApplication extends Application {
 
     private static SoundRecorderApplication singleton = null;
 
-    //Here we making a singleton instance of InitApplication
+    // Here we make a singleton instance of SoundRecorderApplication
     public static SoundRecorderApplication getInstance() {
         if (singleton == null) {
             singleton = new SoundRecorderApplication();
@@ -38,13 +35,6 @@ public class SoundRecorderApplication extends Application {
             return;
         }
         LeakCanary.install(this);
-
-        final CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(!BuildConfig.USE_CRASHLYTICS).build();
-        final Fabric fabric = new Fabric.Builder(this)
-                .kits(new Crashlytics.Builder().core(core).build())
-                .debuggable(true)
-                .build();
-        Fabric.with(fabric);
     }
 
     public boolean isNightModeEnabled() {
@@ -59,6 +49,4 @@ public class SoundRecorderApplication extends Application {
         editor.putBoolean(NIGHT_MODE, isNightModeEnabled);
         editor.apply();
     }
-
-
 }
