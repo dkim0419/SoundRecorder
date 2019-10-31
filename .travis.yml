@@ -46,11 +46,11 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
   - chmod +x gradlew
   - ./gradlew --version
-  - ./gradlew clean
+  - ./gradlew clean -Pbuild=dev
 
 script:
   - |
-    ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true'
+    ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true' -Pbuild=dev
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error on assembling, exit code: "$retval
@@ -62,7 +62,7 @@ script:
 # - ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace --debug
 # run:
   - |
-    ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
+    ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true' -Pbuild=dev
     retval=$?
     if [ $retval -ne 0 ]; then
       echo "error on install, exit code: "$retval
