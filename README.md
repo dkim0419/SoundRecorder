@@ -23,15 +23,11 @@ Please, read [Contributing guidelines](/CONTRIBUTING.md) before opening new [iss
 If you want to run the app locally, do the following:
 
 1. Download or clone the repository
-2. If you don't have a Fabric account -> Sign up at fabric.io
-3. Declare environment variables of which the name starts with `ORG_GRADLE_PROJECT_` followed by the property name (include your own Fabric `apiKey` and `apiSecret`).
-     `export ORG_GRADLE_PROJECT_soundrecorderCrashlyticsApiSecret=0cf7c9df6d057e7bb62b1427ab364e8115a75fcf7430873b6274bb094d1a8adb`   
-     `export ORG_GRADLE_PROJECT_soundrecorderCrashlyticsApiKey=cc238b2a4866c96030`
-   Then `fabric.properties` file will be created automatically by Gradle on the first build. Do not commit this file to a version control, keep it secret.
-4. Import the project in your IDE (we use Gradle + Android Studio to build)
-5. You should now be able to build and run the app.
+2. Import the project in your IDE (we use Gradle + Android Studio to build)
+3. Setup Crashlytics (you need Firebase and Fabric.io accounts for this)
+4. You should now be able to build and run the app.
 
-See [Crashlytics Kit Setup Demo](https://github.com/plastiv/CrashlyticsDemo) if you need more help.
+See [Add Firebase to your Android project](https://firebase.google.com/docs/android/setup) and [Get started with Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/get-started?platform=android) if you need more help.
 
 ## Dev environment
 
