@@ -1,31 +1,57 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
-        applicationId "com.danielkim.soundrecorder"
+        applicationId 'by.naxa.soundrecorder'
         minSdkVersion 16
-        targetSdkVersion 21
-        versionCode 130
-        versionName "1.3.0"
+        targetSdkVersion 28
+        versionCode 202
+        versionName "2.0.2"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled = true
+        }
     }
-    lintOptions{
+    lintOptions {
         disable 'MissingTranslation'
+        abortOnError false
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.+'
-    compile 'com.android.support:cardview-v7:21.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'com.melnykov:floatingactionbutton:1.1.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'androidx.appcompat:appcompat:1.0.+'
+    implementation 'androidx.cardview:cardview:1.0.+'
+    implementation 'androidx.recyclerview:recyclerview:1.0.+'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.+'
+    implementation 'com.google.android.material:material:1.1.+'
+    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+    implementation 'com.budiyev.android:circular-progress-bar:1.2.0'
+
+    // detect memory leaks
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+
+    androidTestImplementation 'androidx.annotation:annotation:1.0.+'
+    androidTestImplementation 'androidx.test:runner:1.1.+'
+    androidTestImplementation 'androidx.test:rules:1.1.+'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.+', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'androidx.annotation', module: 'annotation'
+    })
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 }

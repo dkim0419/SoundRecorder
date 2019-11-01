@@ -3,11 +3,22 @@
     android:id="@+id/fragment_file_viewer"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.danielkim.soundrecorder.fragments.FileViewerFragment">
+    tools:context=".fragments.FileViewerFragment">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/card_view"
+        tools:itemCount="5"
+
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/noRecordView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/no_recordings"
+        android:visibility="gone" />
 
 </RelativeLayout>

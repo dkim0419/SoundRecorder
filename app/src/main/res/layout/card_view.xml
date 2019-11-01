@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:layout_gravity="center"
+    android:layout_margin="5dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:transitionName="open_mediaplayer"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="3dp">
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:transitionName="open_mediaplayer"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="3dp">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:contentDescription="@string/image_description_microphone_icon"
+            android:src="@drawable/ic_fileviewer" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageView"
+            <TextView
+                android:id="@+id/file_name_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_fileviewer"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp"/>
+                android:fontFamily="sans-serif-condensed"
+                android:text="file_name"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/file_length_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center_vertical">
+                android:layout_marginTop="7dp"
+                android:fontFamily="sans-serif-condensed"
+                android:text="00:00"
+                android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/file_name_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="file_name"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/file_length_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="00:00"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-condensed"
-                    android:layout_marginTop="7dp"/>
-
-                <TextView
-                    android:id="@+id/file_date_added_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="mmm dd yyyy - hh:mm a"
-                    android:textSize="12sp"
-                    android:fontFamily="sans-serif-condensed"/>
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/file_date_added_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:text="mmm dd yyyy - hh:mm a"
+                android:textSize="12sp" />
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </LinearLayout>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/optionsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:layout_gravity="center|end"
+        android:src="@drawable/dots"/>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Toolbar -->
+    <string name="app_name">"مسجل الصوت"</string>
+    <string name="action_licenses">"تراخيص"</string>
+    <string name="action_settings">"الإعدادات"</string>
+    <string name="tab_title_record">"تسجل"</string>
+    <string name="tab_title_saved_recordings">"التسجيلات المحفوظة"</string>
+
+    <!-- Toasts -->
+    <string name="toast_recording_start">"بدأ التسجيل"</string>
+    <string name="toast_recording_finish">"تم حفظ التسجيل في"</string>
+    <string name="toast_file_delete">"تم حذف %1$s  بنجاح"</string>
+    <string name="toast_file_exists">"الملف %1$s موجود بالفعل. يرجى اختيار اسم ملف مختلف."</string>
+
+    <!-- Notifications -->
+    <string name="notification_recording">"تسجيل…"</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_delete">"تأكيد الحذف …"</string>
+    <string name="dialog_text_delete">"هل أنت متأكد أنك تريد حذف هذا التسجيل؟
+
+هذا دائم ولا يمكن التراجع عنه."</string>
+    <string name="dialog_title_licenses">"فتح تراخيص المصدر"</string>
+    <string name="dialog_title_rename">"إعادة تسمية الملف"</string>
+    <string name="dialog_title_options">"خيارات"</string>
+    <string name="dialog_file_rename">"إعادة تسمية الملف"</string>
+    <string name="dialog_file_delete">"حذف ملف"</string>
+    <string name="dialog_action_cancel">"إلغاء"</string>
+    <string name="dialog_action_ok">"حسنا"</string>
+    <string name="dialog_action_yes">"نعم"</string>
+    <string name="dialog_action_no">"لا"</string>
+    <string name="no_saved_recordings_message">"لا توجد تسجيلات محفوظة"</string>
+    <string name="pause_recording_button">"توقف مؤقت"</string>
+    <string name="resume_recording_button">"استئنف"</string>
+    <string name="default_file_name">"تسجيلاتي"</string>
+    <string name="record_prompt">"اضغط على الزر لبدء التسجيل"</string>
+    <string name="record_in_progress">"جارى التسجيل"</string>
+
+    <!-- Preferences -->
+    <string name="pref_licenses_title">"تراخيص مفتوحة المصدر"</string>
+    <string name="pref_licenses_desc">"تفاصيل الترخيص لبرنامج مفتوح المصدر"</string>
+
+    <!-- About -->
+    <string name="link">"Sound Recorder 2 Website:
+ https://github.com/naXa777/SoundRecorder"</string>
+    <string name="toast_recording_paused">"تسجيل متوقف"</string>
+    <string name="toast_recording_resumed">"تم استئناف التسجيل"</string>
+    <string name="toast_file_delete_failed">"أخفق حذف %1$s"</string>
+    <string name="toast_file_rename_failed">"فشل في إعادة تسمية %1$s"</string>
+    <string name="dialog_title_share">"مشاركة الملفات"</string>
+    <string name="dialog_file_share">"مشاركة الملفات"</string>
+    <string name="dialog_action_yes_delete">"نعم احذف"</string>
+    <string name="record_paused">"توقف"</string>
+    <string name="send_to">"ارسل إلى"</string>
+
+    <!-- Preferences -->
+    <string name="pref_high_quality_key">"pref_high_quality"</string>
+
+    <!-- Preferences -->
+    <string name="pref_high_quality_title">"تمكين تسجيل عالي الجودة"</string>
+    <string name="pref_high_quality_desc">"سجل في جودة القرص المضغوط"</string>
+    <string name="pref_about_key">"pref_about"</string>
+    <string name="pref_about_desc">"v%s"</string>
+    <string name="prefs_section_record">"تسجيل"</string>
+    <string name="pref_section_about">"حول"</string>
+    <string name="pref_appversion_title">"نسخة التطبيق"</string>
+    <string name="image_description_microphone_icon">"أيقونة الميكروفون"</string>
+
+    <!-- Notification -->
+    <string name="action_stop">"توقف"</string>
+    <string name="notification_title">"جارى التسجيل"</string>
+    <string name="notification_content">"اضغط علي"</string>
+    <string name="notification_channel_recorder">"جارى التسجيل"</string>
+    <string name="notification_channel_description">"إخطار مستمر"</string>
+
+    <!-- Errors -->
+    <string name="error_no_permission_granted_record">"لا يمكن بدء التسجيل الصوتي دون إذنك."</string>
+    <string name="error_no_permission_granted_for_playback">"لا يمكن تشغيل التسجيل دون إذنك للوصول إلى وحدة التخزين الخارجية."</string>
+    <string name="error_mkdir">"خطأ! وحدة التخزين الخارجية (بطاقة SD) غير متاحة للكتابة."</string>
+    <string name="error_mic_is_busy">"خطأ! تعذر بدء التسجيل ، يستخدم تطبيق آخر الميكروفون. أعد تشغيل الجهاز إذا استمرت المشكلة."</string>
+
+    <!-- Errors -->
+    <string name="error_unknown">"خطأ غير معروف =("</string>
+    <string name="error_rename_file">"فشل في إعادة تسمية الملف."</string>
+    <string name="error_prepare_playback">"خطأ! عذرًا ، لا يمكن تشغيل هذا الصوت."</string>
+    <string name="wait">"انتظر"</string>
+</resources>
