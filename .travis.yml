@@ -1,0 +1,110 @@
+language: android
+env:
+  global:
+    - ANDROID_API=29
+    - EMULATOR_API=24
+    - ANDROID_BUILD_TOOLS=29.0.2
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+
+android:
+  components:
+    - tools
+    - android-$EMULATOR_API
+    - platform-tools
+    - tools
+    - build-tools-$ANDROID_BUILD_TOOLS
+    - android-$ANDROID_API
+    - extra-android-support
+    - extra-android-m2repository
+    - extra-google-m2repository
+    - sys-img-armeabi-v7a-android-$EMULATOR_API
+  licenses:
+    - ".+"
+
+before_install:
+  - yes | sdkmanager "platforms;android-28"
+
+# Emulator Management: Update SDK, Create, Start and Wait
+before_script:
+  - echo "y" | android update sdk -a --no-ui --filter android-$EMULATOR_API
+  - echo "y" | android update sdk -a --no-ui --filter sys-img-armeabi-v7a-android-$EMULATOR_API
+  - android list targets | grep -E '^id:' | awk -F '"' '{$1=""; print $2}' # list all targets
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+  - adb wait-for-device get-serialno
+  - cd ${TRAVIS_BUILD_DIR}
+  - chmod +x gradlew
+  - ./gradlew --version
+  - ./gradlew clean
+
+script:
+  - |
+    ./gradlew build assembleAndroidTest -PtestCoverageEnabled='true'
+    retval=$?
+    if [ $retval -ne 0 ]; then
+      echo "error on assembling, exit code: "$retval
+      exit $retval
+    fi
+
+# See https://stackoverflow.com/q/21294945/1429387
+# Instead of this (which doesn't give any output during tests execution):
+# - ./gradlew connectedCheck -PdisablePreDex --continue --stacktrace --debug
+# run:
+  - |
+    ./gradlew :app:installDebug :app:installDebugAndroidTest -PtestCoverageEnabled='true'
+    retval=$?
+    if [ $retval -ne 0 ]; then
+      echo "error on install, exit code: "$retval
+      exit $retval
+    fi
+
+#
+# Run only tests, marked with a special annotation:
+# See https://d.android.com/reference/android/support/test/runner/AndroidJUnitRunner
+# For testing one method only:
+# - adb shell am instrument -w -r -e debug false -e coverage true -e class by.naxa.soundrecorder.MainActivityTests#testGreet by.naxa.soundrecorder/androidx.test.runner.AndroidJUnitRunner
+  - adb shell pm list instrumentation
+  - |
+    adb shell am instrument -w -r -e executionMode travisTest -e coverage true by.naxa.soundrecorder.test/androidx.test.runner.AndroidJUnitRunner |& tee build/adb-test.log
+    retval=$?
+    if [ $retval -ne 0 ]; then
+      echo "error in adb, exit code: "$retval
+      exit $retval
+    fi
+
+# adb doesn't propagate exit code from tests, see https://code.google.com/p/android/issues/detail?id=3254
+# So we need to parse saved terminal log
+  - |
+    cat build/adb-test.log | grep "INSTRUMENTATION_STATUS: stack=" | grep -v "org.junit.AssumptionViolatedException"
+    if [ $? -eq 0 ]; then
+      echo "Test failure found"
+      exit 1
+    else
+      cat build/adb-test.log | grep "OK ("
+    fi
+
+# Copy coverage data from the emulator
+  - |
+    adb shell "rm /sdcard/Download/coverage.ec"
+    adb shell "run-as by.naxa.soundrecorder cp /data/user/0/by.naxa.soundrecorder/files/coverage.ec /sdcard/Download"
+# copy to "build" folder, where it will be found by Sonar scanner
+  - cd app/build
+  - adb pull "/sdcard/Download/coverage.ec"
+  - cd ../..
+
+notifications:
+  email: false
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
