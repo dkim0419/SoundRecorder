@@ -21,9 +21,11 @@
     <string name="dialog_title_delete">Löschen bestätigen...</string>
     <string name="dialog_text_delete">Möchtest du diese Datei wirklich löschen?</string>
     <string name="dialog_title_licenses">Open-Source-Lizenzen</string>
+    <string name="dialog_title_share">Datei teilen</string>
     <string name="dialog_title_rename">Datei umbenennen</string>
     <string name="dialog_title_options">Optionen</string>
 
+    <string name="dialog_file_share">Datei teilen</string>
     <string name="dialog_file_rename">Datei umbenennen</string>
     <string name="dialog_file_delete">Datei löschen</string>
     <string name="dialog_action_cancel">Abbrechen</string>

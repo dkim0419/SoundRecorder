@@ -132,10 +132,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    public void renameItem(RecordingItem item, String recordingName) {
+    public void renameItem(RecordingItem item, String recordingName, String filePath) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(DBHelperItem.COLUMN_NAME_RECORDING_NAME, recordingName);
+        cv.put(DBHelperItem.COLUMN_NAME_RECORDING_FILE_PATH, filePath);
         db.update(DBHelperItem.TABLE_NAME, cv,
                 DBHelperItem._ID + "=" + item.getId(), null);
 
