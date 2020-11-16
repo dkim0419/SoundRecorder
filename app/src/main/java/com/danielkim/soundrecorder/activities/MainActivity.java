@@ -77,13 +77,14 @@ public class MainActivity extends ActionBarActivity{
 
         @Override
         public Fragment getItem(int position) {
-            switch(position){
-                case 0:{
+            switch(position) {
+                case 0: {
                     return RecordFragment.newInstance(position);
                 }
-                case 1:{
+                case 1: {
                     return FileViewerFragment.newInstance(position);
                 }
+                default: break;
             }
             return null;
         }

@@ -66,8 +66,8 @@ public class PlaybackFragment extends DialogFragment{
 
         long itemDuration = item.getLength();
         minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
+        seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration) -
+                TimeUnit.MINUTES.toSeconds(minutes);
     }
 
     @Override
@@ -102,8 +102,8 @@ public class PlaybackFragment extends DialogFragment{
                     mHandler.removeCallbacks(mRunnable);
 
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition()) -
+                            TimeUnit.MINUTES.toSeconds(minutes);
                     mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
 
                     updateSeekBar();
@@ -129,8 +129,8 @@ public class PlaybackFragment extends DialogFragment{
                     mMediaPlayer.seekTo(seekBar.getProgress());
 
                     long minutes = TimeUnit.MILLISECONDS.toMinutes(mMediaPlayer.getCurrentPosition());
-                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition())
-                            - TimeUnit.MINUTES.toSeconds(minutes);
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(mMediaPlayer.getCurrentPosition()) -
+                            TimeUnit.MINUTES.toSeconds(minutes);
                     mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes,seconds));
                     updateSeekBar();
                 }
@@ -305,8 +305,8 @@ public class PlaybackFragment extends DialogFragment{
                 mSeekBar.setProgress(mCurrentPosition);
 
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(mCurrentPosition);
-                long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition)
-                        - TimeUnit.MINUTES.toSeconds(minutes);
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(mCurrentPosition) -
+                        TimeUnit.MINUTES.toSeconds(minutes);
                 mCurrentProgressTextView.setText(String.format("%02d:%02d", minutes, seconds));
 
                 updateSeekBar();
