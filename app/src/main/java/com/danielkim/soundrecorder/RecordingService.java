@@ -111,8 +111,8 @@ public class RecordingService extends Service {
         do{
             count++;
 
-            mFileName = getString(R.string.default_file_name)
-                    + "_" + (mDatabase.getCount() + count) + ".mp4";
+            mFileName = getString(R.string.default_file_name) +
+                    "_" + (mDatabase.getCount() + count) + ".mp4";
             mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
             mFilePath += "/SoundRecorder/" + mFileName;
 
@@ -148,8 +148,7 @@ public class RecordingService extends Service {
             @Override
             public void run() {
                 mElapsedSeconds++;
-                if (onTimerChangedListener != null)
-                    onTimerChangedListener.onTimerChanged(mElapsedSeconds);
+                if (onTimerChangedListener != null) onTimerChangedListener.onTimerChanged(mElapsedSeconds);
                 NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 mgr.notify(1, createNotification());
             }

@@ -59,8 +59,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         long itemDuration = item.getLength();
 
         long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration)
-                - TimeUnit.MINUTES.toSeconds(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(itemDuration) - TimeUnit.MINUTES.toSeconds(minutes);
 
         holder.vName.setText(item.getName());
         holder.vLength.setText(String.format("%02d:%02d", minutes, seconds));
@@ -137,9 +136,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     @Override
     public RecordingsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView = LayoutInflater.
-                from(parent.getContext()).
-                inflate(R.layout.card_view, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view, parent, false);
 
         mContext = parent.getContext();
 
