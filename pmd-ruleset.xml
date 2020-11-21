@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  wcm.io
+  %%
+  Copyright (C) 2014 wcm.io
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<!--
+  Note: The basic setup of this PMD rulset is borrowed from the ExcepGen project
+  http://excepgen.googlecode.com/svn-history/r13/trunk/scm/pmd-ruleset.xml
+-->
+<ruleset name="wcm.io"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  <description>PMD static code analysis rule set</description>
+
+  <!-- Exclude test classes -->
+  <exclude-pattern>.*/src/test/.*</exclude-pattern>
+  <!-- Exclude target folder that may contain generated sources -->
+  <exclude-pattern>.*/target/.*</exclude-pattern>
+
+  <rule ref="rulesets/java/clone.xml">
+    <exclude name="CloneThrowsCloneNotSupportedException"/>
+  </rule>
+
+  <!-- exclude rules for codesize - complexity metrics should be analyzed via code review/sonar inspection and not enforced by ide rules -->
+  <rule ref="rulesets/java/codesize.xml">
+    <exclude name="CyclomaticComplexity"/>
+    <exclude name="ExcessiveMethodLength"/>
+    <exclude name="NcssMethodCount"/>
+    <exclude name="TooManyMethods"/>
+  </rule>
+
+  <rule ref="rulesets/java/controversial.xml">
+    <exclude name="AtLeastOneConstructor"/>   <!-- Not clear why this is useful                                 -->
+    <exclude name="AvoidFinalLocalVariable"/> <!-- See "Hardcore Java," Chapter 2: "The Final Story"            -->
+    <exclude name="AvoidUsingNativeCode"/>    <!-- Decisions like this will not require PMD to tell us about it -->
+    <exclude name="AvoidUsingVolatile"/>      <!-- Learn about volatile in "Java Concurrency in Practice"       -->
+    <exclude name="CallSuperInConstructor"/>  <!-- Rule cannot know which super() overload should be called     -->
+    <exclude name="DataflowAnomalyAnalysis"/> <!-- Rule does not appear to be correct                           -->
+    <exclude name="DefaultPackage"/>          <!-- Package private is legitimate                                -->
+    <exclude name="OnlyOneReturn"/>           <!-- Certainly a good ideal to strive for, but not an absolute    -->
+    <exclude name="UnnecessaryParentheses"/>  <!-- Extra parens can clarify expressions when used tastefully    -->
+    <exclude name="AvoidLiteralsInIfCondition"/>   <!-- triggers even on ==null checks -->
+    <exclude name="UseConcurrentHashMap"/>  <!-- triggers on cases where concurrency is not an issue -->
+    <exclude name="NullAssignment"/>
+    <exclude name="AvoidUsingShortType"/>
+    <exclude name="AvoidPrefixingMethodParameters"/>
+  </rule>
+
+  <rule ref="rulesets/java/design.xml">
+    <exclude name="AbstractClassWithoutAnyMethod"/>              <!-- abstract -> non-instantable, not protected ctor        -->
+    <exclude name="AbstractClassWithoutAbstractMethod"/>         <!-- abstract -> non-instantable, not protected ctor        -->
+    <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/> <!-- Default behavior of no-op is OK                        -->
+    <exclude name="NonStaticInitializer"/>                       <!-- Non-static initializers are OK                         -->
+    <exclude name="UnnecessaryLocalBeforeReturn"/>               <!-- One line of code does one thing, "return" is one thing -->
+    <exclude name="UseLocaleWithCaseConversions"/>               <!-- TODO: Not thoroughly understood, L10n/I18n issue       -->
+    <exclude name="ConfusingTernary"/>
+    <exclude name="ConstructorCallsOverridableMethod"/>
+    <exclude name="AvoidSynchronizedAtMethodLevel"/>
+    <exclude name="AvoidDeeplyNestedIfStmts"/>
+    <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/>
+    <exclude name="CloseResource"/>
+  </rule>
+  <rule ref="rulesets/java/design.xml/CloseResource">
+    <properties>
+      <property name="types" value="Connection,Statement,ResultSet,OutgoingMessageBuilder"/>
+    </properties>
+  </rule>
+
+  <rule ref="rulesets/java/finalizers.xml"/>
+
+
+  <rule ref="rulesets/java/imports.xml">
+    <exclude name="TooManyStaticImports"/> <!-- avoids duplication -->
+  </rule>
+
+  <rule ref="rulesets/java/javabeans.xml">
+    <!--
+      Generating too many false positives
+      TODO: configure this to include files that are designed to specify Beans.
+    -->
+    <exclude name="BeanMembersShouldSerialize"/>
+  </rule>
+
+  <rule ref="rulesets/java/logging-java.xml">
+    <exclude name="LoggerIsNotStaticFinal"/>
+  </rule>
+
+  <rule ref="rulesets/java/naming.xml">
+    <exclude name="ShortVariable"/>
+    <exclude name="LongVariable"/>
+    <exclude name="ShortMethodName"/>
+  </rule>
+
+  <rule ref="rulesets/java/optimizations.xml">
+    <exclude name="MethodArgumentCouldBeFinal"/>
+    <exclude name="LocalVariableCouldBeFinal"/>
+    <exclude name="PrematureDeclaration"/>
+    <exclude name="SimplifyStartsWith"/>
+  </rule>
+
+  <rule ref="rulesets/java/strictexception.xml">
+    <exclude name="AvoidCatchingThrowable"/>  <!-- makes sense but is used alot currently -->
+    <exclude name="AvoidThrowingRawExceptionTypes"/>  <!-- makes sense but is used alot currently -->
+  </rule>
+
+  <rule ref="rulesets/java/strings.xml">
+    <exclude name="AvoidDuplicateLiterals"/> <!-- avoids duplication -->
+    <exclude name="ConsecutiveLiteralAppends"/>
+    <exclude name="InsufficientStringBufferDeclaration"/>
+  </rule>
+
+  <rule ref="rulesets/java/typeresolution.xml">
+    <exclude name="UnusedImports"/>                     <!-- avoids duplication, included in the "imports" ruleset         -->
+    <exclude name="SignatureDeclareThrowsException"/>   <!-- avoids duplication, included in the "strictexception" ruleset -->
+    <exclude name="CloneMethodMustImplementCloneable"/> <!-- avoids duplication, included in the "clone" ruleset           -->
+    <exclude name="LooseCoupling"/>                     <!-- avoids duplication, included in the "coupling" ruleset        -->
+  </rule>
+
+  <rule ref="rulesets/java/unusedcode.xml">
+    <exclude name="UnusedFormalParameter"/>
+    <exclude name="UnusedPrivateMethod"/>  <!-- too much false positives with annoated methods e.g. @PostConstruct, @Activate -->
+  </rule>
+
+</ruleset>

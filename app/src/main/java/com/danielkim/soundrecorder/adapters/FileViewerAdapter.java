@@ -26,7 +26,6 @@ import com.danielkim.soundrecorder.fragments.PlaybackFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 
