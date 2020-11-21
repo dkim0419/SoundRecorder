@@ -1,6 +1,7 @@
 language: android
 
 android:
+  components:
   - build-tools-25.0.0
   - amdroid-21
   - sys-img-x86-android-21
@@ -14,3 +15,6 @@ before_script:
   - adb shell input keyevent 82 &
 
 script: ./gradlew connectedAndroidTest
+
+notifications:
+  slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
