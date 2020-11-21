@@ -1,20 +1,20 @@
 language: android
+install: skip
 
-android:
-  components:
-  - build-tools-25.0.0
-  - amdroid-21
-  - sys-img-x86-android-21
-  - sys-img-armeabi-v7a-android-22
+dist: trusty
+jdk: oraclejdk8
 
-before_script:
-  # Create and start emulator
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
-script: ./gradlew connectedAndroidTest
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+script:
+  - ./gradlew build --scan -s
 
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
