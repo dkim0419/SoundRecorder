@@ -9,7 +9,10 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
+    - android-$ANDROID_API_LEVEL
     - android-$ANDROID_EMULATOR_LEVEL
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+    - addon-google_apis-google-$ANDROID_API_LEVEL
     - sys-img-armeabi-v7a-google_apis-$ANDROID_EMULATOR_LEVEL
   licenses:
     - '.+'
@@ -39,11 +42,9 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew build connectedCheck
+  - ./gradlew build check
 
 notifications:
   slack:
     secure:
       soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
-
-sudo: false
