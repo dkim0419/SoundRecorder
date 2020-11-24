@@ -29,7 +29,8 @@ before_install:
   - chmod +x gradlew
 
 script:
-  - ./gradlew compileJava
+  # failed with gradleCheck and compileJava
+  - ./gradlew assembleDebug
 
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
