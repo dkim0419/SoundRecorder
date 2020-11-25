@@ -1,36 +1,33 @@
 language: android
 
+java: oraclejdk8 # We need this if your sdk version is 24
+
 android:
   components:
+    # Uncomment the lines below if you want to
+    # use the latest revision of Android SDK Tools
     - tools
-    - platform-tools
-    - android-$ANDROID_API_LEVEL
-    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
-    - extra-google-google_play_services
-    - extra-google-m2repository
+
+    # The BuildTools version used by your project
+    - build-tools-29.0.2
+
+    # The SDK version used to compile your project
+    - android-30
+
+    # Additional components
+    #- extra-google-google_play_services
+    - extra-android-support
     - extra-android-m2repository
+    - extra-google-m2repository
 
-licenses:
-    - '.+'
-
-env:
-  global:
-    - ANDROID_API_LEVEL=30
-    - ANDROID_EMULATOR_LEVEL=25
-    - ANDROID_BUILD_TOOLS_VERSION=29.0.2
-    - ANDROID_ABI=armeabi-v7a
-    - ANDROID_TAG=google_apis
-    - ADB_INSTALL_TIMEOUT=20
-
-jdk:
-  - oraclejdk8
 
 before_install:
-  - chmod +x gradlew
+  - chmod +x ./gradlew
+  - yes | sdkmanager "platforms;android-30"
+
 
 script:
-  # failed with gradleCheck and compileJava
-  - ./gradlew assembleDebug
+  - ./gradlew build
 
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
