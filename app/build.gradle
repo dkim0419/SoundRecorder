@@ -21,7 +21,6 @@ android {
         disable 'MissingTranslation'
         abortOnError false
       }
-    }
 }
 
 allprojects {
