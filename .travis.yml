@@ -18,6 +18,17 @@ android:
     - extra-android-m2repository
     - extra-google-m2repository
 
+#  Save time not downloading dependencies ad every build
+cache:
+  directories:
+    ~/.gradle/caches/
+    ~/.gradle/wrapper/
+
+addons:
+  apt:
+    packages:
+      - lynx
+
 before_install:
   - chmod +x ./gradlew
   - yes | sdkmanager "platforms;android-30"
@@ -32,10 +43,12 @@ jobs:
       name: "Compile"
       script: ./gradlew build
     - stage: static_analysis
-      script: ./gradlew checkstyle
       name: "Checkstyle analysis"
-      script: ./gradlew pmd
+      script: ./gradlew checkstyle
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/checkstyle/checkstyle.html
       name: "PMD analysis"
+      script: ./gradlew pmd
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pmd/pmd.html
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         expire_in: 4 days
