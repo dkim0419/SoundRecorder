@@ -1,20 +1,25 @@
 package com.danielkim.soundrecorder.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.format.DateUtils;
@@ -23,10 +28,10 @@ import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
 import com.danielkim.soundrecorder.fragments.PlaybackFragment;
+import com.danielkim.soundrecorder.fragments.TextFromAudioFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
 import java.io.File;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 
@@ -34,7 +39,7 @@ import java.util.ArrayList;
  * Created by Daniel on 12/29/2014.
  */
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
-    implements OnDatabaseChangedListener{
+    implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
 
@@ -96,6 +101,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             public boolean onLongClick(View v) {
 
                 ArrayList<String> entrys = new ArrayList<String>();
+                entrys.add(mContext.getString(R.string.dialog_file_convert));
                 entrys.add(mContext.getString(R.string.dialog_file_share));
                 entrys.add(mContext.getString(R.string.dialog_file_rename));
                 entrys.add(mContext.getString(R.string.dialog_file_delete));
@@ -107,12 +113,38 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle(mContext.getString(R.string.dialog_title_options));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @SuppressLint("ResourceType")
                     public void onClick(DialogInterface dialog, int item) {
-                        if (item == 0) {
-                            shareFileDialog(holder.getPosition());
-                        } if (item == 1) {
+                        if (item == 0){
+                            if(isDeviceConnected()){
+                                TextFromAudioFragment textFromAudioFragment = new TextFromAudioFragment();
+
+
+                            }else{
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
+                                        .setMessage(mContext.getString(R.string.dialog_device_not_connected_message))
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
+                        }
+                        else if (item == 1) {
+                            if(isDeviceConnected()){
+                                shareFileDialog(holder.getPosition());
+                            }else{
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
+                                        .setMessage(mContext.getString(R.string.dialog_device_not_connected_message))
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
+                        }
+                        else if (item == 2) {
                             renameFileDialog(holder.getPosition());
-                        } else if (item == 2) {
+                        }
+                        else if (item == 3) {
                             deleteFileDialog(holder.getPosition());
                         }
                     }
@@ -301,5 +333,16 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         AlertDialog alert = confirmDelete.create();
         alert.show();
+    }
+
+    private boolean isDeviceConnected(){
+        boolean isConnected = false;
+
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+
+        if(ni != null) isConnected = ni.isConnected();
+
+        return isConnected;
     }
 }
