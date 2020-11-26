@@ -1,7 +1,5 @@
 language: android
 
-java: oraclejdk8 # We need this if your sdk version is 24
-
 android:
   components:
     # Uncomment the lines below if you want to
@@ -20,14 +18,29 @@ android:
     - extra-android-m2repository
     - extra-google-m2repository
 
-
 before_install:
   - chmod +x ./gradlew
   - yes | sdkmanager "platforms;android-30"
 
+stages:
+  - compile
+  - static_analysis
 
-script:
-  - ./gradlew build
+jobs:
+  include:
+    - stage: compile
+      name: "Compile"
+      script: ./gradlew build
+    - stage: static_analysis
+      script: ./gradlew checkstyle
+      name: "Checkstyle analysis"
+      script: ./gradlew pmd
+      name: "PMD analysis"
+      artifacts:
+        name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+        expire_in: 4 days
+        paths:
+          - app/build/reports/
 
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
