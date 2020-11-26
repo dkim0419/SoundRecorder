@@ -56,6 +56,11 @@ task checkstyle(type: Checkstyle) {
     exclude '**/gen/**'
     showViolations = true
     classpath = files()
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 task pmd(type: Pmd) {
@@ -66,7 +71,7 @@ task pmd(type: Pmd) {
     exclude '**/gen/**'
 
     reports {
-        xml.enabled = true
+        xml.enabled = false
         html.enabled = true
     }
 }
@@ -74,5 +79,3 @@ task pmd(type: Pmd) {
 task uml{
     version = "1.0.2"
 }
-
-
