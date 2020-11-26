@@ -75,6 +75,4 @@ task uml{
     version = "1.0.2"
 }
 
-afterEvaluate {
-    preBuild.dependsOn 'pmd', 'checkstyle'
-}
+
