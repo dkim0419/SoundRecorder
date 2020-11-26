@@ -27,6 +27,9 @@
     <string name="dialog_title_rename">Rename File</string>
     <string name="dialog_title_options">Options</string>
 
+    <string name="dialog_device_not_connected_title">Device not connected</string>
+    <string name="dialog_device_not_connected_message">The device is not connected to the network.\nTo continue, you must first establish a connection with Wi-Fi or data connection</string>
+    <string name="dialog_file_convert">Extract Text From Audio</string>
     <string name="dialog_file_share">Share File</string>
     <string name="dialog_file_rename">Rename File</string>
     <string name="dialog_file_delete">Delete File</string>
@@ -34,6 +37,7 @@
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>
     <string name="dialog_action_no">No</string>
+    <string name="fragmentTextFromAudioTitle">Text extracted from the audio</string>
 
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">Pause</string>
