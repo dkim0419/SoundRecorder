@@ -2,18 +2,10 @@ language: android
 
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
     - tools
-
-    # The BuildTools version used by your project
     - build-tools-29.0.2
-
-    # The SDK version used to compile your project
     - android-30
-
     # Additional components
-    #- extra-google-google_play_services
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
@@ -47,7 +39,7 @@ jobs:
       script: ./gradlew checkstyle
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/checkstyle/checkstyle.html
       name: "PMD analysis"
-      script: ./gradlew pmd
+    - script: ./gradlew pmd
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pmd/pmd.html
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
