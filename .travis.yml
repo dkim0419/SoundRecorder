@@ -35,10 +35,11 @@ jobs:
       name: "Compile"
       script: ./gradlew build
     - stage: static_analysis
-      name: "Static analysis"
-    - script: ./gradlew checkstyle
+      name: "Checkstyle analysis"
+      script: ./gradlew checkstyle
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/checkstyle/checkstyle.html
     - script: ./gradlew pmd
+      name: "PMD analysis"
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pmd/pmd.html
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
