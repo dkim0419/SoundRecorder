@@ -1,9 +1,7 @@
 package com.danielkim.soundrecorder.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,14 +14,12 @@ import android.view.MenuItem;
 import com.astuetz.PagerSlidingTabStrip;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.fragments.FileViewerFragment;
-import com.danielkim.soundrecorder.fragments.LicensesFragment;
 import com.danielkim.soundrecorder.fragments.RecordFragment;
 
 
 public class MainActivity extends ActionBarActivity{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
 
@@ -42,6 +38,7 @@ public class MainActivity extends ActionBarActivity{
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
     }
 
     @Override
@@ -102,6 +99,5 @@ public class MainActivity extends ActionBarActivity{
 
     public MainActivity() {
     }
-
 
 }

@@ -19,19 +19,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.format.DateUtils;
 
+import com.danielkim.soundrecorder.CustomAlertDialogForExtractedText;
 import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
 import com.danielkim.soundrecorder.fragments.PlaybackFragment;
-import com.danielkim.soundrecorder.fragments.TextFromAudioFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
+import com.ibm.cloud.sdk.core.security.IamAuthenticator;
+import com.ibm.watson.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
+import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
+import com.ibm.watson.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 
@@ -42,19 +49,21 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
-
     private DBHelper mDatabase;
+    private String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
+    private String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
 
     RecordingItem item;
     Context mContext;
     LinearLayoutManager llm;
 
+
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
-        mContext = context;
-        mDatabase = new DBHelper(mContext);
-        mDatabase.setOnDatabaseChangedListener(this);
-        llm = linearLayoutManager;
+        this.mContext = context;
+        this.mDatabase = new DBHelper(mContext);
+        this.mDatabase.setOnDatabaseChangedListener(this);
+        this.llm = linearLayoutManager;
     }
 
     @Override
@@ -81,9 +90,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public void onClick(View view) {
                 try {
-                    PlaybackFragment playbackFragment =
-                            new PlaybackFragment().newInstance(getItem(holder.getPosition()));
-
+                    PlaybackFragment playbackFragment = new PlaybackFragment().newInstance(getItem(holder.getPosition()));
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
                             .getSupportFragmentManager()
                             .beginTransaction();
@@ -108,7 +115,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
                 final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
 
-
                 // File delete confirm
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle(mContext.getString(R.string.dialog_title_options));
@@ -117,8 +123,19 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0){
                             if(isDeviceConnected()){
-                                TextFromAudioFragment textFromAudioFragment = new TextFromAudioFragment();
+                                /*String extractedText = getJsonResults(holder.getPosition());
+                                Log.d("myBug", extractedText);
 
+                                if (extractedText != null) {
+                                    CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                    customAlertDialogForExtractedText.show();
+
+                                    customAlertDialogForExtractedText.setText(extractedText);
+
+                                }
+                                else{
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.noTextCanBeExtracted), Toast.LENGTH_LONG).show();
+                                }*/
 
                             }else{
                                 new AlertDialog.Builder(mContext)
@@ -163,6 +180,45 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 return false;
             }
         });
+    }
+
+    private String getJsonResults (int position){
+        IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
+        SpeechToText speechToText = new SpeechToText(authenticator);
+        speechToText.setServiceUrl(this.url);
+
+        try {
+            RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
+                    .audio(new FileInputStream(getItem(position).getFilePath()))
+                    .contentType("audio/mp3")
+                    .model("en-US_BroadbandModel")
+                    //.keywords(Arrays.asList("colorado", "tornado", "tornadoes"))
+                    //.keywordsThreshold((float) 0.5)
+                    //.maxAlternatives(3)
+                    .build();
+
+
+            BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
+                public SpeechRecognitionResults results;
+
+                @Override
+                public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
+                    this.results = speechRecognitionResults;
+                }
+
+                @Override
+                public void onDisconnected() {
+                    Log.d("results", results.toString());
+                }
+            };
+
+            speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
+            return "Done";
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
