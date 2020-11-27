@@ -37,7 +37,13 @@
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>
     <string name="dialog_action_no">No</string>
-    <string name="fragmentTextFromAudioTitle">Text extracted from the audio</string>
+    <string name="customAlertDialogFromAudioTitle">Text extracted from the audio</string>
+    <string name="noTextCanBeExtracted">No Text Can Be Extracted</string>
+    <string name="customAlertDialaogForExtractedTestButtonOk">Ok</string>
+    <string name="customAlertDialaogForExtractedTestButtonCopy">Copy</string>
+    <string name="textCopiedToClipboard">Text Copied To Clipboard</string>
+    <string name="customAlertDialogFromAudioBodyDescription">Text extracted from the audio</string>
+
 
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">Pause</string>
