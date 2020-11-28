@@ -92,8 +92,23 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.3.1@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.junit.platform:junit-platform-commons:1.3.1@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.apiguardian:apiguardian-api:1.0.0@jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: org.opentest4j:opentest4j:1.1.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:25.3.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.nineoldandroids:library:2.4.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.testng:testng:6.9.6@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.inject:guice:4.0:no_aop@jar" level="project" />
+    <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1@jar" level="project" />
+    <orderEntry type="library" name="Gradle: aopalliance:aopalliance:1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:16.0.1@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.beanshell:bsh:2.0b4@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.ant:ant:1.7.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.ant:ant-launcher:1.7.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.beust:jcommander:1.48@jar" level="project" />
+    <orderEntry type="library" name="Gradle: org.yaml:snakeyaml:1.15@jar" level="project" />
+    <orderEntry type="library" name="Gradle: junit:junit:4.10@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7:25.3.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:cardview-v7:25.3.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.melnykov:floatingactionbutton:1.3.0@aar" level="project" />
