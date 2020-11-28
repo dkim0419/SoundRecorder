@@ -4,7 +4,7 @@ android:
   components:
     - tools
     - build-tools-29.0.2
-    - android-30
+    - android-21
     # Additional components
     - extra-android-support
     - extra-android-m2repository
@@ -23,12 +23,11 @@ addons:
 
 before_install:
   - chmod +x ./gradlew
-  - yes | sdkmanager "platforms;android-30"
+  - yes | sdkmanager "platforms;android-21"
 
 stages:
   - compile
   - static_analysis
-
 
 jobs:
   include:
@@ -47,6 +46,7 @@ jobs:
         expire_in: 4 days
         paths:
           - app/build/reports/
+
 
 
 notifications:

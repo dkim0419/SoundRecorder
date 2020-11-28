@@ -20,7 +20,6 @@ import com.danielkim.soundrecorder.fragments.RecordFragment;
 public class MainActivity extends ActionBarActivity{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
 
@@ -39,6 +38,7 @@ public class MainActivity extends ActionBarActivity{
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
     }
 
     @Override
@@ -95,6 +95,9 @@ public class MainActivity extends ActionBarActivity{
         public CharSequence getPageTitle(int position) {
             return titles[position];
         }
+    }
+
+    public MainActivity() {
     }
 
 }
