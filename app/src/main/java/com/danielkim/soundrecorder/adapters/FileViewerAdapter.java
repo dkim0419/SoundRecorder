@@ -1,6 +1,5 @@
 package com.danielkim.soundrecorder.adapters;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.format.DateUtils;
 
 import com.danielkim.soundrecorder.CustomAlertDialogForExtractedText;
 import com.danielkim.soundrecorder.DBHelper;
@@ -38,9 +36,8 @@ import com.ibm.watson.speech_to_text.v1.websocket.BaseRecognizeCallback;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Daniel on 12/29/2014.
@@ -50,13 +47,11 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
     private static final String LOG_TAG = "FileViewerAdapter";
     private DBHelper mDatabase;
-    private String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
-    private String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
-
-    RecordingItem item;
-    Context mContext;
-    LinearLayoutManager llm;
-
+    private RecordingItem item;
+    private Context mContext;
+    private LinearLayoutManager llm;
+    private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
+    private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
@@ -119,7 +114,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle(mContext.getString(R.string.dialog_title_options));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
-                    @SuppressLint("ResourceType")
+                    @Override
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0){
                             if(isDeviceConnected()){
@@ -131,15 +126,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                                     customAlertDialogForExtractedText.show();
 
                                     customAlertDialogForExtractedText.setText(extractedText);
-
                                 }
                                 else{
                                     Toast.makeText(mContext, mContext.getResources().getString(R.string.noTextCanBeExtracted), Toast.LENGTH_LONG).show();
                                 }*/
-
                                 CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
                                 customAlertDialogForExtractedText.show();
-
                             }else{
                                 new AlertDialog.Builder(mContext)
                                         .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
@@ -172,6 +164,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 builder.setCancelable(true);
                 builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                         new DialogInterface.OnClickListener() {
+                            @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
@@ -185,6 +178,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         });
     }
 
+    /**
+     *     TO DO
+     */
     private String getJsonResults (int position){
         IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
         SpeechToText speechToText = new SpeechToText(authenticator);
@@ -219,7 +215,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             return "Done";
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -339,6 +334,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         renameFileBuilder.setCancelable(true);
         renameFileBuilder.setPositiveButton(mContext.getString(R.string.dialog_action_ok),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             String value = input.getText().toString().trim() + ".mp4";
@@ -353,6 +349,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 });
         renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
@@ -371,6 +368,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         confirmDelete.setCancelable(true);
         confirmDelete.setPositiveButton(mContext.getString(R.string.dialog_action_yes),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             //remove item from database, recyclerview, and storage
@@ -385,6 +383,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 });
         confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
