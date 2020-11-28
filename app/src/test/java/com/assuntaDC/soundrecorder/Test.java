@@ -1,4 +1,4 @@
-package com.assuntaDC.soundrecorder;
+package com.assuntadc.soundrecorder;
 
 public class Test {
 
