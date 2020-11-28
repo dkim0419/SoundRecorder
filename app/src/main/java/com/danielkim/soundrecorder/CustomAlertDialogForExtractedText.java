@@ -6,14 +6,14 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View.OnClickListener;
 
-public class CustomAlertDialogForExtractedText extends Dialog implements android.view.View.OnClickListener{
+public class CustomAlertDialogForExtractedText extends Dialog implements OnClickListener{
     private Button buttonOk, buttonCopy;
     private TextView customAlertDialaogForExtractedTextBody;
 
