@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="390dp"
+    android:layout_height="370dp"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp">
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintEnd_toEndOf="@+id/customAlertDialaogForExtractedTextTitle"
+            app:layout_constraintHeight_max="140dp"
+            app:layout_constraintStart_toStartOf="@+id/customAlertDialaogForExtractedTextTitle"
+            app:layout_constraintTop_toBottomOf="@+id/customAlertDialaogForExtractedTextTitle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/customAlertDialaogForExtractedTextBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwww"
+                    android:textAlignment="textStart"
+                    android:textColor="#000000"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/customAlertDialaogForExtractedTextTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/customAlertDialogFromAudioTitle"
+            android:textAlignment="center"
+            android:textColor="#020202"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/scrollView"
+            app:layout_constraintHorizontal_bias="0.505"
+            app:layout_constraintStart_toStartOf="@+id/scrollView"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView">
+
+            <Button
+                android:id="@+id/customAlertDialaogForExtractedTextButtonCopy"
+                android:layout_width="111dp"
+                android:layout_height="match_parent"
+                android:text="@string/customAlertDialaogForExtractedTestButtonCopy" />
+
+            <Button
+                android:id="@+id/customAlertDialaogForExtractedTextButtonOk"
+                android:layout_width="111dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:text="@string/customAlertDialaogForExtractedTestButtonOk" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>

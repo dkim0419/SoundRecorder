@@ -4,12 +4,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,38 +20,45 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.text.format.DateUtils;
 
+import com.danielkim.soundrecorder.CustomAlertDialogForExtractedText;
 import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
 import com.danielkim.soundrecorder.fragments.PlaybackFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
+import com.ibm.cloud.sdk.core.security.IamAuthenticator;
+import com.ibm.watson.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
+import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
+import com.ibm.watson.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Daniel on 12/29/2014.
  */
 public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.RecordingsViewHolder>
-    implements OnDatabaseChangedListener{
+    implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
-
     private DBHelper mDatabase;
-
-    RecordingItem item;
-    Context mContext;
-    LinearLayoutManager llm;
+    private RecordingItem item;
+    private Context mContext;
+    private LinearLayoutManager llm;
+    private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
+    private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
-        mContext = context;
-        mDatabase = new DBHelper(mContext);
-        mDatabase.setOnDatabaseChangedListener(this);
-        llm = linearLayoutManager;
+        this.mContext = context;
+        this.mDatabase = new DBHelper(mContext);
+        this.mDatabase.setOnDatabaseChangedListener(this);
+        this.llm = linearLayoutManager;
     }
 
     @Override
@@ -75,9 +85,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public void onClick(View view) {
                 try {
-                    PlaybackFragment playbackFragment =
-                            new PlaybackFragment().newInstance(getItem(holder.getPosition()));
-
+                    PlaybackFragment playbackFragment = new PlaybackFragment().newInstance(getItem(holder.getPosition()));
                     FragmentTransaction transaction = ((FragmentActivity) mContext)
                             .getSupportFragmentManager()
                             .beginTransaction();
@@ -95,23 +103,60 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             public boolean onLongClick(View v) {
 
                 ArrayList<String> entrys = new ArrayList<String>();
+                entrys.add(mContext.getString(R.string.dialog_file_convert));
                 entrys.add(mContext.getString(R.string.dialog_file_share));
                 entrys.add(mContext.getString(R.string.dialog_file_rename));
                 entrys.add(mContext.getString(R.string.dialog_file_delete));
 
                 final CharSequence[] items = entrys.toArray(new CharSequence[entrys.size()]);
 
-
                 // File delete confirm
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle(mContext.getString(R.string.dialog_title_options));
                 builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int item) {
-                        if (item == 0) {
-                            shareFileDialog(holder.getPosition());
-                        } if (item == 1) {
+                        if (item == 0){
+                            if(isDeviceConnected()){
+                                /*String extractedText = getJsonResults(holder.getPosition());
+                                Log.d("myBug", extractedText);
+
+                                if (extractedText != null) {
+                                    CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                    customAlertDialogForExtractedText.show();
+
+                                    customAlertDialogForExtractedText.setText(extractedText);
+                                }
+                                else{
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.noTextCanBeExtracted), Toast.LENGTH_LONG).show();
+                                }*/
+                                CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                customAlertDialogForExtractedText.show();
+                            }else{
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
+                                        .setMessage(mContext.getString(R.string.dialog_device_not_connected_message))
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
+                        }
+                        else if (item == 1) {
+                            if(isDeviceConnected()){
+                                shareFileDialog(holder.getPosition());
+                            }else{
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
+                                        .setMessage(mContext.getString(R.string.dialog_device_not_connected_message))
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
+                        }
+                        else if (item == 2) {
                             renameFileDialog(holder.getPosition());
-                        } else if (item == 2) {
+                        }
+                        else if (item == 3) {
                             deleteFileDialog(holder.getPosition());
                         }
                     }
@@ -119,6 +164,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 builder.setCancelable(true);
                 builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                         new DialogInterface.OnClickListener() {
+                            @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
@@ -130,6 +176,47 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 return false;
             }
         });
+    }
+
+    /**
+     *     TO DO
+     */
+    private String getJsonResults (int position){
+        IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
+        SpeechToText speechToText = new SpeechToText(authenticator);
+        speechToText.setServiceUrl(this.url);
+
+        try {
+            RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
+                    .audio(new FileInputStream(getItem(position).getFilePath()))
+                    .contentType("audio/mp3")
+                    .model("en-US_BroadbandModel")
+                    //.keywords(Arrays.asList("colorado", "tornado", "tornadoes"))
+                    //.keywordsThreshold((float) 0.5)
+                    //.maxAlternatives(3)
+                    .build();
+
+
+            BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
+                public SpeechRecognitionResults results;
+
+                @Override
+                public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
+                    this.results = speechRecognitionResults;
+                }
+
+                @Override
+                public void onDisconnected() {
+                    Log.d("results", results.toString());
+                }
+            };
+
+            speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
+            return "Done";
+
+        } catch (FileNotFoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -247,6 +334,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         renameFileBuilder.setCancelable(true);
         renameFileBuilder.setPositiveButton(mContext.getString(R.string.dialog_action_ok),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             String value = input.getText().toString().trim() + ".mp4";
@@ -261,6 +349,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 });
         renameFileBuilder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
@@ -279,6 +368,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         confirmDelete.setCancelable(true);
         confirmDelete.setPositiveButton(mContext.getString(R.string.dialog_action_yes),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
                             //remove item from database, recyclerview, and storage
@@ -293,6 +383,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 });
         confirmDelete.setNegativeButton(mContext.getString(R.string.dialog_action_no),
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
@@ -300,5 +391,16 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         AlertDialog alert = confirmDelete.create();
         alert.show();
+    }
+
+    private boolean isDeviceConnected(){
+        boolean isConnected = false;
+
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+
+        if(ni != null) isConnected = ni.isConnected();
+
+        return isConnected;
     }
 }
