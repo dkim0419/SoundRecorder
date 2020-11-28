@@ -137,6 +137,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                                     Toast.makeText(mContext, mContext.getResources().getString(R.string.noTextCanBeExtracted), Toast.LENGTH_LONG).show();
                                 }*/
 
+                                CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                customAlertDialogForExtractedText.show();
+
                             }else{
                                 new AlertDialog.Builder(mContext)
                                         .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))

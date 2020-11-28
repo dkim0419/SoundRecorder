@@ -53,6 +53,9 @@ public class CustomAlertDialogForExtractedText extends Dialog implements android
                 Toast.makeText(getContext(), R.string.textCopiedToClipboard, Toast.LENGTH_LONG).show();
 
                 break;
+
+            default:
+                break;
         }
     }
 
