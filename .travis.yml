@@ -28,7 +28,7 @@ before_install:
 stages:
   - compile
   - static_analysis
-  - test
+
 
 jobs:
   include:
@@ -47,9 +47,6 @@ jobs:
         expire_in: 4 days
         paths:
           - app/build/reports/
-    - stage: test
-      name: "Unit Test"
-      script: ./gradlew unitTest
 
 
 notifications:
