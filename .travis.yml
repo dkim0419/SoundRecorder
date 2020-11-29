@@ -52,8 +52,5 @@ jobs:
        script: ./gradlew test
 
 
-
-
-
 notifications:
-  slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
+  slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMiit
