@@ -30,6 +30,7 @@ import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 import com.ibm.cloud.sdk.core.security.IamAuthenticator;
 import com.ibm.watson.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
+import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionAlternative;
 import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
 import com.ibm.watson.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
@@ -37,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -102,7 +104,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             @Override
             public boolean onLongClick(View v) {
 
-                ArrayList<String> entrys = new ArrayList<String>();
+                final ArrayList<String> entrys = new ArrayList<String>();
                 entrys.add(mContext.getString(R.string.dialog_file_convert));
                 entrys.add(mContext.getString(R.string.dialog_file_share));
                 entrys.add(mContext.getString(R.string.dialog_file_rename));
@@ -118,20 +120,24 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0){
                             if(isDeviceConnected()){
-                                /*String extractedText = getJsonResults(holder.getPosition());
-                                Log.d("myBug", extractedText);
+                                //customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
+                                //Log.d("position", getItem(holder.getPosition()).getFilePath()+"");
 
-                                if (extractedText != null) {
-                                    CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
-                                    customAlertDialogForExtractedText.show();
+                                String extractedText;
+                                try{
+                                    extractedText = contactServiceAndGetTranscript(holder.getPosition());
 
-                                    customAlertDialogForExtractedText.setText(extractedText);
+                                    if (extractedText != null) {
+                                        CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                        customAlertDialogForExtractedText.show();
+                                        customAlertDialogForExtractedText.setText(extractedText);
+                                    }
                                 }
-                                else{
-                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.noTextCanBeExtracted), Toast.LENGTH_LONG).show();
-                                }*/
-                                CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
-                                customAlertDialogForExtractedText.show();
+                                catch (FileNotFoundException e){
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
+                                }catch (RuntimeException e){
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_unable_to_extract_text), Toast.LENGTH_LONG).show();
+                                }
                             }else{
                                 new AlertDialog.Builder(mContext)
                                         .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
@@ -143,7 +149,12 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                         }
                         else if (item == 1) {
                             if(isDeviceConnected()){
-                                shareFileDialog(holder.getPosition());
+                                try {
+                                    shareFileDialog(holder.getPosition());
+                                }
+                                catch (FileNotFoundException e){
+                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
+                                }
                             }else{
                                 new AlertDialog.Builder(mContext)
                                         .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
@@ -178,45 +189,55 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         });
     }
 
-    /**
-     *     TO DO
-     */
-    private String getJsonResults (int position){
+    private String contactServiceAndGetTranscript(int position) throws RuntimeException, FileNotFoundException{
         IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
         SpeechToText speechToText = new SpeechToText(authenticator);
         speechToText.setServiceUrl(this.url);
 
-        try {
-            RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
-                    .audio(new FileInputStream(getItem(position).getFilePath()))
-                    .contentType("audio/mp3")
-                    .model("en-US_BroadbandModel")
-                    //.keywords(Arrays.asList("colorado", "tornado", "tornadoes"))
-                    //.keywordsThreshold((float) 0.5)
-                    //.maxAlternatives(3)
-                    .build();
+        final String[] transcript = new String[1];
+        final Boolean[] transcriptionEnded = new Boolean[1];
+        transcriptionEnded[0] = false;
 
+        RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
+                .audio(new FileInputStream(getItem(position).getFilePath()))
+                .contentType("audio/mp3")
+                .model("en-US_BroadbandModel")
+                .maxAlternatives(5)
+                .build();
 
-            BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
-                public SpeechRecognitionResults results;
+        BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
 
-                @Override
-                public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
-                    this.results = speechRecognitionResults;
+            @Override
+            public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
+                List<SpeechRecognitionAlternative> alternatives = speechRecognitionResults.getResults().get(0).getAlternatives();
+
+                int biggerConfidenceIndex = 0;
+                double maxConfidence = 0;
+                for (int i = 0; i < alternatives.size(); i++){
+                    double currentConfidence;
+
+                    if (alternatives.get(i).getConfidence() != null) currentConfidence = alternatives.get(i).getConfidence();
+                    else currentConfidence = 0;
+
+                    if(currentConfidence > maxConfidence){
+                        maxConfidence = currentConfidence;
+                        biggerConfidenceIndex = i;
+                    }
                 }
 
-                @Override
-                public void onDisconnected() {
-                    Log.d("results", results.toString());
-                }
-            };
+                transcript[0] = alternatives.get(biggerConfidenceIndex).getTranscript();
+            }
 
-            speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
-            return "Done";
+            @Override
+            public void onDisconnected() {
+                transcriptionEnded[0] = true;
+            }
+        };
 
-        } catch (FileNotFoundException e) {
-            return null;
-        }
+        speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
+
+        while (!transcriptionEnded[0]);
+        return transcript[0];
     }
 
     @Override
@@ -313,12 +334,18 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         }
     }
 
-    public void shareFileDialog(int position) {
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(getItem(position).getFilePath())));
-        shareIntent.setType("audio/mp4");
-        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
+    public void shareFileDialog(int position) throws FileNotFoundException{
+        File file = new File(getItem(position).getFilePath());
+        if(file.exists()){
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(getItem(position).getFilePath())));
+            shareIntent.setType("audio/mp3");
+            mContext.startActivity(Intent.createChooser(shareIntent, mContext.getText(R.string.send_to)));
+        }
+        else{
+            throw new FileNotFoundException();
+        }
     }
 
     public void renameFileDialog (final int position) {
@@ -337,7 +364,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         try {
-                            String value = input.getText().toString().trim() + ".mp4";
+                            String value = input.getText().toString().trim() + ".mp3";
                             rename(position, value);
 
                         } catch (Exception e) {
