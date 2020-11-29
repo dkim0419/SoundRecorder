@@ -45,12 +45,11 @@ jobs:
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         expire_in: 4 days
-        paths:
-          - app/build/reports/
-     - stage: test
-       name: "Unit Test"
-       script: ./gradlew test
-      
+        paths: app/build/reports/
+    - stage: test
+      name: "Unit Test"
+      script: ./gradlew test
+
 
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
