@@ -44,6 +44,7 @@
     <string name="customAlertDialaogForExtractedTestButtonCopy">Copy</string>
     <string name="textCopiedToClipboard">Text Copied To Clipboard</string>
     <string name="customAlertDialogFromAudioBodyDescription">Text extracted from the audio</string>
+    <string name="nameAlreadyExistsInDB">The entered name already exists in the app database</string>
     <string name="textExtractionInProgress">Extraction in progress, please wait...</string>
 
 

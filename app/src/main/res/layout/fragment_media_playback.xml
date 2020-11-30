@@ -7,12 +7,11 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/mediaplayer_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        card_view:cardElevation="3dp"
+        app:cardElevation="3dp"
         android:transitionName="open_mediaplayer"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
@@ -30,9 +29,9 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
-                android:text="file_name.mp4"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-condensed"/>
+                android:fontFamily="sans-serif-condensed"
+                android:text="file_name.wav"
+                android:textSize="18sp" />
 
             <SeekBar
                 android:id="@+id/seekbar"
