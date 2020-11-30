@@ -64,7 +64,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 
-
 }
 
 apply plugin: 'checkstyle'
