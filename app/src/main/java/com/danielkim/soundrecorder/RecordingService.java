@@ -51,7 +51,6 @@ public class RecordingService extends Service {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
-    private static final int RECORDER_BASE_QUALITY_SAMPLERATE = 22050;
     private static final int RECORDER_CD_QUALITY_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -104,13 +103,7 @@ public class RecordingService extends Service {
 
         this.tempFilePath = Environment.getExternalStorageDirectory().getPath() + "/SoundRecorder/" + AUDIO_RECORDER_TEMP_FILE;
         this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
-
-        if (MySharedPreferences.getPrefHighQuality(this)) {
-            this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
-        }
-        else{
-            this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_BASE_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
-        }
+        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
 
         if(this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED){
             this.audioRecord.startRecording();
