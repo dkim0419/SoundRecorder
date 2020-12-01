@@ -60,6 +60,10 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
         }
     }
 
+    public void setButtonCopyEnabled(boolean enabled){
+        this.buttonCopy.setEnabled(enabled);
+    }
+
     public void setText(String text) {
         this.customAlertDialaogForExtractedTextBody.setText(text);
     }

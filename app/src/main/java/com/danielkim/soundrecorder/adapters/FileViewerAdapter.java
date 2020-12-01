@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -125,23 +126,22 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0){
                             if(isDeviceConnected()){
-                                //customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
-                                //Log.d("position", getItem(holder.getPosition()).getFilePath()+"");
+                                FileInputStream audioInputStream;
+                                try {
+                                    audioInputStream = new FileInputStream(getItem(holder.getPosition()).getFilePath());
 
-                                String extractedText;
-                                try{
-                                    extractedText = contactServiceAndGetTranscript(holder.getPosition());
+                                    CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+                                    customAlertDialogForExtractedText.show();
+                                    customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
 
-                                    if (extractedText != null) {
-                                        CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
-                                        customAlertDialogForExtractedText.show();
-                                        customAlertDialogForExtractedText.setText(extractedText);
-                                    }
-                                }
-                                catch (FileNotFoundException e){
-                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
-                                }catch (RuntimeException e){
-                                    Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_unable_to_extract_text), Toast.LENGTH_LONG).show();
+                                    AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(customAlertDialogForExtractedText);
+                                    AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
+
+                                    asyncronusRefreshing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+                                    asyncronusTranscription.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
+                                } catch (FileNotFoundException e) {
+                                   Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
                                 }
                             }else{
                                 new AlertDialog.Builder(mContext)
@@ -199,7 +199,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         });
     }
 
-    private String contactServiceAndGetTranscript(int position) throws RuntimeException, FileNotFoundException{
+    private String contactServiceAndGetTranscript(FileInputStream audioInputStream){
         IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
         SpeechToText speechToText = new SpeechToText(authenticator);
         speechToText.setServiceUrl(this.url);
@@ -211,7 +211,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         transcriptionEnded[0] = false;
 
         RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
-                .audio(new FileInputStream(getItem(position).getFilePath()))
+                .audio(audioInputStream)
                 .contentType("audio/wav")
                 .model("en-US_BroadbandModel")
                 .maxAlternatives(5)
@@ -462,5 +462,78 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         if(ni != null) isConnected = ni.isConnected();
 
         return isConnected;
+    }
+
+    class AsyncronusRefreshing extends AsyncTask{
+        private boolean isLoadingEnded;
+        private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
+
+        public AsyncronusRefreshing(CustomAlertDialogForExtractedText customAlertDialogForExtractedText){
+            this.isLoadingEnded = false;
+            this.customAlertDialogForExtractedText = customAlertDialogForExtractedText;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            final String baseText = mContext.getResources().getString(R.string.textExtractionInProgress);
+            String loadingText = baseText;
+
+            while (!this.isLoadingEnded){
+                try {
+                    loadingText = loadingText + ".";
+                    publishProgress(loadingText);
+
+                    if (loadingText.equals(baseText + "...")) loadingText = baseText;
+
+                    Thread.sleep(500);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            String loadingText = (String) values[0];
+            this.customAlertDialogForExtractedText.setText(loadingText);
+        }
+
+        public void endTask(){
+            this.isLoadingEnded = true;
+        }
+    }
+
+    class AsyncronusTranscription extends AsyncTask{
+        private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
+        private FileInputStream audioInputStream;
+        private AsyncronusRefreshing asyncronusRefreshing;
+
+        public AsyncronusTranscription(CustomAlertDialogForExtractedText customAlertDialogForExtractedText, FileInputStream audioInputStream, AsyncronusRefreshing asyncronusRefreshing){
+            this.customAlertDialogForExtractedText = customAlertDialogForExtractedText;
+            this.audioInputStream = audioInputStream;
+            this.asyncronusRefreshing = asyncronusRefreshing;
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            String extractedText = contactServiceAndGetTranscript(this.audioInputStream);
+
+            this.asyncronusRefreshing.endTask();
+
+            return extractedText;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            String extractedText = (String) result;
+
+            if (!extractedText.equals("")) this.customAlertDialogForExtractedText.setText(extractedText);
+            else {
+                this.customAlertDialogForExtractedText.setButtonCopyEnabled(false);
+                this.customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.toast_unable_to_extract_text));
+            }
+        }
     }
 }
