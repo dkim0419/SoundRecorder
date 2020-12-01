@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -32,8 +33,8 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
         this.buttonCopy = (Button) findViewById(R.id.customAlertDialaogForExtractedTextButtonCopy);
         this.customAlertDialaogForExtractedTextBody = (TextView) findViewById(R.id.customAlertDialaogForExtractedTextBody);
 
-        buttonOk.setOnClickListener(this);
-        buttonCopy.setOnClickListener(this);
+        this.buttonOk.setOnClickListener(this);
+        this.buttonCopy.setOnClickListener(this);
     }
 
     @Override
@@ -57,6 +58,10 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
             default:
                 break;
         }
+    }
+
+    public void setButtonCopyEnabled(boolean enabled){
+        this.buttonCopy.setEnabled(enabled);
     }
 
     public void setText(String text) {
