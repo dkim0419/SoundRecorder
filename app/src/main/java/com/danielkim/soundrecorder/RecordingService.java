@@ -6,6 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.IBinder;
@@ -16,6 +18,9 @@ import android.widget.Toast;
 import com.danielkim.soundrecorder.activities.MainActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -31,8 +36,7 @@ public class RecordingService extends Service {
 
     private String mFileName = null;
     private String mFilePath = null;
-
-    private MediaRecorder mRecorder = null;
+    private String tempFilePath = null;
 
     private DBHelper mDatabase;
 
@@ -44,6 +48,17 @@ public class RecordingService extends Service {
 
     private Timer mTimer = null;
     private TimerTask mIncrementTimerTask = null;
+
+    private static final int RECORDER_BPP = 16;
+    private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
+    private static final int RECORDER_CD_QUALITY_SAMPLERATE = 44100;
+    private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
+    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+
+    private AudioRecord audioRecord;
+    private Thread recordingThread;
+    private int bufferSize = 0;
+    private boolean isRecording;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,7 +72,8 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mDatabase = new DBHelper(getApplicationContext());
+        this.mDatabase = new DBHelper(getApplicationContext());
+        this.isRecording = false;
     }
 
     @Override
@@ -68,38 +84,70 @@ public class RecordingService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mRecorder != null) {
+        if (audioRecord != null) {
             stopRecording();
         }
 
         super.onDestroy();
     }
 
-    public void startRecording() {
+    public void startRecording(){
+        this.recordingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                writeAudioDataToFile();
+            }
+        });
+
         setFileNameAndPath();
 
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(mFilePath);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mRecorder.setAudioChannels(1);
-        if (MySharedPreferences.getPrefHighQuality(this)) {
-            mRecorder.setAudioSamplingRate(44100);
-            mRecorder.setAudioEncodingBitRate(192000);
+        this.tempFilePath = Environment.getExternalStorageDirectory().getPath() + "/SoundRecorder/" + AUDIO_RECORDER_TEMP_FILE;
+        this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
+        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
+
+        if(this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED){
+            this.audioRecord.startRecording();
+            this.mStartingTimeMillis = System.currentTimeMillis();
+            this.isRecording = true;
+            this.recordingThread.start();
         }
+    }
+
+    private void writeAudioDataToFile() {
+        byte data[] = new byte[this.bufferSize];
+        FileOutputStream os = null;
 
         try {
-            mRecorder.prepare();
-            mRecorder.start();
-            mStartingTimeMillis = System.currentTimeMillis();
-
-            //startTimer();
-            //startForeground(1, createNotification());
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            os = new FileOutputStream(this.tempFilePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+
+        int read = 0;
+        if (null != os) {
+            while (this.isRecording) {
+                read = audioRecord.read(data, 0, bufferSize);
+
+                if (read != AudioRecord.ERROR_INVALID_OPERATION) {
+                    try {
+                        os.write(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            try {
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void deleteTempFile() {
+        File file = new File(this.tempFilePath);
+        file.delete();
     }
 
     public void setFileNameAndPath(){
@@ -109,35 +157,122 @@ public class RecordingService extends Service {
         do{
             count++;
 
-            mFileName = getString(R.string.default_file_name) +
-                    "_" + (mDatabase.getCount() + count) + ".mp4";
-            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += "/SoundRecorder/" + mFileName;
+            this.mFileName = getString(R.string.default_file_name) + "_" + (this.mDatabase.getCount() + count) + ".wav";
+
+            this.mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            this.mFilePath += "/SoundRecorder/" + this.mFileName;
 
             f = new File(mFilePath);
         }while (f.exists() && !f.isDirectory());
     }
 
-    public void stopRecording() {
-        mRecorder.stop();
-        mElapsedMillis = (System.currentTimeMillis() - mStartingTimeMillis);
-        mRecorder.release();
-        Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + mFilePath, Toast.LENGTH_LONG).show();
+    public void stopRecording(){
+        if (this.audioRecord != null) {
+            this.isRecording = false;
 
-        //remove notification
-        if (mIncrementTimerTask != null) {
-            mIncrementTimerTask.cancel();
-            mIncrementTimerTask = null;
+            if (this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED) this.audioRecord.stop();
+
+            this.audioRecord.release();
+
+            this.mElapsedMillis = (System.currentTimeMillis() - this.mStartingTimeMillis);
+
+            copyWaveFile(this.tempFilePath, this.mFilePath);
+            deleteTempFile();
+
+            this.audioRecord = null;
+            this.recordingThread = null;
+
+            Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + this.mFilePath, Toast.LENGTH_LONG).show();
+
+            try {
+                this.mDatabase.addRecording(this.mFileName, this.mFilePath, this.mElapsedMillis);
+            } catch (Exception e){
+                Log.e(LOG_TAG, "exception", e);
+            }
         }
+    }
 
-        mRecorder = null;
+    private void copyWaveFile(String inFilename, String outFilename) {
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        long totalAudioLen = 0;
+        long totalDataLen = totalAudioLen + 36;
+        long longSampleRate = RECORDER_CD_QUALITY_SAMPLERATE;
+        int channels = ((RECORDER_CHANNELS == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2);
+        long byteRate = RECORDER_BPP * RECORDER_CD_QUALITY_SAMPLERATE * channels / 8;
+
+        byte[] data = new byte[bufferSize];
 
         try {
-            mDatabase.addRecording(mFileName, mFilePath, mElapsedMillis);
+            in = new FileInputStream(inFilename);
+            out = new FileOutputStream(outFilename);
+            totalAudioLen = in.getChannel().size();
+            totalDataLen = totalAudioLen + 36;
 
-        } catch (Exception e){
-            Log.e(LOG_TAG, "exception", e);
+            WriteWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate);
+
+            while (in.read(data) != -1) {
+                out.write(data);
+            }
+
+            in.close();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate, int channels, long byteRate) throws IOException {
+        byte[] header = new byte[44];
+
+        header[0] = 'R'; // RIFF/WAVE header
+        header[1] = 'I';
+        header[2] = 'F';
+        header[3] = 'F';
+        header[4] = (byte) (totalDataLen & 0xff);
+        header[5] = (byte) ((totalDataLen >> 8) & 0xff);
+        header[6] = (byte) ((totalDataLen >> 16) & 0xff);
+        header[7] = (byte) ((totalDataLen >> 24) & 0xff);
+        header[8] = 'W';
+        header[9] = 'A';
+        header[10] = 'V';
+        header[11] = 'E';
+        header[12] = 'f'; // 'fmt ' chunk
+        header[13] = 'm';
+        header[14] = 't';
+        header[15] = ' ';
+        header[16] = 16; // 4 bytes: size of 'fmt ' chunk
+        header[17] = 0;
+        header[18] = 0;
+        header[19] = 0;
+        header[20] = 1; // format = 1
+        header[21] = 0;
+        header[22] = (byte) channels;
+        header[23] = 0;
+        header[24] = (byte) (longSampleRate & 0xff);
+        header[25] = (byte) ((longSampleRate >> 8) & 0xff);
+        header[26] = (byte) ((longSampleRate >> 16) & 0xff);
+        header[27] = (byte) ((longSampleRate >> 24) & 0xff);
+        header[28] = (byte) (byteRate & 0xff);
+        header[29] = (byte) ((byteRate >> 8) & 0xff);
+        header[30] = (byte) ((byteRate >> 16) & 0xff);
+        header[31] = (byte) ((byteRate >> 24) & 0xff);
+        header[32] = (byte) (((RECORDER_CHANNELS == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2) * 16 / 8); // block align
+        header[33] = 0;
+        header[34] = RECORDER_BPP; // bits per sample
+        header[35] = 0;
+        header[36] = 'd';
+        header[37] = 'a';
+        header[38] = 't';
+        header[39] = 'a';
+        header[40] = (byte) (totalAudioLen & 0xff);
+        header[41] = (byte) ((totalAudioLen >> 8) & 0xff);
+        header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
+        header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
+
+        out.write(header, 0, 44);
     }
 
     private void startTimer() {

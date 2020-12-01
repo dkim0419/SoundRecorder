@@ -15,6 +15,8 @@
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
+    <string name="toast_file_does_not_exist">The selected file does not exist.</string>
+    <string name="toast_unable_to_extract_text">Unable to extract text from this file</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
@@ -38,12 +40,12 @@
     <string name="dialog_action_yes">Yes</string>
     <string name="dialog_action_no">No</string>
     <string name="customAlertDialogFromAudioTitle">Text extracted from the audio</string>
-    <string name="noTextCanBeExtracted">No Text Can Be Extracted</string>
     <string name="customAlertDialaogForExtractedTestButtonOk">Ok</string>
     <string name="customAlertDialaogForExtractedTestButtonCopy">Copy</string>
     <string name="textCopiedToClipboard">Text Copied To Clipboard</string>
     <string name="customAlertDialogFromAudioBodyDescription">Text extracted from the audio</string>
-
+    <string name="nameAlreadyExistsInDB">The entered name already exists in the app database</string>
+    <string name="textExtractionInProgress">Extraction in progress, please wait</string>
 
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">Pause</string>
@@ -55,9 +57,6 @@
     <string name="send_to">Send to</string>
 
     <!-- Preferences -->
-    <string name="pref_high_quality_key">pref_high_quality</string>
-    <string name="pref_high_quality_title">Enable High Quality Recording</string>
-    <string name="pref_high_quality_desc">Record in CD Quality</string>
     <string name="pref_about_key">pref_about</string>
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
