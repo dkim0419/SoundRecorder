@@ -57,9 +57,6 @@
     <string name="send_to">Send to</string>
 
     <!-- Preferences -->
-    <string name="pref_high_quality_key">pref_high_quality</string>
-    <string name="pref_high_quality_title">Enable High Quality Recording</string>
-    <string name="pref_high_quality_desc">Record in CD Quality</string>
     <string name="pref_about_key">pref_about</string>
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
