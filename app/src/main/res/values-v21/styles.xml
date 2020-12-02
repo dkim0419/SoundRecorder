@@ -5,6 +5,8 @@
         <!-- remove action bar, using toolbar -->
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="colorControlNormal">@color/white</item>
+
 
         <!-- colors -->
         <item name="android:colorPrimary">@color/primary</item>

@@ -2,80 +2,98 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="390dp"
-    android:layout_height="370dp"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="false"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentTop="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentRight="false"
+    android:layout_alignParentBottom="false"
+    android:layout_marginLeft="2dp"
+    android:layout_marginTop="30dp"
+    android:layout_marginRight="2dp"
+    android:layout_marginBottom="30dp"
+    android:orientation="vertical"
+    android:visibility="visible">
 
-    <android.support.constraint.ConstraintLayout
+    <TextView
+        android:id="@+id/customAlertDialaogForExtractedTextTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="15dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/customAlertDialogFromAudioTitle"
+        android:textColor="#020202"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-        <ScrollView
-            android:id="@+id/scrollView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:layout_constrainedHeight="true"
-            app:layout_constraintEnd_toEndOf="@+id/customAlertDialaogForExtractedTextTitle"
-            app:layout_constraintHeight_max="140dp"
-            app:layout_constraintStart_toStartOf="@+id/customAlertDialaogForExtractedTextTitle"
-            app:layout_constraintTop_toBottomOf="@+id/customAlertDialaogForExtractedTextTitle">
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="16dp"
+        android:scrollbarStyle="insideInset">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/customAlertDialaogForExtractedTextBody"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwwwTextViewwwwwwwwwwwwwwwwaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasssssssssssssssssssssssswwwwwwwwwwwwwwwww"
-                    android:textAlignment="textStart"
-                    android:textColor="#000000"
-                    android:textSize="15sp" />
-            </LinearLayout>
-        </ScrollView>
-
-        <TextView
-            android:id="@+id/customAlertDialaogForExtractedTextTitle"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/customAlertDialogFromAudioTitle"
-            android:textAlignment="center"
-            android:textColor="#020202"
-            android:textSize="24sp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customAlertDialaogForExtractedTextBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ut eros nibh. Nulla facilisi. Sed iaculis velit nulla. Donec pharetra arcu augue, id ultrices erat porta id. Maecenas libero ipsum, ullamcorper ac sem eu, tincidunt molestie massa. Pellentesque consequat sem et enim efficitur, sit amet sollicitudin massa fermentum. Vestibulum placerat metus sed mattis iaculis. Nam id efficitur ex. Nullam dictum rutrum mi. Quisque maximus tincidunt sapien sit amet tristique.  "
+                android:textAlignment="textStart"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="0dp">
+
+        <Button
+            android:id="@+id/customAlertDialaogForExtractedTextButtonOk"
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="64dp"
+            android:background="@color/primary"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/customAlertDialaogForExtractedTestButtonOk"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/customAlertDialaogForExtractedTextButtonCopy"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/customAlertDialaogForExtractedTextButtonCopy"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="64dp"
+            android:background="#F44336"
+            android:contentDescription="@string/customAlertDialaogForExtractedTestButtonCopy"
+            android:src="?attr/actionModeCopyDrawable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/customAlertDialaogForExtractedTextButtonOk"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@+id/scrollView"
-            app:layout_constraintHorizontal_bias="0.505"
-            app:layout_constraintStart_toStartOf="@+id/scrollView"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView">
-
-            <Button
-                android:id="@+id/customAlertDialaogForExtractedTextButtonCopy"
-                android:layout_width="111dp"
-                android:layout_height="match_parent"
-                android:text="@string/customAlertDialaogForExtractedTestButtonCopy" />
-
-            <Button
-                android:id="@+id/customAlertDialaogForExtractedTextButtonOk"
-                android:layout_width="111dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:text="@string/customAlertDialaogForExtractedTestButtonOk" />
-        </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 
 </LinearLayout>

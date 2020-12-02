@@ -519,9 +519,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         @Override
         protected Object doInBackground(Object[] objects) {
             String extractedText = contactServiceAndGetTranscript(this.audioInputStream);
-
             this.asyncronusRefreshing.endTask();
-
             return extractedText;
         }
 
