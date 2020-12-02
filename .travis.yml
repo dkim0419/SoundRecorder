@@ -28,6 +28,7 @@ before_install:
 stages:
   - compile
   - static_analysis
+  - test
 
 jobs:
   include:
@@ -44,9 +45,10 @@ jobs:
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         expire_in: 4 days
-        paths:
-          - app/build/reports/
-
+        paths: app/build/reports/
+    - stage: test
+      name: "Unit Test"
+      script: ./gradlew test
 
 
 notifications:
