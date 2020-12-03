@@ -72,7 +72,7 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.mDatabase = new DBHelper(getApplicationContext());
+        this.mDatabase = DBHelper.getInstance(getApplicationContext());
         this.isRecording = false;
     }
 

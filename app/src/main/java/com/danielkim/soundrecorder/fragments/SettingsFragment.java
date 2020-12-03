@@ -6,6 +6,7 @@ import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 
 import com.danielkim.soundrecorder.BuildConfig;
+import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.activities.SettingsActivity;
 
@@ -35,8 +36,8 @@ public class SettingsFragment extends PreferenceFragment {
         resyncPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                /*** TO DO - please add resync function call-site ***/
-                 return true;
+                DBHelper.getInstance(getActivity()).checkConsistencyWithFileSistem();
+                return true;
             }
         });
 
