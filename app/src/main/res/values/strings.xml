@@ -39,13 +39,19 @@
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_action_yes">Yes</string>
     <string name="dialog_action_no">No</string>
-    <string name="customAlertDialogFromAudioTitle">Text extracted from the audio</string>
+    <string name="customAlertDialogFromAudioTitle">Speech-To-Text</string>
     <string name="customAlertDialaogForExtractedTestButtonOk">Ok</string>
     <string name="customAlertDialaogForExtractedTestButtonCopy">Copy</string>
     <string name="textCopiedToClipboard">Text Copied To Clipboard</string>
-    <string name="customAlertDialogFromAudioBodyDescription">Text extracted from the audio</string>
+    <string name="customAlertDialogFromAudioBodyDescription">Speech-To-Text</string>
     <string name="nameAlreadyExistsInDB">The entered name already exists in the app database</string>
     <string name="textExtractionInProgress">Extraction in progress, please wait</string>
+    <string name="speech_to_text_example">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Nulla ut eros nibh. Nulla facilisi. Sed iaculis velit nulla. Donec pharetra arcu augue,
+        id ultrices erat porta id. Maecenas libero ipsum, ullamcorper ac sem eu, tincidunt molestie massa.
+        consequat sem et enim efficitur, sit amet sollicitudin massa fermentum. Vestibulum placerat metus
+        sed mattis iaculis. Nam id efficitur ex. Nullam dictum rutrum mi. Quisque maximus tincidunt sapien
+        sit amet tristique.  </string>
 
     <string name="no_saved_recordings_message">No saved recordings</string>
     <string name="pause_recording_button">Pause</string>

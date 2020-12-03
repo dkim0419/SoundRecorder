@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
                 android:fontFamily="sans-serif-condensed-light"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ut eros nibh. Nulla facilisi. Sed iaculis velit nulla. Donec pharetra arcu augue, id ultrices erat porta id. Maecenas libero ipsum, ullamcorper ac sem eu, tincidunt molestie massa. Pellentesque consequat sem et enim efficitur, sit amet sollicitudin massa fermentum. Vestibulum placerat metus sed mattis iaculis. Nam id efficitur ex. Nullam dictum rutrum mi. Quisque maximus tincidunt sapien sit amet tristique.  "
+                android:text="@string/speech_to_text_example"
                 android:textAlignment="textStart"
                 android:textColor="#000000"
                 android:textSize="18sp" />
