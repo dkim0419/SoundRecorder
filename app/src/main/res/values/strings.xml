@@ -67,4 +67,8 @@
     <string name="pref_about_title">About</string>
     <string name="pref_about_desc">v%s</string>
 
+    <string name="pref_resyncDB_key">pref_Sync_Data</string>
+    <string name="pref_resyncDB_title">Sync Data</string>
+    <string name="pref_resyncDB_desc">Synchronize data with file system</string>
+
 </resources>
