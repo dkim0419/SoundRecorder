@@ -4,9 +4,9 @@
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorControlNormal">@color/white</item>
 
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
-
 </resources>

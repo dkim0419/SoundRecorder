@@ -29,5 +29,16 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+        Preference resyncPref = findPreference(getString(R.string.pref_resyncDB_key));
+        resyncPref.setSummary(getString(R.string.pref_resyncDB_desc));
+        resyncPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                /*** TO DO - please add resync function call-site ***/
+                 return true;
+            }
+        });
+
     }
 }

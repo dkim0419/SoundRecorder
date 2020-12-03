@@ -5,6 +5,8 @@
         <!-- remove action bar, using toolbar -->
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="colorControlNormal">@color/white</item>
+
 
         <!-- colors -->
         <item name="android:colorPrimary">@color/primary</item>
@@ -38,5 +40,11 @@
         <item name="android:windowEnterTransition">@android:transition/explode</item>
         <item name="android:windowExitTransition">@android:transition/explode</item>
     </style>
+
+    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.Dark">
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+
 
 </resources>
