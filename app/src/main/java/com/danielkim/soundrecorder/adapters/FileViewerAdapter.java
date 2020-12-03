@@ -54,8 +54,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     private RecordingItem item;
     private Context mContext;
     private LinearLayoutManager llm;
-    private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
-    private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
 
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
@@ -198,65 +196,6 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 return false;
             }
         });
-    }
-
-    private String contactServiceAndGetTranscript(FileInputStream audioInputStream){
-        IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
-        SpeechToText speechToText = new SpeechToText(authenticator);
-        speechToText.setServiceUrl(this.url);
-
-        final String[] transcript = new String[1];
-        transcript[0] = "";
-
-        final Boolean[] transcriptionEnded = new Boolean[1];
-        transcriptionEnded[0] = false;
-
-        RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
-                .audio(audioInputStream)
-                .contentType("audio/wav")
-                .model("en-US_BroadbandModel")
-                .maxAlternatives(5)
-                .build();
-
-        BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
-
-            @Override
-            public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
-                List<SpeechRecognitionResult> results = speechRecognitionResults.getResults();
-
-                for (int resultsIndex = 0; resultsIndex < results.size(); resultsIndex++){
-                    List<SpeechRecognitionAlternative> alternatives = results.get(resultsIndex).getAlternatives();
-
-                    int biggerConfidenceIndex = 0;
-                    double maxConfidence = 0;
-                    for (int alternativeIndex = 0; alternativeIndex < alternatives.size(); alternativeIndex++){
-                        double currentConfidence;
-
-                        if (alternatives.get(alternativeIndex).getConfidence() != null) currentConfidence = alternatives.get(alternativeIndex).getConfidence();
-                        else currentConfidence = 0;
-
-                        if(currentConfidence > maxConfidence){
-                            maxConfidence = currentConfidence;
-                            biggerConfidenceIndex = alternativeIndex;
-                        }
-                    }
-
-                    transcript[0] += alternatives.get(biggerConfidenceIndex).getTranscript() + " ";
-                }
-            }
-
-            @Override
-            public void onDisconnected() {
-                transcriptionEnded[0] = true;
-            }
-        };
-
-        speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
-
-        while (!transcriptionEnded[0]);
-
-        String firstChar = transcript[0].substring(0, 1);
-        return transcript[0].replace(firstChar, firstChar.toUpperCase());
     }
 
     @Override
@@ -509,6 +448,8 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     }
 
     class AsyncronusTranscription extends AsyncTask{
+        private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
+        private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
         private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
         private FileInputStream audioInputStream;
         private AsyncronusRefreshing asyncronusRefreshing;
@@ -538,6 +479,65 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 this.customAlertDialogForExtractedText.setButtonCopyEnabled(false);
                 this.customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.toast_unable_to_extract_text));
             }
+        }
+
+        private String contactServiceAndGetTranscript(FileInputStream audioInputStream){
+            IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
+            SpeechToText speechToText = new SpeechToText(authenticator);
+            speechToText.setServiceUrl(this.url);
+
+            final String[] transcript = new String[1];
+            transcript[0] = "";
+
+            final Boolean[] transcriptionEnded = new Boolean[1];
+            transcriptionEnded[0] = false;
+
+            RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
+                    .audio(audioInputStream)
+                    .contentType("audio/wav")
+                    .model("en-US_BroadbandModel")
+                    .maxAlternatives(5)
+                    .build();
+
+            BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
+
+                @Override
+                public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
+                    List<SpeechRecognitionResult> results = speechRecognitionResults.getResults();
+
+                    for (int resultsIndex = 0; resultsIndex < results.size(); resultsIndex++){
+                        List<SpeechRecognitionAlternative> alternatives = results.get(resultsIndex).getAlternatives();
+
+                        int biggerConfidenceIndex = 0;
+                        double maxConfidence = 0;
+                        for (int alternativeIndex = 0; alternativeIndex < alternatives.size(); alternativeIndex++){
+                            double currentConfidence;
+
+                            if (alternatives.get(alternativeIndex).getConfidence() != null) currentConfidence = alternatives.get(alternativeIndex).getConfidence();
+                            else currentConfidence = 0;
+
+                            if(currentConfidence > maxConfidence){
+                                maxConfidence = currentConfidence;
+                                biggerConfidenceIndex = alternativeIndex;
+                            }
+                        }
+
+                        transcript[0] += alternatives.get(biggerConfidenceIndex).getTranscript() + " ";
+                    }
+                }
+
+                @Override
+                public void onDisconnected() {
+                    transcriptionEnded[0] = true;
+                }
+            };
+
+            speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
+
+            while (!transcriptionEnded[0]);
+
+            String firstChar = transcript[0].substring(0, 1);
+            return transcript[0].replace(firstChar, firstChar.toUpperCase());
         }
     }
 }
