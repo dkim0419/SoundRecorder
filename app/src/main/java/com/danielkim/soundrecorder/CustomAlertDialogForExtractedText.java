@@ -6,16 +6,17 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View.OnClickListener;
 
 public class CustomAlertDialogForExtractedText extends Dialog implements OnClickListener{
-    private Button buttonOk, buttonCopy;
+    private Button buttonOk;
+    private ImageButton buttonCopy;
     private TextView customAlertDialaogForExtractedTextBody;
 
     public CustomAlertDialogForExtractedText(@NonNull Context context) {
@@ -30,7 +31,7 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
         setContentView(R.layout.custom_alert_dialog_for_extracted_text);
 
         this.buttonOk = (Button) findViewById(R.id.customAlertDialaogForExtractedTextButtonOk);
-        this.buttonCopy = (Button) findViewById(R.id.customAlertDialaogForExtractedTextButtonCopy);
+        this.buttonCopy = (ImageButton) findViewById(R.id.customAlertDialaogForExtractedTextButtonCopy);
         this.customAlertDialaogForExtractedTextBody = (TextView) findViewById(R.id.customAlertDialaogForExtractedTextBody);
 
         this.buttonOk.setOnClickListener(this);
