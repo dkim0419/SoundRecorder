@@ -5,4 +5,8 @@
       <map />
     </option>
   </component>
+  <component name="NewModuleRootManager">
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
 </module>
