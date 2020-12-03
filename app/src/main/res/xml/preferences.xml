@@ -4,4 +4,8 @@
         android:key="@string/pref_about_key"
         android:title="@string/pref_about_title"
         android:summary="@string/pref_about_desc"/>
+    <Preference
+        android:key="@string/pref_resyncDB_key"
+        android:title="@string/pref_resyncDB_title"
+        android:summary="@string/pref_about_desc"/>
 </PreferenceScreen>
