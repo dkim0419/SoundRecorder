@@ -518,6 +518,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
         @Override
         protected Object doInBackground(Object[] objects) {
+            //Layout building test string
+            //String extractedText = (String) mContext.getResources().getString(R.string.speech_to_text_example);
+
             String extractedText = contactServiceAndGetTranscript(this.audioInputStream);
             this.asyncronusRefreshing.endTask();
             return extractedText;
