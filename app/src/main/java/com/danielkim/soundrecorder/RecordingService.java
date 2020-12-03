@@ -51,7 +51,7 @@ public class RecordingService extends Service {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
-    private static final int RECORDER_CD_QUALITY_SAMPLERATE = 48000;
+    private static final int RECORDER_HIGH_QUALITY_SAMPLERATE = 48000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -102,8 +102,8 @@ public class RecordingService extends Service {
         setFileNameAndPath();
 
         this.tempFilePath = Environment.getExternalStorageDirectory().getPath() + "/SoundRecorder/" + AUDIO_RECORDER_TEMP_FILE;
-        this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
-        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
+        this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_HIGH_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
+        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_HIGH_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
 
         if(this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED){
             this.audioRecord.startRecording();
@@ -197,9 +197,9 @@ public class RecordingService extends Service {
         FileOutputStream out = null;
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
-        long longSampleRate = RECORDER_CD_QUALITY_SAMPLERATE;
+        long longSampleRate = RECORDER_HIGH_QUALITY_SAMPLERATE;
         int channels = ((RECORDER_CHANNELS == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2);
-        long byteRate = RECORDER_BPP * RECORDER_CD_QUALITY_SAMPLERATE * channels / 8;
+        long byteRate = RECORDER_BPP * RECORDER_HIGH_QUALITY_SAMPLERATE * channels / 8;
 
         byte[] data = new byte[bufferSize];
 

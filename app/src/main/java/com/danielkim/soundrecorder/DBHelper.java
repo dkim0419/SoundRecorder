@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
@@ -177,7 +178,6 @@ public class DBHelper extends SQLiteOpenHelper {
         if (appDirectory.isDirectory()){
             File[] filesInAppDirectory = appDirectory.listFiles();
             for (int i = 0; i < filesInAppDirectory.length && !found; i++){
-                Log.d("DBConsistency", "2" + filesInAppDirectory[i].getName());
                 if (fileName.equals(filesInAppDirectory[i].getName())) found = true;
             }
         }
@@ -187,7 +187,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void checkConsistencyWithFileSistem(){
         for (int i = 0; i < getCount(); i++){
-            Log.d("DBConsistency", "1" + getItemAt(i).getName());
             RecordingItem currentItem = getItemAt(i);
             if (!checkFileExistenceInFileSystem(currentItem.getName())) removeItemWithId(currentItem.getId());
         }
