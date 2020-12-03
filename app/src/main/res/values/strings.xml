@@ -17,6 +17,7 @@
     <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
     <string name="toast_file_does_not_exist">The selected file does not exist.</string>
     <string name="toast_unable_to_extract_text">Unable to extract text from this file</string>
+    <string name="toast_sync_with_db">Synchronization between database and file system performed</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
