@@ -38,4 +38,7 @@
     <string name="record_prompt">Premi il bottone per iniziare a registrare</string>
     <string name="record_in_progress">Registrazione in corso</string>
 
+    <!-- Preferences -->
+     <string name="pref_resyncDB_desc">Sincronizza i dati con il file system</string>
+
 </resources>
