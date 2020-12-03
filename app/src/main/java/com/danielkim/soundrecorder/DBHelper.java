@@ -162,7 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return rowId;
     }
 
-    private boolean checkExistenceInFileSystem(String fileName){
+    private boolean checkFileExistenceInFileSystem(String fileName){
         boolean found = false;
         File appDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SoundRecorder/");
 
@@ -178,7 +178,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void checkConsistencyWithFileSistem(){
         for (int i = 0; i < getCount(); i++){
-            if (!checkExistenceInFileSystem(getItemAt(i).getName())) removeItemWithId(i);
+            if (!checkFileExistenceInFileSystem(getItemAt(i).getName())) removeItemWithId(i);
         }
     }
 }
