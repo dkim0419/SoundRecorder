@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.provider.BaseColumns;
 
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
+import java.io.File;
 import java.util.Comparator;
 
 /**
@@ -158,5 +160,25 @@ public class DBHelper extends SQLiteOpenHelper {
             //mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
         }
         return rowId;
+    }
+
+    private boolean checkExistenceInFileSystem(String fileName){
+        boolean found = false;
+        File appDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SoundRecorder/");
+
+        if (appDirectory.isDirectory()){
+            File[] filesInAppDirectory = appDirectory.listFiles();
+            for (int i = 0; i < filesInAppDirectory.length && !found; i++){
+                if (fileName.equals(filesInAppDirectory[i].getName())) found = true;
+            }
+        }
+
+        return found;
+    }
+
+    public void checkConsistencyWithFileSistem(){
+        for (int i = 0; i < getCount(); i++){
+            if (!checkExistenceInFileSystem(getItemAt(i).getName())) removeItemWithId(i);
+        }
     }
 }
