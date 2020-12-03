@@ -60,14 +60,15 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     public FileViewerAdapter(Context context, LinearLayoutManager linearLayoutManager) {
         super();
         this.mContext = context;
-        this.mDatabase = new DBHelper(mContext);
+        this.mDatabase = DBHelper.getInstance(mContext);
+        this.mDatabase.checkConsistencyWithFileSistem();
         this.mDatabase.setOnDatabaseChangedListener(this);
         this.llm = linearLayoutManager;
     }
 
     @Override
     public void onBindViewHolder(final RecordingsViewHolder holder, int position) {
-        item = getItem(position);
+        this.item = getItem(position);
         long itemDuration = item.getLength();
 
         long minutes = TimeUnit.MILLISECONDS.toMinutes(itemDuration);
@@ -253,7 +254,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
 
         while (!transcriptionEnded[0]);
-        return transcript[0];
+
+        String firstChar = transcript[0].substring(0, 1);
+        return transcript[0].replace(firstChar, firstChar.toUpperCase());
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
@@ -17,6 +18,7 @@ import java.util.Comparator;
  * Created by Daniel on 12/29/2014.
  */
 public class DBHelper extends SQLiteOpenHelper {
+    private static DBHelper instance;
     private Context mContext;
 
     private static final String LOG_TAG = "DBHelper";
@@ -58,9 +60,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public DBHelper(Context context) {
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
+    }
+
+    public static DBHelper getInstance(Context context){
+        if (instance == null) instance = new DBHelper(context);
+
+        return instance;
     }
 
     public static void setOnDatabaseChangedListener(OnDatabaseChangedListener listener) {
@@ -169,6 +177,7 @@ public class DBHelper extends SQLiteOpenHelper {
         if (appDirectory.isDirectory()){
             File[] filesInAppDirectory = appDirectory.listFiles();
             for (int i = 0; i < filesInAppDirectory.length && !found; i++){
+                Log.d("DBConsistency", "2" + filesInAppDirectory[i].getName());
                 if (fileName.equals(filesInAppDirectory[i].getName())) found = true;
             }
         }
@@ -178,7 +187,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void checkConsistencyWithFileSistem(){
         for (int i = 0; i < getCount(); i++){
-            if (!checkFileExistenceInFileSystem(getItemAt(i).getName())) removeItemWithId(i);
+            Log.d("DBConsistency", "1" + getItemAt(i).getName());
+            RecordingItem currentItem = getItemAt(i);
+            if (!checkFileExistenceInFileSystem(currentItem.getName())) removeItemWithId(currentItem.getId());
         }
     }
 }
