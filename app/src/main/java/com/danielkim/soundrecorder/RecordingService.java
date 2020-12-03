@@ -51,7 +51,7 @@ public class RecordingService extends Service {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
-    private static final int RECORDER_CD_QUALITY_SAMPLERATE = 44100;
+    private static final int RECORDER_CD_QUALITY_SAMPLERATE = 48000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
