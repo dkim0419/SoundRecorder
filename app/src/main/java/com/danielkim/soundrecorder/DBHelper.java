@@ -178,7 +178,8 @@ public class DBHelper extends SQLiteOpenHelper {
         if (appDirectory.isDirectory()){
             File[] filesInAppDirectory = appDirectory.listFiles();
             for (int i = 0; i < filesInAppDirectory.length && !found; i++){
-                if (fileName.equals(filesInAppDirectory[i].getName())) found = true;
+                File currentFile = filesInAppDirectory[i];
+                if (!currentFile.isDirectory() && fileName.equals(currentFile.getName())) found = true;
             }
         }
 
