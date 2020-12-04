@@ -177,6 +177,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (appDirectory.isDirectory()){
             File[] filesInAppDirectory = appDirectory.listFiles();
+
             for (int i = 0; i < filesInAppDirectory.length && !found; i++){
                 File currentFile = filesInAppDirectory[i];
                 if (!currentFile.isDirectory() && fileName.equals(currentFile.getName())) found = true;
@@ -186,10 +187,14 @@ public class DBHelper extends SQLiteOpenHelper {
         return found;
     }
 
-    public void checkConsistencyWithFileSistem(){
+    public void checkConsistencyWithFileSystem(){
         for (int i = 0; i < getCount(); i++){
             RecordingItem currentItem = getItemAt(i);
-            if (!checkFileExistenceInFileSystem(currentItem.getName())) removeItemWithId(currentItem.getId());
+
+            if (!checkFileExistenceInFileSystem(currentItem.getName())){
+                removeItemWithId(currentItem.getId());
+                i--;
+            }
         }
     }
 }
