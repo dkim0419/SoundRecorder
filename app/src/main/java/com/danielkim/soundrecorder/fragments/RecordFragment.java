@@ -43,11 +43,9 @@ public class RecordFragment extends Fragment {
     private int mRecordPromptCount = 0;
 
     private boolean mStartRecording = true;
-    private boolean mPauseRecording = true;
 
     private Chronometer mChronometer = null;
     long timeWhenPaused = 0; //stores time when user clicks pause button
-    long pauseStart, pauseStop, totalPause = 0; //stores start, stop, total pause time
     private boolean inPause = false; //handles when user stops while in pause
 
     /**
@@ -78,6 +76,7 @@ public class RecordFragment extends Fragment {
         View recordView = inflater.inflate(R.layout.fragment_record, container, false);
 
         mChronometer = (Chronometer) recordView.findViewById(R.id.chronometer);
+
         //update recording prompt text
         mRecordingPrompt = (TextView) recordView.findViewById(R.id.recording_status_text);
 
@@ -97,8 +96,8 @@ public class RecordFragment extends Fragment {
         mPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onPauseRecord(mPauseRecording);
-                mPauseRecording = !mPauseRecording;
+                inPause = !inPause;
+                onPauseRecord();
             }
         });
 
@@ -109,8 +108,6 @@ public class RecordFragment extends Fragment {
     private void onRecord(boolean start){
         Intent intent = new Intent(getActivity(), RecordingService.class);
         if (start) {
-            Log.d("Flow", "onRecording (true)");
-
             // start recording
             mRecordButton.setImageResource(R.drawable.ic_media_stop);
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_pause,0,0,0);
@@ -144,6 +141,7 @@ public class RecordFragment extends Fragment {
 
             //start RecordingService
             getActivity().startService(intent);
+
             //keep screen on while recording
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             mRecordingPrompt.setText(getString(R.string.record_in_progress) + ".");
@@ -151,50 +149,30 @@ public class RecordFragment extends Fragment {
 
         } else {
             //stop recording
-            Log.d("Flow", "onRecording (false)");
             mRecordButton.setImageResource(R.drawable.ic_mic_white_36dp);
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_pause,0,0,0);
             mPauseButton.setVisibility(View.GONE);
-            mPauseRecording = true;
 
             mChronometer.stop();
             mChronometer.setBase(SystemClock.elapsedRealtime());
 
-            if(inPause){
-                pauseStop = System.currentTimeMillis();
-                totalPause += pauseStart - pauseStop;
-            }
-            Log.d("Flow - paused", "total paused: " + totalPause);
-            //Intent updateIntent = new Intent(getActivity(), RecordingService.class);
-            //intent.putExtra("timeWhenPaused", totalPause);
-            totalPause = 0;
-
-            //getActivity().startService(intent);
             mRecordingPrompt.setText(getString(R.string.record_prompt));
             getActivity().stopService(intent);
+            inPause = false;
+
             //allow the screen to turn off again once recording is finished
             getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
     }
 
-    private void onPauseRecord(boolean pause) {
-        if (pause) {
-            Log.d("Flow", "onPauseRecord (true)");
+    private void onPauseRecord() {
+        if (inPause) {
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_play, 0,0,0);
             mRecordingPrompt.setText((String)getString(R.string.resume_recording_button).toUpperCase());
             timeWhenPaused = SystemClock.elapsedRealtime() - mChronometer.getBase();
             mChronometer.stop();
 
-            pauseStart = System.currentTimeMillis();
-            inPause = true;
         }else {
-            pauseStop = System.currentTimeMillis();
-            totalPause += pauseStart - pauseStop;
-            inPause = false;
-
-            Log.d("Flow", "onPauseRecord (false)");
-            Log.d("Flow - paused", "total paused: " + totalPause);
-
             mPauseButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_media_pause,0,0,0);
             mRecordingPrompt.setText((String)getString(R.string.pause_recording_button).toUpperCase());
             mChronometer.setBase(SystemClock.elapsedRealtime() - timeWhenPaused);
