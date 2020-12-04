@@ -59,6 +59,11 @@ public class RecordingService extends Service {
     private Thread recordingThread;
     private int bufferSize = 0;
     private boolean isRecording;
+    private boolean isRecordingInPause;
+
+    private long pauseTimeStart;
+    private long pauseTimeEnd;
+    private long timeWhenPaused;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,13 +78,36 @@ public class RecordingService extends Service {
     public void onCreate() {
         super.onCreate();
         this.mDatabase = DBHelper.getInstance(getApplicationContext());
-        this.isRecording = false;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startRecording();
+        if(intent.hasExtra("inPause")){
+            this.isRecordingInPause = (boolean) intent.getExtras().get("inPause");
+
+            if (this.isRecordingInPause) pauseTimeStart = System.currentTimeMillis();
+            else {
+                this.pauseTimeEnd = System.currentTimeMillis();
+                this.timeWhenPaused += (this.pauseTimeEnd - this.pauseTimeStart);
+            }
+        }
+        else {
+            this.isRecording = false;
+            this.isRecordingInPause = false;
+            this.pauseTimeStart = 0;
+            this.pauseTimeEnd = 0;
+            this.timeWhenPaused = 0;
+
+            startRecording();
+        }
+
         return START_STICKY;
+    }
+
+    public void pauseRecording(){
+        if(audioRecord!=null && isRecording){
+            audioRecord.stop();
+        }
     }
 
     @Override
@@ -126,13 +154,15 @@ public class RecordingService extends Service {
         int read = 0;
         if (null != os) {
             while (this.isRecording) {
-                read = audioRecord.read(data, 0, bufferSize);
+                if(!isRecordingInPause){
+                    read = audioRecord.read(data, 0, bufferSize);
 
-                if (read != AudioRecord.ERROR_INVALID_OPERATION) {
-                    try {
-                        os.write(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (read != AudioRecord.ERROR_INVALID_OPERATION) {
+                        try {
+                            os.write(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -174,7 +204,15 @@ public class RecordingService extends Service {
 
             this.audioRecord.release();
 
-            this.mElapsedMillis = (System.currentTimeMillis() - this.mStartingTimeMillis);
+            this.mElapsedMillis = System.currentTimeMillis() - this.mStartingTimeMillis - this.timeWhenPaused;
+
+            if (this.isRecordingInPause) {
+                this.mElapsedMillis -= (System.currentTimeMillis() - this.pauseTimeStart);
+            }
+
+            this.isRecordingInPause = false;
+
+            Log.d("Flow - service side", "ElapsedMillis:" + mElapsedMillis);
 
             copyWaveFile(this.tempFilePath, this.mFilePath);
             deleteTempFile();

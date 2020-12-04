@@ -40,7 +40,7 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 Context context = getActivity();
                 DBHelper dbHelper= DBHelper.getInstance(context);
-                dbHelper.checkConsistencyWithFileSistem();
+                dbHelper.checkConsistencyWithFileSystem();
 
                 Toast.makeText(context, context.getResources().getString(R.string.toast_sync_with_db), Toast.LENGTH_LONG).show();
 
