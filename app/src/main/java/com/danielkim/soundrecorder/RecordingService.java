@@ -85,7 +85,7 @@ public class RecordingService extends Service {
         if(intent.hasExtra("inPause")){
             this.isRecordingInPause = (boolean) intent.getExtras().get("inPause");
 
-            if (this.isRecordingInPause) pauseTimeStart = System.currentTimeMillis();
+            if (this.isRecordingInPause) this.pauseTimeStart = System.currentTimeMillis();
             else {
                 this.pauseTimeEnd = System.currentTimeMillis();
                 this.timeWhenPaused += (this.pauseTimeEnd - this.pauseTimeStart);
@@ -211,8 +211,6 @@ public class RecordingService extends Service {
             }
 
             this.isRecordingInPause = false;
-
-            Log.d("Flow - service side", "ElapsedMillis:" + mElapsedMillis);
 
             copyWaveFile(this.tempFilePath, this.mFilePath);
             deleteTempFile();
