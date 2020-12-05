@@ -5,16 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
 
+import java.io.File;
 import java.util.Comparator;
 
 /**
  * Created by Daniel on 12/29/2014.
  */
 public class DBHelper extends SQLiteOpenHelper {
+    private static DBHelper instance;
     private Context mContext;
 
     private static final String LOG_TAG = "DBHelper";
@@ -56,9 +61,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public DBHelper(Context context) {
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
+    }
+
+    public static DBHelper getInstance(Context context){
+        if (instance == null) instance = new DBHelper(context);
+
+        return instance;
     }
 
     public static void setOnDatabaseChangedListener(OnDatabaseChangedListener listener) {
@@ -158,5 +169,32 @@ public class DBHelper extends SQLiteOpenHelper {
             //mOnDatabaseChangedListener.onNewDatabaseEntryAdded();
         }
         return rowId;
+    }
+
+    private boolean checkFileExistenceInFileSystem(String fileName){
+        boolean found = false;
+        File appDirectory = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/SoundRecorder/");
+
+        if (appDirectory.isDirectory()){
+            File[] filesInAppDirectory = appDirectory.listFiles();
+
+            for (int i = 0; i < filesInAppDirectory.length && !found; i++){
+                File currentFile = filesInAppDirectory[i];
+                if (!currentFile.isDirectory() && fileName.equals(currentFile.getName())) found = true;
+            }
+        }
+
+        return found;
+    }
+
+    public void checkConsistencyWithFileSystem(){
+        for (int i = 0; i < getCount(); i++){
+            RecordingItem currentItem = getItemAt(i);
+
+            if (!checkFileExistenceInFileSystem(currentItem.getName())){
+                removeItemWithId(currentItem.getId());
+                i--;
+            }
+        }
     }
 }
