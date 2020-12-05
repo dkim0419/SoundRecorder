@@ -1,31 +1,20 @@
 package com.danielkim.soundrecorder;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.danielkim.soundrecorder.activities.MainActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by Daniel on 12/28/2014.
@@ -33,6 +22,7 @@ import java.util.TimerTask;
 public class RecordingService extends Service {
 
     private static final String LOG_TAG = "RecordingService";
+    private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
 
     private String mFileName = null;
     private String mFilePath = null;
@@ -40,43 +30,40 @@ public class RecordingService extends Service {
 
     private DBHelper mDatabase;
 
-    private long mStartingTimeMillis = 0;
-    private long mElapsedMillis = 0;
-    private int mElapsedSeconds = 0;
-    private OnTimerChangedListener onTimerChangedListener = null;
-    private static final SimpleDateFormat mTimerFormat = new SimpleDateFormat("mm:ss", Locale.getDefault());
-
-    private Timer mTimer = null;
-    private TimerTask mIncrementTimerTask = null;
-
     private static final int RECORDER_BPP = 16;
-    private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final int RECORDER_HIGH_QUALITY_SAMPLERATE = 48000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
-    private AudioRecord audioRecord;
-    private Thread recordingThread;
     private int bufferSize = 0;
+
+    private AudioRecord audioRecord;
+
+    private Thread recordingThread;
+
     private boolean isRecording;
     private boolean isRecordingInPause;
 
     private long pauseTimeStart;
     private long pauseTimeEnd;
     private long timeWhenPaused;
+    private long mStartingTimeMillis;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    public interface OnTimerChangedListener {
-        void onTimerChanged(int seconds);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
+
+        this.isRecording = false;
+        this.isRecordingInPause = false;
+        this.pauseTimeStart = 0;
+        this.pauseTimeEnd = 0;
+        this.timeWhenPaused = 0;
+        this.mStartingTimeMillis = 0;
         this.mDatabase = DBHelper.getInstance(getApplicationContext());
     }
 
@@ -92,22 +79,10 @@ public class RecordingService extends Service {
             }
         }
         else {
-            this.isRecording = false;
-            this.isRecordingInPause = false;
-            this.pauseTimeStart = 0;
-            this.pauseTimeEnd = 0;
-            this.timeWhenPaused = 0;
-
             startRecording();
         }
 
         return START_STICKY;
-    }
-
-    public void pauseRecording(){
-        if(audioRecord!=null && isRecording){
-            audioRecord.stop();
-        }
     }
 
     @Override
@@ -134,7 +109,6 @@ public class RecordingService extends Service {
         this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_HIGH_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
 
         if(this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED){
-            this.audioRecord.startRecording();
             this.mStartingTimeMillis = System.currentTimeMillis();
             this.isRecording = true;
             this.recordingThread.start();
@@ -154,7 +128,12 @@ public class RecordingService extends Service {
         int read = 0;
         if (null != os) {
             while (this.isRecording) {
-                if(!isRecordingInPause){
+                if(isRecordingInPause){
+                    if (this.audioRecord.getState() != AudioRecord.RECORDSTATE_STOPPED) this.audioRecord.stop();
+                }
+                else {
+                    if (this.audioRecord.getState() != AudioRecord.RECORDSTATE_RECORDING) this.audioRecord.startRecording();
+
                     read = audioRecord.read(data, 0, bufferSize);
 
                     if (read != AudioRecord.ERROR_INVALID_OPERATION) {
@@ -204,10 +183,10 @@ public class RecordingService extends Service {
 
             this.audioRecord.release();
 
-            this.mElapsedMillis = System.currentTimeMillis() - this.mStartingTimeMillis - this.timeWhenPaused;
+            long recordingDuration = System.currentTimeMillis() - this.mStartingTimeMillis - this.timeWhenPaused;
 
             if (this.isRecordingInPause) {
-                this.mElapsedMillis -= (System.currentTimeMillis() - this.pauseTimeStart);
+                recordingDuration -= (System.currentTimeMillis() - this.pauseTimeStart);
             }
 
             this.isRecordingInPause = false;
@@ -221,7 +200,7 @@ public class RecordingService extends Service {
             Toast.makeText(this, getString(R.string.toast_recording_finish) + " " + this.mFilePath, Toast.LENGTH_LONG).show();
 
             try {
-                this.mDatabase.addRecording(this.mFileName, this.mFilePath, this.mElapsedMillis);
+                this.mDatabase.addRecording(this.mFileName, this.mFilePath, recordingDuration);
             } catch (Exception e){
                 Log.e(LOG_TAG, "exception", e);
             }
@@ -309,34 +288,5 @@ public class RecordingService extends Service {
         header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
 
         out.write(header, 0, 44);
-    }
-
-    private void startTimer() {
-        mTimer = new Timer();
-        mIncrementTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                mElapsedSeconds++;
-                if (onTimerChangedListener != null) onTimerChangedListener.onTimerChanged(mElapsedSeconds);
-                NotificationManager mgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mgr.notify(1, createNotification());
-            }
-        };
-        mTimer.scheduleAtFixedRate(mIncrementTimerTask, 1000, 1000);
-    }
-
-    //TODO:
-    private Notification createNotification() {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.ic_mic_white_36dp)
-                        .setContentTitle(getString(R.string.notification_recording))
-                        .setContentText(mTimerFormat.format(mElapsedSeconds * 1000))
-                        .setOngoing(true);
-
-        mBuilder.setContentIntent(PendingIntent.getActivities(getApplicationContext(), 0,
-                new Intent[]{new Intent(getApplicationContext(), MainActivity.class)}, 0));
-
-        return mBuilder.build();
     }
 }

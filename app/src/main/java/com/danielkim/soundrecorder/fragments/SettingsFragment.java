@@ -1,11 +1,14 @@
 package com.danielkim.soundrecorder.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.danielkim.soundrecorder.BuildConfig;
+import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.activities.SettingsActivity;
 
@@ -35,8 +38,13 @@ public class SettingsFragment extends PreferenceFragment {
         resyncPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                /*** TO DO - please add resync function call-site ***/
-                 return true;
+                Context context = getActivity();
+                DBHelper dbHelper= DBHelper.getInstance(context);
+                dbHelper.checkConsistencyWithFileSystem();
+
+                Toast.makeText(context, context.getResources().getString(R.string.toast_sync_with_db), Toast.LENGTH_LONG).show();
+
+                return true;
             }
         });
 
