@@ -14,15 +14,16 @@
     <string name="toast_recording_start">Recording started</string>
     <string name="toast_recording_finish">Recording saved to</string>
     <string name="toast_file_delete">%1$s successfully deleted</string>
-    <string name="toast_file_exists">The file %1$s already exists. Please choose a different file name.</string>
-    <string name="toast_file_does_not_exist">The selected file does not exist.</string>
+    <string name="toast_file_exists">The file %1$s already exists: please choose a different file name</string>
+    <string name="toast_file_does_not_exist">The selected file does not exist</string>
     <string name="toast_unable_to_extract_text">Unable to extract text from this file</string>
+    <string name="toast_sync_with_db">Synchronization between database and file system performed</string>
 
     <!-- Notifications -->
     <string name="notification_recording">Recording...</string>
 
     <!-- Dialogs -->
-    <string name="dialog_title_delete">Confirm Delete...</string>
+    <string name="dialog_title_delete">Confirm Delete</string>
     <string name="dialog_text_delete">Are you sure you would like to delete this file?</string>
     <string name="dialog_title_licenses">Open Source Licenses</string>
     <string name="dialog_title_share">Share File</string>
