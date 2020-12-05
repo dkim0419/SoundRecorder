@@ -51,7 +51,7 @@ public class RecordingService extends Service {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
-    private static final int RECORDER_CD_QUALITY_SAMPLERATE = 44100;
+    private static final int RECORDER_HIGH_QUALITY_SAMPLERATE = 48000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
@@ -59,6 +59,11 @@ public class RecordingService extends Service {
     private Thread recordingThread;
     private int bufferSize = 0;
     private boolean isRecording;
+    private boolean isRecordingInPause;
+
+    private long pauseTimeStart;
+    private long pauseTimeEnd;
+    private long timeWhenPaused;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -72,14 +77,37 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.mDatabase = new DBHelper(getApplicationContext());
-        this.isRecording = false;
+        this.mDatabase = DBHelper.getInstance(getApplicationContext());
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        startRecording();
+        if(intent.hasExtra("inPause")){
+            this.isRecordingInPause = (boolean) intent.getExtras().get("inPause");
+
+            if (this.isRecordingInPause) this.pauseTimeStart = System.currentTimeMillis();
+            else {
+                this.pauseTimeEnd = System.currentTimeMillis();
+                this.timeWhenPaused += (this.pauseTimeEnd - this.pauseTimeStart);
+            }
+        }
+        else {
+            this.isRecording = false;
+            this.isRecordingInPause = false;
+            this.pauseTimeStart = 0;
+            this.pauseTimeEnd = 0;
+            this.timeWhenPaused = 0;
+
+            startRecording();
+        }
+
         return START_STICKY;
+    }
+
+    public void pauseRecording(){
+        if(audioRecord!=null && isRecording){
+            audioRecord.stop();
+        }
     }
 
     @Override
@@ -102,8 +130,8 @@ public class RecordingService extends Service {
         setFileNameAndPath();
 
         this.tempFilePath = Environment.getExternalStorageDirectory().getPath() + "/SoundRecorder/" + AUDIO_RECORDER_TEMP_FILE;
-        this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
-        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_CD_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
+        this.bufferSize = AudioRecord.getMinBufferSize(RECORDER_HIGH_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING) * 3;
+        this.audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_HIGH_QUALITY_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSize);
 
         if(this.audioRecord.getState() == AudioRecord.STATE_INITIALIZED){
             this.audioRecord.startRecording();
@@ -126,13 +154,15 @@ public class RecordingService extends Service {
         int read = 0;
         if (null != os) {
             while (this.isRecording) {
-                read = audioRecord.read(data, 0, bufferSize);
+                if(!isRecordingInPause){
+                    read = audioRecord.read(data, 0, bufferSize);
 
-                if (read != AudioRecord.ERROR_INVALID_OPERATION) {
-                    try {
-                        os.write(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (read != AudioRecord.ERROR_INVALID_OPERATION) {
+                        try {
+                            os.write(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -174,7 +204,13 @@ public class RecordingService extends Service {
 
             this.audioRecord.release();
 
-            this.mElapsedMillis = (System.currentTimeMillis() - this.mStartingTimeMillis);
+            this.mElapsedMillis = System.currentTimeMillis() - this.mStartingTimeMillis - this.timeWhenPaused;
+
+            if (this.isRecordingInPause) {
+                this.mElapsedMillis -= (System.currentTimeMillis() - this.pauseTimeStart);
+            }
+
+            this.isRecordingInPause = false;
 
             copyWaveFile(this.tempFilePath, this.mFilePath);
             deleteTempFile();
@@ -197,9 +233,9 @@ public class RecordingService extends Service {
         FileOutputStream out = null;
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
-        long longSampleRate = RECORDER_CD_QUALITY_SAMPLERATE;
+        long longSampleRate = RECORDER_HIGH_QUALITY_SAMPLERATE;
         int channels = ((RECORDER_CHANNELS == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2);
-        long byteRate = RECORDER_BPP * RECORDER_CD_QUALITY_SAMPLERATE * channels / 8;
+        long byteRate = RECORDER_BPP * RECORDER_HIGH_QUALITY_SAMPLERATE * channels / 8;
 
         byte[] data = new byte[bufferSize];
 
