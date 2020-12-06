@@ -46,7 +46,7 @@ public class RecordingService extends Service {
 
     private long pauseTimeStart;
     private long pauseTimeEnd;
-    private long timeWhenPaused;
+    private long totalBreakTime; // cumulative pause intervals
     private long mStartingTimeMillis;
 
     @Override
@@ -62,7 +62,7 @@ public class RecordingService extends Service {
         this.isRecordingInPause = false;
         this.pauseTimeStart = 0;
         this.pauseTimeEnd = 0;
-        this.timeWhenPaused = 0;
+        this.totalBreakTime = 0;
         this.mStartingTimeMillis = 0;
         this.mDatabase = DBHelper.getInstance(getApplicationContext());
     }
@@ -75,7 +75,7 @@ public class RecordingService extends Service {
             if (this.isRecordingInPause) this.pauseTimeStart = System.currentTimeMillis();
             else {
                 this.pauseTimeEnd = System.currentTimeMillis();
-                this.timeWhenPaused += (this.pauseTimeEnd - this.pauseTimeStart);
+                this.totalBreakTime += (this.pauseTimeEnd - this.pauseTimeStart);
             }
         }
         else {
@@ -183,7 +183,7 @@ public class RecordingService extends Service {
 
             this.audioRecord.release();
 
-            long recordingDuration = System.currentTimeMillis() - this.mStartingTimeMillis - this.timeWhenPaused;
+            long recordingDuration = System.currentTimeMillis() - this.mStartingTimeMillis - this.totalBreakTime;
 
             if (this.isRecordingInPause) {
                 recordingDuration -= (System.currentTimeMillis() - this.pauseTimeStart);
