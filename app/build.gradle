@@ -12,6 +12,9 @@ android {
         versionName "1.3.0"
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -23,6 +26,7 @@ android {
     }
 
     testOptions {
+        unitTests.returnDefaultValues = true;
         unitTests.includeAndroidResources = true
         unitTests.all {
             reports {
@@ -33,8 +37,8 @@ android {
     }
     sourceSets{
         main { java.srcDirs = ['src/main/java'] }
-        test { java.srcDirs = ['src/test/java'] }
         androidTest { java.srcDirs = ['src/androidTest/java'] }
+        test { java.srcDirs = ['src/test/java'] }
     }
     configurations.all {
         resolutionStrategy.dependencySubstitution {
@@ -62,7 +66,9 @@ dependencies {
     implementation 'com.ibm.watson:ibm-watson:8.6.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'org.testng:testng:6.9.6'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation 'org.robolectric:robolectric:4.4'
 
 }
 
@@ -73,7 +79,7 @@ apply plugin: 'jacoco'
 
 checkstyle {
     configFile = file("${project.rootDir}/app/checkstyle.xml")
-    toolVersion = '8.36'
+    toolVersion = '8.+'
     ignoreFailures = false
 }
 
@@ -102,4 +108,17 @@ task pmd(type: Pmd) {
 
 task uml{
     version = "1.0.2"
+}
+
+
+task jacocoTestReport(type:JacocoReport, dependsOn: "test"){
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+}
+
+task jacoco{
+    version = "0.8.5"
 }
