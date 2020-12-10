@@ -16,19 +16,26 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled true
+        }
     }
     lintOptions{
         disable 'MissingTranslation'
         abortOnError false
     }
-
     testOptions {
+        execution 'ANDROID_TEST_ORCHESTRATOR'
+        animationsDisabled true
         unitTests.returnDefaultValues = true;
         unitTests.includeAndroidResources = true
         unitTests.all {
             reports {
                 junitXml.enabled = true
                 html.enabled = false
+            }
+            jacoco {
+                includeNoLocationClasses = true
             }
         }
     }
@@ -66,7 +73,6 @@ dependencies {
     androidTestImplementation 'org.testng:testng:6.9.6'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     testImplementation 'org.robolectric:robolectric:4.4'
-
 }
 
 apply plugin: 'checkstyle'
@@ -103,20 +109,46 @@ task pmd(type: Pmd) {
     }
 }
 
+
 task uml{
     version = "1.0.2"
 }
 
-
-task jacocoTestReport(type:JacocoReport, dependsOn: "compileDebugUnitTestJavaWithJavac"){
+task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
+    def mainSrc = "${project.projectDir}/src/test/java/"
+    def coverageSourceDirs = [
+            "src/test/java/"
+    ]
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*'
+    ]
+    def javaClasses = fileTree(
+            dir: "$buildDir/intermediates/classes/debug",
+            excludes: fileFilter
+    )
+    sourceDirectories.from(files([mainSrc]))
+    classDirectories.from(files([ javaClasses ]))
+    //additionalSourceDirs.from(files(coverageSourceDirs))
+    // sourceDirectories.from(files(coverageSourceDirs))
+    executionData.from(fileTree(dir: "$project.buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec"
+    ]))
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.enabled true
+        xml.enabled = false
+        html.enabled = true
     }
 }
 
-task jacoco{
+jacoco{
     version = "0.8.5"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
 }
 

@@ -150,7 +150,7 @@ public class LocalRecordingService extends Service {
 
 
     public boolean isStateS1(){
-        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() == 0 ||
+        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() == System.currentTimeMillis() ||
                 getPauseTimeStart() != 0 || getPauseTimeEnd() != 0 || getTotalBreakTime() != 0) {
             return false;
         }
@@ -168,17 +168,17 @@ public class LocalRecordingService extends Service {
 
     public boolean isStateS3(){
         if (!isRecording() || !isRecordingInPause() || getmStartingTimeMillis() == 0 ||
-                getPauseTimeStart() <= 0 || getPauseTimeEnd() < 0 || getTotalBreakTime() < 0
-                || getPauseTimeStart() <= getPauseTimeEnd()) {
+                getPauseTimeStart() <= 0 || getPauseTimeEnd() < 0 || getTotalBreakTime() < 0 ||
+                getPauseTimeStart() <= getPauseTimeEnd()) {
             return false;
         }
         return true;
     }
 
     public boolean isStateS4(){
-        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() == 0 ||
-                getPauseTimeStart() <= 0 || getPauseTimeEnd() <= 0 || getTotalBreakTime() <= 0
-                || getPauseTimeStart() <= getPauseTimeEnd()) {
+        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() ==  0||
+                getPauseTimeStart() <= 0 || getPauseTimeEnd() <= 0 || getTotalBreakTime() <= 0 ||
+                getPauseTimeStart() <= getPauseTimeEnd()) {
             return false;
         }
         return true;
