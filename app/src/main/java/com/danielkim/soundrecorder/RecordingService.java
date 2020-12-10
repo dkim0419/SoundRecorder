@@ -69,6 +69,7 @@ public class RecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("onStartCommand", flags + " flags - " + startId + " startID");
         if(intent.hasExtra("inPause")){
             this.isRecordingInPause = (boolean) intent.getExtras().get("inPause");
 
@@ -94,7 +95,7 @@ public class RecordingService extends Service {
         super.onDestroy();
     }
 
-    public void startRecording(){
+    private void startRecording(){
         this.recordingThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +160,7 @@ public class RecordingService extends Service {
         file.delete();
     }
 
-    public void setFileNameAndPath(){
+    private void setFileNameAndPath(){
         int count = 0;
         File f;
 
@@ -175,7 +176,7 @@ public class RecordingService extends Service {
         }while (f.exists() && !f.isDirectory());
     }
 
-    public void stopRecording(){
+    private void stopRecording(){
         if (this.audioRecord != null) {
             this.isRecording = false;
 
