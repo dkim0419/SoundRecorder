@@ -12,9 +12,6 @@ android {
         versionName "1.3.0"
     }
     buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -111,14 +108,15 @@ task uml{
 }
 
 
-task jacocoTestReport(type:JacocoReport, dependsOn: "test"){
+task jacocoTestReport(type:JacocoReport, dependsOn: "compileDebugUnitTestJavaWithJavac"){
     reports {
         xml.enabled false
         csv.enabled false
-        html.destination file("${buildDir}/jacocoHtml")
+        html.enabled true
     }
 }
 
 task jacoco{
     version = "0.8.5"
 }
+
