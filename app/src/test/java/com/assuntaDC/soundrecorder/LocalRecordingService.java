@@ -156,8 +156,8 @@ public class LocalRecordingService extends Service {
     public boolean isStateS2(){
         if(!isRecording && !isRecordingInPause && mStartingTimeMillis > 0 && pauseTimeStart >= 0){
             if (pauseTimeEnd == 0) return true;
-            else if (pauseTimeStart > pauseTimeEnd && totalBreakTime >= 0) return true;
-            else if (pauseTimeEnd > pauseTimeStart && totalBreakTime > 0) return true;
+            else if (pauseTimeStart > pauseTimeEnd && totalBreakTime >= 0){ return true; }
+            else if (pauseTimeEnd > pauseTimeStart && totalBreakTime > 0){ return true; }
             else return false;
         }
         else return false;

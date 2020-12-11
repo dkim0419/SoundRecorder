@@ -143,10 +143,10 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
             dir: "$buildDir/intermediates/classes/debug",
             excludes: fileFilter
     )
-    sourceDirectories.from(files([mainSrc]))
+    //sourceDirectories.from(files([mainSrc]))
     classDirectories.from(files([ javaClasses ]))
     //additionalSourceDirs.from(files(coverageSourceDirs))
-    // sourceDirectories.from(files(coverageSourceDirs))
+    sourceDirectories.from(files(coverageSourceDirs))
     executionData.from(fileTree(dir: "$project.buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
     ]))
