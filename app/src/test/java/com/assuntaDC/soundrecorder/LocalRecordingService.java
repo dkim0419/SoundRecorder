@@ -11,7 +11,6 @@ public class LocalRecordingService extends Service {
     private boolean isRecording;
     private boolean isRecordingInPause;
 
-
     private long recordingDuration;
     private long pauseTimeStart;
     private long pauseTimeEnd;
@@ -90,10 +89,10 @@ public class LocalRecordingService extends Service {
 
     private void stopRecording(){
         this.isRecording = false;
-        recordingDuration = System.currentTimeMillis() - this.mStartingTimeMillis - this.totalBreakTime;
+        this.recordingDuration = System.currentTimeMillis() - this.mStartingTimeMillis - this.totalBreakTime;
 
         if (this.isRecordingInPause) {
-            recordingDuration -= (System.currentTimeMillis() - this.pauseTimeStart);
+            this.recordingDuration -= (System.currentTimeMillis() - this.pauseTimeStart);
         }
 
         this.isRecordingInPause = false;
@@ -101,7 +100,7 @@ public class LocalRecordingService extends Service {
 
 
         copyWaveFile();
-        System.out.println("Recording stopped. Audio file created. Duration: " + recordingDuration/1000.0 + " s.");
+        System.out.println("Recording stopped. Audio file created. Duration: " + Math.round(this.recordingDuration/100.0)/10.0 + " s.\n");
     }
 
     private void copyWaveFile(){
@@ -137,55 +136,46 @@ public class LocalRecordingService extends Service {
         return recordingDuration;
     }
 
+
     /*** States description*/
-
-
     public boolean isStateS0(){
-        if (isRecording() || isRecordingInPause() || getmStartingTimeMillis() != 0 ||
-                getPauseTimeStart() != 0 || getPauseTimeEnd() != 0 || getTotalBreakTime() != 0) {
-            return false;
-        }
-        return true;
+        if(!isRecording && !isRecordingInPause && mStartingTimeMillis == 0 && pauseTimeStart == 0 &&
+                pauseTimeEnd == 0 && totalBreakTime == 0) return true;
+
+        else return false;
     }
 
 
     public boolean isStateS1(){
-        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() == System.currentTimeMillis() ||
-                getPauseTimeStart() != 0 || getPauseTimeEnd() != 0 || getTotalBreakTime() != 0) {
-            return false;
-        }
-        return true;
+        if (isRecording && !isRecordingInPause && mStartingTimeMillis > 0 &&
+                pauseTimeStart == 0 && pauseTimeEnd == 0 && totalBreakTime == 0) return true;
+
+        else return false;
     }
 
     public boolean isStateS2(){
-        if (isRecording() || isRecordingInPause() || getmStartingTimeMillis() == 0 ||
-                getPauseTimeStart() < 0 || getPauseTimeEnd() < 0 || getPauseTimeStart() < getPauseTimeEnd() ||
-                getTotalBreakTime() < 0) {
-            return false;
+        if(!isRecording && !isRecordingInPause && mStartingTimeMillis > 0 && pauseTimeStart >= 0){
+            if (pauseTimeEnd == 0) return true;
+            else if (pauseTimeStart > pauseTimeEnd && totalBreakTime >= 0) return true;
+            else if (pauseTimeEnd > pauseTimeStart && totalBreakTime > 0) return true;
+            else return false;
         }
-        return true;
+        else return false;
     }
 
     public boolean isStateS3(){
-        if (!isRecording() || !isRecordingInPause() || getmStartingTimeMillis() == 0 ||
-                getPauseTimeStart() <= 0 || getPauseTimeEnd() < 0 || getTotalBreakTime() < 0 ||
-                getPauseTimeStart() <= getPauseTimeEnd()) {
-            return false;
-        }
-        return true;
+        if (isRecording && isRecordingInPause && mStartingTimeMillis > 0 && pauseTimeStart >0 &&
+                pauseTimeEnd >= 0 && pauseTimeStart > pauseTimeEnd && totalBreakTime >= 0) return true;
+
+        else return false;
     }
 
     public boolean isStateS4(){
-        if (!isRecording() || isRecordingInPause() || getmStartingTimeMillis() ==  0||
-                getPauseTimeStart() <= 0 || getPauseTimeEnd() <= 0 || getTotalBreakTime() <= 0 ||
-                getPauseTimeStart() <= getPauseTimeEnd()) {
-            return false;
-        }
-        return true;
+        if (isRecording && !isRecordingInPause && mStartingTimeMillis > 0 && pauseTimeStart > 0 &&
+                pauseTimeEnd > 0 && pauseTimeEnd > pauseTimeStart && totalBreakTime > 0) return true;
+
+        else return false;
     }
-
-
-
 
     @Nullable
     @Override
