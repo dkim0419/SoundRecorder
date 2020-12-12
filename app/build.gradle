@@ -138,9 +138,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
             '**/*$ViewInjector*.*',
             '**/*$ViewBinder*.*',
             '**/BuildConfig.*',
-            '**/Manifest*.*',
-            '/com/danielkim/soundrecorder/listeners/**',
-            '/com/danielkim/soundrecorder/activities/**'
+            '**/Manifest*.*'
     ]
     def javaClasses = fileTree(
             dir: "$buildDir/intermediates/javac/debug",
@@ -160,11 +158,21 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
 task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'jacocoTestReport') {
     def coverageSourceDirs = ["src/main/java/"]
     def fileFilter = [
-            'src/main/java/com/danielkim/soundrecorder/mockClasses/LocalRecordingSerevice.class'
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/com/danielkim/soundrecorder/**'
+    ]
+    def coverageClasses = [
+            '**/com/danielkim/soundrecorder/mockclasses/**'
     ]
     def javaClasses = fileTree(
             dir: "$buildDir/intermediates/javac/debug/classes/",
-            includes: fileFilter
+            excludes: fileFilter,
+            includes: coverageClasses
     )
     classDirectories.from(files([ javaClasses ]))
     sourceDirectories.from(files(coverageSourceDirs))
@@ -173,7 +181,7 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
         failOnViolation = true
         rule {
             limit {
-                minimum = 1.00
+                minimum = 0.85
             }
         }
     }
