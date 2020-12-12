@@ -92,6 +92,7 @@ apply plugin: 'pmd'
 apply plugin: 'com.github.roroche.plantuml'
 apply plugin: 'jacoco'
 
+
 checkstyle {
     configFile = file("${project.rootDir}/app/checkstyle.xml")
     toolVersion = '8.+'
@@ -127,9 +128,8 @@ task uml{
 }
 
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
-    def mainSrc = "${project.projectDir}/src/test/java/"
     def coverageSourceDirs = [
-            "src/test/java/"
+            "src/main/java/"
     ]
     def fileFilter = [
             '**/R.class',
@@ -140,12 +140,10 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
             '**/Manifest*.*'
     ]
     def javaClasses = fileTree(
-            dir: "$buildDir/intermediates/classes/debug",
+            dir: "$buildDir/intermediates/javac/debug",
             excludes: fileFilter
     )
-    //sourceDirectories.from(files([mainSrc]))
     classDirectories.from(files([ javaClasses ]))
-    //additionalSourceDirs.from(files(coverageSourceDirs))
     sourceDirectories.from(files(coverageSourceDirs))
     executionData.from(fileTree(dir: "$project.buildDir", includes: [
             "jacoco/testDebugUnitTest.exec"
