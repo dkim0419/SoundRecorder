@@ -1,4 +1,4 @@
-package com.assuntadc.soundrecorder;
+package com.danielkim.soundrecorder;
 
 import android.app.Service;
 import android.content.Intent;

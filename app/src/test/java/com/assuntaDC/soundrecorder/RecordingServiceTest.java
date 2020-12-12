@@ -2,6 +2,8 @@ package com.assuntadc.soundrecorder;
 
 import android.content.Intent;
 
+import com.danielkim.soundrecorder.LocalRecordingService;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
