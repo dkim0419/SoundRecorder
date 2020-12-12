@@ -1,4 +1,4 @@
-package com.danielkim.soundrecorder;
+package com.danielkim.soundrecorder.mockClasses;
 
 import android.app.Service;
 import android.content.Intent;
