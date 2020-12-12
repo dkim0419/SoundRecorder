@@ -71,6 +71,7 @@ allprojects {
     }
 }
 
+
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:appcompat-v7:21.0.+'
@@ -127,7 +128,7 @@ task uml{
     version = "1.0.2"
 }
 
-task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
     def coverageSourceDirs = [
             "src/main/java/"
     ]
@@ -157,6 +158,8 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
 jacoco{
     version = "0.8.5"
 }
+
+
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
