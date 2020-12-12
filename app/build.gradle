@@ -138,7 +138,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
             '**/*$ViewInjector*.*',
             '**/*$ViewBinder*.*',
             '**/BuildConfig.*',
-            '**/Manifest*.*'
+            '**/Manifest*.*',
+            '/com/danielkim/soundrecorder/listeners/**',
+            '/com/danielkim/soundrecorder/activities/**'
     ]
     def javaClasses = fileTree(
             dir: "$buildDir/intermediates/javac/debug",
@@ -155,11 +157,31 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
     }
 }
 
+task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'jacocoTestReport') {
+    def coverageSourceDirs = ["src/main/java/"]
+    def fileFilter = [
+            'src/main/java/com/danielkim/soundrecorder/mockClasses/LocalRecordingSerevice.class'
+    ]
+    def javaClasses = fileTree(
+            dir: "$buildDir/intermediates/javac/debug/classes/",
+            includes: fileFilter
+    )
+    classDirectories.from(files([ javaClasses ]))
+    sourceDirectories.from(files(coverageSourceDirs))
+    executionData.from(fileTree(dir: "$project.buildDir", includes: ["jacoco/testDebugUnitTest.exec"]))
+    violationRules {
+        failOnViolation = true
+        rule {
+            limit {
+                minimum = 1.00
+            }
+        }
+    }
+}
+
 jacoco{
     version = "0.8.5"
 }
-
-
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
