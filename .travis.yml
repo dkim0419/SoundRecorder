@@ -53,7 +53,7 @@ jobs:
     - stage: coverage
       name: "Jacoco Code Coverage analysis"
       script: ./gradlew jacocoTestReport
-      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/index.html
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/jacocoTestReport/html/index.html
 
 
 notifications:
