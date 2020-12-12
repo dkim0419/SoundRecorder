@@ -29,6 +29,7 @@ stages:
   - compile
   - static_analysis
   - test
+  - coverage
 
 jobs:
   include:
@@ -48,7 +49,11 @@ jobs:
         paths: app/build/reports/
     - stage: test
       name: "Unit Test"
-      script: ./gradlew test
+      script: ./gradlew testDebugUnitTest
+    - stage: coverage
+      name: "Jacoco Code Coverage analysis"
+      script: ./gradlew jacocoTestReport
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/index.html
 
 
 notifications:
