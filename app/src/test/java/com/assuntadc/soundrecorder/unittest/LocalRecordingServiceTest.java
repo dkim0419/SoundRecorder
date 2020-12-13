@@ -1,8 +1,6 @@
-package com.assuntadc.soundrecorder;
+package com.assuntadc.soundrecorder.unittest;
 
 import android.content.Intent;
-
-import com.danielkim.soundrecorder.mockclasses.LocalRecordingService;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,14 +17,14 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21)
-public class RecordingServiceTest {
+public class LocalRecordingServiceTest {
     private static int startId = 0;
-    private ServiceController<LocalRecordingService> serviceController;
-    private LocalRecordingService localRecordingService;
+    private ServiceController<com.danielkim.soundrecorder.mockclasses.LocalRecordingService> serviceController;
+    private com.danielkim.soundrecorder.mockclasses.LocalRecordingService localRecordingService;
 
     @Before
     public void setUp() {
-        serviceController = Robolectric.buildService(LocalRecordingService.class);
+        serviceController = Robolectric.buildService(com.danielkim.soundrecorder.mockclasses.LocalRecordingService.class);
     }
 
     @AfterClass
@@ -64,7 +62,7 @@ public class RecordingServiceTest {
     @Test
     public void firstSequence() {
         //Test sequence S0 - S1 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, com.danielkim.soundrecorder.mockclasses.LocalRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -100,7 +98,7 @@ public class RecordingServiceTest {
     @Test
     public void SecondSequence() {
         // S0 - S1 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, com.danielkim.soundrecorder.mockclasses.LocalRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -151,7 +149,7 @@ public class RecordingServiceTest {
     @Test
     public void ThirdSequence() {
         // S0 - S1 - S3 - S4 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, com.danielkim.soundrecorder.mockclasses.LocalRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -211,7 +209,7 @@ public class RecordingServiceTest {
     @Test
     public void FourthSequence() {
         // S0 - S1 - S3 - S4 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, com.danielkim.soundrecorder.mockclasses.LocalRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
