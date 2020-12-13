@@ -64,10 +64,11 @@ android {
 
 allprojects {
     repositories {
-        jcenter()
+        google()
         maven {
-            url "https://maven.google.com"
+            url 'https://maven.google.com/'
         }
+        jcenter()
     }
 }
 
@@ -81,10 +82,8 @@ dependencies {
     implementation 'com.jpardogo.materialtabstrip:library:1.0.6'
     implementation 'com.ibm.watson:ibm-watson:8.6.3'
     implementation 'com.android.support:multidex:1.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'org.testng:testng:6.9.6'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    androidTestImplementation 'org.testng:testng:6.14.3'
+    testImplementation 'junit:junit:4.13'
     testImplementation 'org.robolectric:robolectric:4.4'
 }
 
@@ -92,6 +91,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 apply plugin: 'com.github.roroche.plantuml'
 apply plugin: 'jacoco'
+apply plugin: 'pl.droidsonroids.pitest'
 
 
 checkstyle {
@@ -121,8 +121,8 @@ task pmd(type: Pmd) {
         xml.enabled = false
         html.enabled = true
     }
+    incrementalAnalysis = true // incremental analysis cache to improve performance when files have not changed in between builds.
 }
-
 
 task uml{
     version = "1.0.2"
@@ -187,11 +187,15 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
     }
 }
 
-jacoco{
-    version = "0.8.5"
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
+pitest{
+    targetClasses = ['com.danielkim.soundrecorder.mockclasses.*']
+    //targetTests = ['com.assuntadc.soundrecorder.*']
+    //testSourceSets.set(['com.assuntadc.soundrecorder.unittest.*'])
+    threads = 4
+    outputFormats = ['HTML']
+    useClasspathFile.set(true)     //useful with projects on Windows
+    timestampedReports = false
+    verbose = true
+    excludeMockableAndroidJar = true
 }
 
