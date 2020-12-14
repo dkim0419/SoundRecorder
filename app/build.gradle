@@ -192,7 +192,7 @@ pitest{
     targetTests = ['com.assuntadc.soundrecorder.unittest.*']
     threads = 4
     outputFormats = ['HTML']
-    timestampedReports = true
-    verbose = true
+    timestampedReports = false
+    verbose = false
 }
 
