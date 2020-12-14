@@ -62,7 +62,6 @@ jobs:
         expire_in: 4 days
         paths: app/build/reports/
     - stage: mutation
-      if: branch = master
       name: 'Mutation unit testing'
       script: ./gradlew pitest
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pitest/com.danielkim.soundrecorder.mockclasses/LocalRecordingService.java.html
