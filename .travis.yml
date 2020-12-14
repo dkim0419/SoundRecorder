@@ -30,7 +30,6 @@ stages:
   - static_analysis
   - unit_test
   - coverage
-  - mutation
 
 jobs:
   include:
@@ -61,14 +60,7 @@ jobs:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         expire_in: 4 days
         paths: app/build/reports/
-    - stage: mutation
-      name: 'Mutation unit testing'
-      script: ./gradlew pitest
-      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pitest/com.danielkim.soundrecorder.mockclasses/LocalRecordingService.java.html
-      artifacts:
-        name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
-        expire_in: 4 days
-        paths: app/build/reports/
+
 
 
 notifications:
