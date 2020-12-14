@@ -188,14 +188,11 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
 }
 
 pitest{
-    targetClasses = ['com.danielkim.soundrecorder.mockclasses.*']
-    //targetTests = ['com.assuntadc.soundrecorder.*']
-    //testSourceSets.set(['com.assuntadc.soundrecorder.unittest.*'])
+    targetClasses = ['com.danielkim.soundrecorder.mockclasses.**']
+    targetTests = ['com.assuntadc.soundrecorder.unittest.*']
     threads = 4
     outputFormats = ['HTML']
-    useClasspathFile.set(true)     //useful with projects on Windows
-    timestampedReports = false
+    timestampedReports = true
     verbose = true
-    excludeMockableAndroidJar = true
 }
 
