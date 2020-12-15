@@ -190,7 +190,7 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
 pitest{
     targetClasses = ['com.danielkim.soundrecorder.mockclasses.**']
     targetTests = ['com.assuntadc.soundrecorder.unittest.*']
-    threads = 4
+    threads = 12
     outputFormats = ['HTML']
     timestampedReports = false
     verbose = false
