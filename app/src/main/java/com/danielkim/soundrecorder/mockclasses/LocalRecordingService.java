@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-
 public class LocalRecordingService extends Service {
     private Thread recordingThread;
     private boolean isRecording;
