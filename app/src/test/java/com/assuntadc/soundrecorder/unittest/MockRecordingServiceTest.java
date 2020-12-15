@@ -1,7 +1,7 @@
 package com.assuntadc.soundrecorder.unittest;
 
 import android.content.Intent;
-import com.danielkim.soundrecorder.mockclasses.LocalRecordingService;
+import com.danielkim.soundrecorder.mockclasses.MockRecordingService;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,23 +18,18 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21)
-public class LocalRecordingServiceTest {
+public class MockRecordingServiceTest {
     private static int startId = 0;
-    private ServiceController<LocalRecordingService> serviceController;
-    private LocalRecordingService localRecordingService;
+    private ServiceController<MockRecordingService> serviceController;
+    private MockRecordingService mockRecordingService;
 
     @Before
     public void setUp() {
-        serviceController = Robolectric.buildService(LocalRecordingService.class);
-    }
-
-    @AfterClass
-    public static void tearDown() {
-
+        serviceController = Robolectric.buildService(MockRecordingService.class);
     }
 
     private void goStateS0(){
-        localRecordingService = serviceController.create().get();
+        mockRecordingService = serviceController.create().get();
     }
 
     private void goStateS1(Intent intent){
@@ -63,7 +58,7 @@ public class LocalRecordingServiceTest {
     @Test
     public void firstSequence() {
         //Test sequence S0 - S1 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -73,10 +68,10 @@ public class LocalRecordingServiceTest {
         expectedRecordingDurationInSeconds = Math.round(expectedRecordingDurationInSeconds*10.0)/10.0;
 
         goStateS0();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", localRecordingService.isStateS0());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
 
         goStateS1(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", localRecordingService.isStateS1());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", mockRecordingService.isStateS1());
 
         do {
             //recording
@@ -84,9 +79,9 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*1000);
 
         goStateS2();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", localRecordingService.isStateS2());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", mockRecordingService.isStateS2());
 
-        double actualRecordingDurationInSeconds = Math.round(localRecordingService.getRecordingDuration()/100.0)/10.0;
+        double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
 
         assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING TIME ARE DIFFERENT", expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds);
 
@@ -99,7 +94,7 @@ public class LocalRecordingServiceTest {
     @Test
     public void SecondSequence() {
         // S0 - S1 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -113,10 +108,10 @@ public class LocalRecordingServiceTest {
         expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
 
         goStateS0();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", localRecordingService.isStateS0());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
 
         goStateS1(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", localRecordingService.isStateS1());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", mockRecordingService.isStateS1());
 
         do {
             //recording
@@ -124,7 +119,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*1000);
 
         goStateS3(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", localRecordingService.isStateS3());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", mockRecordingService.isStateS3());
 
         start = System.currentTimeMillis();
         do {
@@ -133,10 +128,10 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedTotalBreakTimeInSeconds*1000);
 
         goStateS2();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", localRecordingService.isStateS2());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", mockRecordingService.isStateS2());
 
-        double actualRecordingDurationInSeconds = Math.round(localRecordingService.getRecordingDuration()/100.0)/10.0;
-        double actualTotalBreakTimeInSeconds = Math.round((localRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - localRecordingService.getPauseTimeStart()))/100.0)/10.0;
+        double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
+        double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - mockRecordingService.getPauseTimeStart()))/100.0)/10.0;
 
         assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
@@ -150,7 +145,7 @@ public class LocalRecordingServiceTest {
     @Test
     public void ThirdSequence() {
         // S0 - S1 - S3 - S4 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -164,10 +159,10 @@ public class LocalRecordingServiceTest {
         expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
 
         goStateS0();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", localRecordingService.isStateS0());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
 
         goStateS1(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", localRecordingService.isStateS1());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", mockRecordingService.isStateS1());
 
         do {
             //recording
@@ -175,7 +170,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*500);
 
         goStateS3(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", localRecordingService.isStateS3());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", mockRecordingService.isStateS3());
 
         start = System.currentTimeMillis();
         do {
@@ -184,7 +179,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedTotalBreakTimeInSeconds*1000);
 
         goStateS4(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S4", localRecordingService.isStateS4());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S4", mockRecordingService.isStateS4());
 
         start = System.currentTimeMillis();
         do {
@@ -193,10 +188,10 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*500);
 
         goStateS2();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", localRecordingService.isStateS2());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", mockRecordingService.isStateS2());
 
-        double actualRecordingDurationInSeconds = Math.round(localRecordingService.getRecordingDuration()/100.0)/10.0;
-        double actualTotalBreakTimeInSeconds = Math.round((localRecordingService.getTotalBreakTime())/100.0)/10.0;
+        double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
+        double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime())/100.0)/10.0;
 
         assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
@@ -210,7 +205,7 @@ public class LocalRecordingServiceTest {
     @Test
     public void FourthSequence() {
         // S0 - S1 - S3 - S4 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, LocalRecordingService.class);
+        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -224,10 +219,10 @@ public class LocalRecordingServiceTest {
         expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
 
         goStateS0();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", localRecordingService.isStateS0());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
 
         goStateS1(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", localRecordingService.isStateS1());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S1", mockRecordingService.isStateS1());
 
         do {
             //recording
@@ -235,7 +230,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*500);
 
         goStateS3(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", localRecordingService.isStateS3());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", mockRecordingService.isStateS3());
 
         start = System.currentTimeMillis();
         do {
@@ -244,7 +239,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedTotalBreakTimeInSeconds*500);
 
         goStateS4(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S4", localRecordingService.isStateS4());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S4", mockRecordingService.isStateS4());
 
         start = System.currentTimeMillis();
         do {
@@ -253,7 +248,7 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedRecordingDurationInSeconds*500);
 
         goStateS3(intent);
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", localRecordingService.isStateS3());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S3", mockRecordingService.isStateS3());
 
         start = System.currentTimeMillis();
         do {
@@ -262,10 +257,10 @@ public class LocalRecordingServiceTest {
         }while (end <= start + expectedTotalBreakTimeInSeconds*500);
 
         goStateS2();
-        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", localRecordingService.isStateS2());
+        assertTrue("ILLEGAL STATE INVARIANTS FOR S2", mockRecordingService.isStateS2());
 
-        double actualRecordingDurationInSeconds = Math.round(localRecordingService.getRecordingDuration()/100.0)/10.0;
-        double actualTotalBreakTimeInSeconds = Math.round((localRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - localRecordingService.getPauseTimeStart()))/100.0)/10.0;
+        double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
+        double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - mockRecordingService.getPauseTimeStart()))/100.0)/10.0;
 
         assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
