@@ -62,6 +62,5 @@ jobs:
         paths: app/build/reports/
 
 
-
 notifications:
   slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi
