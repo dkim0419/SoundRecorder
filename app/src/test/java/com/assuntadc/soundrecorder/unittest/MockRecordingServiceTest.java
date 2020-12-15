@@ -1,9 +1,9 @@
 package com.assuntadc.soundrecorder.unittest;
 
 import android.content.Intent;
+
 import com.danielkim.soundrecorder.mockclasses.MockRecordingService;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,12 +83,16 @@ public class MockRecordingServiceTest {
 
         double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
 
-        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING TIME ARE DIFFERENT", expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds);
+        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING TIME ARE DIFFERENT" + "\n" +
+                "                                      RECORDING DURATION RESULTS" + "\n" +
+                "                                      Expected Duration: " + expectedRecordingDurationInSeconds + "\n" +
+                "                                      Actual Duration: " + actualRecordingDurationInSeconds + "\n\n" +
+                "                                      OUTCOME: TEST FAILED\n", expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds);
 
         System.out.println("RECORDING DURATION RESULTS");
         System.out.println("Expected Duration: " + expectedRecordingDurationInSeconds);
         System.out.println("Actual Duration: " + actualRecordingDurationInSeconds);
-        System.out.println("OUTCOME: TEST SUCCESSFUL\n");
+        System.out.println("\nOUTCOME: TEST SUCCESSFUL\n");
     }
 
     @Test
@@ -133,13 +137,17 @@ public class MockRecordingServiceTest {
         double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
         double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - mockRecordingService.getPauseTimeStart()))/100.0)/10.0;
 
-        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
+        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT" + "\n" +
+                "                                      RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS" + "\n" +
+                "                                      Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds + "\n" +
+                "                                      Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds + "\n\n" +
+                "                                      OUTCOME: TEST FAILED\n",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
 
         System.out.println("RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS");
         System.out.println("Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds);
         System.out.println("Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds);
-        System.out.println("OUTCOME: TEST SUCCESSFUL\n");
+        System.out.println("\nOUTCOME: TEST SUCCESSFUL\n");
     }
 
     @Test
@@ -193,13 +201,17 @@ public class MockRecordingServiceTest {
         double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
         double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime())/100.0)/10.0;
 
-        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
+        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT" + "\n" +
+                        "                                      RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS" + "\n" +
+                        "                                      Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds + "\n" +
+                        "                                      Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds + "\n\n" +
+                        "                                      OUTCOME: TEST FAILED\n",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
 
         System.out.println("RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS");
         System.out.println("Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds);
         System.out.println("Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds);
-        System.out.println("OUTCOME: TEST SUCCESSFUL\n");
+        System.out.println("\nOUTCOME: TEST SUCCESSFUL\n");
     }
 
     @Test
@@ -262,12 +274,16 @@ public class MockRecordingServiceTest {
         double actualRecordingDurationInSeconds = Math.round(mockRecordingService.getRecordingDuration()/100.0)/10.0;
         double actualTotalBreakTimeInSeconds = Math.round((mockRecordingService.getTotalBreakTime() + (System.currentTimeMillis() - mockRecordingService.getPauseTimeStart()))/100.0)/10.0;
 
-        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT",
+        assertTrue("THE DURATION OF THE EXPECTED AND THE ACTUAL RECORDING AND PAUSE TIME ARE DIFFERENT" + "\n" +
+                        "                                      RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS" + "\n" +
+                        "                                      Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds + "\n" +
+                        "                                      Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds + "\n\n" +
+                        "                                      OUTCOME: TEST FAILED\n",
                 expectedRecordingDurationInSeconds == actualRecordingDurationInSeconds && expectedTotalBreakTimeInSeconds == actualTotalBreakTimeInSeconds);
 
         System.out.println("RECORDING DURATION RESULTS      |       PAUSE DURATION RESULTS");
         System.out.println("Expected Duration: " + expectedRecordingDurationInSeconds + "          |       " + "Expected Duration: " + expectedTotalBreakTimeInSeconds);
         System.out.println("Actual Duration: " + actualRecordingDurationInSeconds + "            |       " + "Actual Duration: " + actualTotalBreakTimeInSeconds);
-        System.out.println("OUTCOME: TEST SUCCESSFUL\n");
+        System.out.println("\nOUTCOME: TEST SUCCESSFUL\n");
     }
 }
