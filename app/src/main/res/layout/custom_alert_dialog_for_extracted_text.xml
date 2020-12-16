@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="false"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentTop="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentRight="false"
+    android:layout_alignParentBottom="false"
+    android:layout_marginLeft="2dp"
+    android:layout_marginTop="30dp"
+    android:layout_marginRight="2dp"
+    android:layout_marginBottom="30dp"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <TextView
+        android:id="@+id/customAlertDialaogForExtractedTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/customAlertDialogFromAudioTitle"
+        android:textColor="#020202"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="16dp"
+        android:scrollbarStyle="insideInset">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/customAlertDialaogForExtractedTextBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="@string/speech_to_text_example"
+                android:textAlignment="textStart"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="0dp">
+
+        <Button
+            android:id="@+id/customAlertDialaogForExtractedTextButtonOk"
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="64dp"
+            android:background="@color/primary"
+            android:fontFamily="sans-serif-condensed"
+            android:text="@string/customAlertDialaogForExtractedTestButtonOk"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/customAlertDialaogForExtractedTextButtonCopy"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/customAlertDialaogForExtractedTextButtonCopy"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="64dp"
+            android:background="#F44336"
+            android:contentDescription="@string/customAlertDialaogForExtractedTestButtonCopy"
+            android:src="?attr/actionModeCopyDrawable"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/customAlertDialaogForExtractedTextButtonOk"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>

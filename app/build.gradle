@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.danielkim.soundrecorder"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 21
         versionCode 130
         versionName "1.3.0"
@@ -19,13 +19,87 @@ android {
     }
     lintOptions{
         disable 'MissingTranslation'
+        abortOnError false
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            reports {
+                junitXml.enabled = true
+                html.enabled = false
+            }
+        }
+    }
+    sourceSets{
+        main { java.srcDirs = ['src/main/java'] }
+        test { java.srcDirs = ['src/test/java'] }
+        androidTest { java.srcDirs = ['src/androidTest/java'] }
+    }
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute module('org.hamcrest:hamcrest-core:1.1') with module('junit:junit:4.10')
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.+'
-    compile 'com.android.support:cardview-v7:21.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'com.melnykov:floatingactionbutton:1.1.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:appcompat-v7:21.0.+'
+    implementation 'com.android.support:cardview-v7:21.0.+'
+    implementation 'com.android.support:recyclerview-v7:21.0.+'
+    implementation 'com.melnykov:floatingactionbutton:1.1.0'
+    implementation 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'com.ibm.watson:ibm-watson:8.6.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testImplementation 'junit:junit:4.12'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+}
+
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'com.github.roroche.plantuml'
+apply plugin: 'jacoco'
+
+checkstyle {
+    configFile = file("${project.rootDir}/app/checkstyle.xml")
+    toolVersion = '8.36'
+    ignoreFailures = false
+}
+
+task checkstyle(type: Checkstyle) {
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    showViolations = true
+    classpath = files()
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task pmd(type: Pmd) {
+    ignoreFailures = true
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task uml{
+    version = "1.0.2"
 }
