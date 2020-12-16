@@ -187,11 +187,11 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
     }
 }
 
-pitest{
+/*pitest{
     targetClasses = ['com.danielkim.soundrecorder.mockclasses.**']
     targetTests = ['com.assuntadc.soundrecorder.unittest.*']
     threads = 12
     outputFormats = ['HTML']
     timestampedReports = false
     verbose = false
-}
+}*/
