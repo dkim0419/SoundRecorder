@@ -89,10 +89,8 @@ dependencies {
 
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
-apply plugin: 'com.github.roroche.plantuml'
 apply plugin: 'jacoco'
 apply plugin: 'pl.droidsonroids.pitest'
-
 
 checkstyle {
     configFile = file("${project.rootDir}/app/checkstyle.xml")
@@ -122,10 +120,6 @@ task pmd(type: Pmd) {
         html.enabled = true
     }
     incrementalAnalysis = true // incremental analysis cache to improve performance when files have not changed in between builds.
-}
-
-task uml{
-    version = "1.0.2"
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
@@ -194,4 +188,5 @@ pitest{
     outputFormats = ['HTML']
     timestampedReports = false
     verbose = false
+    //excludeMockableAndroidJar = true
 }
