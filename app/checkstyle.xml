@@ -40,7 +40,7 @@
 
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
-    <property name="max" value="200"/>
+    <property name="max" value="250"/>
     <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
   </module>
 
@@ -214,7 +214,7 @@
       <property name="ignoreInlineTags" value="false"/>
     </module>
   -->
-  
+
     <module name="EmptyCatchBlock">
       <property name="exceptionVariableName" value="expected"/>
     </module>

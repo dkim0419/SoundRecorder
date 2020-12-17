@@ -5,8 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-
-public class LocalRecordingService extends Service {
+public class MockRecordingService extends Service {
     private Thread recordingThread;
     private boolean isRecording;
     private boolean isRecordingInPause;
@@ -16,8 +15,6 @@ public class LocalRecordingService extends Service {
     private long pauseTimeEnd;
     private long totalBreakTime; // cumulative pause intervals
     private long mStartingTimeMillis;
-
-    LocalRecordingService(){}
 
     @Override
     public void onCreate() {
@@ -48,7 +45,6 @@ public class LocalRecordingService extends Service {
 
         return START_STICKY;
     }
-
 
     private void startRecording(){
         this.recordingThread = new Thread(new Runnable() {
