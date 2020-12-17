@@ -85,6 +85,7 @@ dependencies {
     androidTestImplementation 'org.testng:testng:6.14.3'
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.robolectric:robolectric:4.4'
+    androidTestImplementation 'junit:junit:4.12'
 }
 
 apply plugin: 'checkstyle'
