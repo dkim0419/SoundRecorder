@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'org.jacoco:org.jacoco.core:0.8.5'
         classpath "pl.droidsonroids.gradle:gradle-pitest-plugin:0.2.5"
         // NOTE: Do not place your application dependencies here; they belong
