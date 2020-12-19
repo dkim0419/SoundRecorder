@@ -32,6 +32,8 @@
     <property name="optional" value="true"/>
   </module>
 
+  <suppress checks="." files="src[\\/]androidTest[\\/]"/>
+
   <!-- Checks for whitespace                               -->
   <!-- See http://checkstyle.org/config_whitespace.html -->
   <module name="FileTabCharacter">
