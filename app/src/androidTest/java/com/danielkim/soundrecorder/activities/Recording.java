@@ -106,8 +106,8 @@ public class Recording {
             @Override
             public boolean matchesSafely(View view) {
                 ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
+                return parent instanceof ViewGroup && parentMatcher.matches(parent) &&
+                        view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
     }
