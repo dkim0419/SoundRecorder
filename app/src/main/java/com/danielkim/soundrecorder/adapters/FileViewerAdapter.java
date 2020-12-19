@@ -50,6 +50,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
     implements OnDatabaseChangedListener {
 
     private static final String LOG_TAG = "FileViewerAdapter";
+
     private DBHelper mDatabase;
     private RecordingItem item;
     private Context mContext;
@@ -62,6 +63,10 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         this.mDatabase.checkConsistencyWithFileSystem();
         this.mDatabase.setOnDatabaseChangedListener(this);
         this.llm = linearLayoutManager;
+    }
+
+    public DBHelper getDatabase() {
+        return mDatabase;
     }
 
     @Override
@@ -196,6 +201,40 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 return false;
             }
         });
+    }
+
+    public Context getmContext() {
+        return mContext;
+    }
+
+    public void performSpeechToText(String audioFilePath){
+        System.out.println(0000);
+
+        FileInputStream audioInputStream;
+        try {
+            audioInputStream = new FileInputStream(audioFilePath);
+
+            System.out.println(1111);
+
+            CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+            customAlertDialogForExtractedText.show();
+            customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
+
+            System.out.println(2222);
+
+            AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(customAlertDialogForExtractedText);
+            AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
+
+            System.out.println(3333);
+
+            asyncronusRefreshing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+            asyncronusTranscription.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
+            System.out.println(4444);
+
+        } catch (FileNotFoundException e) {
+            Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -406,7 +445,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         return isConnected;
     }
 
-    class AsyncronusRefreshing extends AsyncTask{
+    private class AsyncronusRefreshing extends AsyncTask{
         private boolean isLoadingEnded;
         private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
 
@@ -447,7 +486,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         }
     }
 
-    class AsyncronusTranscription extends AsyncTask{
+    private class AsyncronusTranscription extends AsyncTask{
         private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
         private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
         private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
@@ -503,6 +542,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
 
                 @Override
                 public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
+                    System.out.println("Sono qui");
                     List<SpeechRecognitionResult> results = speechRecognitionResults.getResults();
 
                     for (int resultsIndex = 0; resultsIndex < results.size(); resultsIndex++){
@@ -532,11 +572,18 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 }
             };
 
+            System.out.println(recognizeOptions != null);
+            System.out.println(baseRecognizeCallback != null);
+
+
             speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
 
             while (!transcriptionEnded[0]);
 
             String firstChar = transcript[0].substring(0, 1);
+
+            System.out.println(transcript[0].replace(firstChar, firstChar.toUpperCase()));
+
             return transcript[0].replace(firstChar, firstChar.toUpperCase());
         }
     }

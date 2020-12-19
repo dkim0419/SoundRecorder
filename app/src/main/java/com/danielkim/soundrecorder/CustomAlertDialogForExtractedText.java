@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 public class CustomAlertDialogForExtractedText extends Dialog implements OnClickListener{
     private Button buttonOk;
-    private ImageButton buttonCopy;
+    private Button buttonCopy;
     private TextView customAlertDialaogForExtractedTextBody;
 
     public CustomAlertDialogForExtractedText(@NonNull Context context) {
@@ -31,7 +31,7 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
         setContentView(R.layout.custom_alert_dialog_for_extracted_text);
 
         this.buttonOk = (Button) findViewById(R.id.customAlertDialaogForExtractedTextButtonOk);
-        this.buttonCopy = (ImageButton) findViewById(R.id.customAlertDialaogForExtractedTextButtonCopy);
+        this.buttonCopy = (Button) findViewById(R.id.customAlertDialaogForExtractedTextButtonCopy);
         this.customAlertDialaogForExtractedTextBody = (TextView) findViewById(R.id.customAlertDialaogForExtractedTextBody);
 
         this.buttonOk.setOnClickListener(this);
@@ -67,5 +67,9 @@ public class CustomAlertDialogForExtractedText extends Dialog implements OnClick
 
     public void setText(String text) {
         this.customAlertDialaogForExtractedTextBody.setText(text);
+    }
+
+    public TextView getBodyTextView() {
+        return customAlertDialaogForExtractedTextBody;
     }
 }
