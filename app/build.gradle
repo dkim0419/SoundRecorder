@@ -120,6 +120,8 @@ task checkstyle(type: Checkstyle) {
     source 'src'
     include '**/*.java'
     exclude '**/gen/**'
+    // exclude '**/test/**'
+    exclude '**/androidTest/**'
     showViolations = true
     classpath = files()
     reports {
