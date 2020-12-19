@@ -60,9 +60,9 @@ jobs:
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         paths: app/build/reports/
-     - stage: integration_test
-       name: "Integration Test"
-       script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
+   - stage: integration_test
+     name: "Integration Test"
+     script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
 
 
 notifications:
