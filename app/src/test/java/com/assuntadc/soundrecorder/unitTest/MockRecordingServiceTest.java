@@ -1,5 +1,6 @@
 package com.assuntadc.soundrecorder.unitTest;
 
+import android.content.Context;
 import android.content.Intent;
 
 import com.danielkim.soundrecorder.mockclasses.MockRecordingService;
@@ -20,11 +21,13 @@ import static org.junit.Assert.assertTrue;
 @Config(sdk = 21)
 public class MockRecordingServiceTest {
     private static int startId = 0;
+    private Context context;
     private ServiceController<MockRecordingService> serviceController;
     private MockRecordingService mockRecordingService;
 
     @Before
     public void setUp() {
+        context = RuntimeEnvironment.application;
         serviceController = Robolectric.buildService(MockRecordingService.class);
     }
 
@@ -58,7 +61,8 @@ public class MockRecordingServiceTest {
     @Test
     public void firstSequence() {
         //Test sequence S0 - S1 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
+        System.out.println("RECORDING SERVICE UNIT TEST - TEST N. 1");
+        Intent intent = new Intent(context, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -98,7 +102,8 @@ public class MockRecordingServiceTest {
     @Test
     public void SecondSequence() {
         // S0 - S1 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
+        System.out.println("RECORDING SERVICE UNIT TEST - TEST N. 2");
+        Intent intent = new Intent(context, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -153,7 +158,8 @@ public class MockRecordingServiceTest {
     @Test
     public void ThirdSequence() {
         // S0 - S1 - S3 - S4 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
+        System.out.println("RECORDING SERVICE UNIT TEST - TEST N. 3");
+        Intent intent = new Intent(context, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;
@@ -217,7 +223,8 @@ public class MockRecordingServiceTest {
     @Test
     public void FourthSequence() {
         // S0 - S1 - S3 - S4 - S3 - S2
-        Intent intent = new Intent(RuntimeEnvironment.application, MockRecordingService.class);
+        System.out.println("RECORDING SERVICE UNIT TEST - TEST N. 4");
+        Intent intent = new Intent(context, MockRecordingService.class);
 
         long start = System.currentTimeMillis();
         long end = 0;

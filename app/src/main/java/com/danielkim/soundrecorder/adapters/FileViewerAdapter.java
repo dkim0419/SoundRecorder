@@ -26,21 +26,15 @@ import com.danielkim.soundrecorder.CustomAlertDialogForExtractedText;
 import com.danielkim.soundrecorder.DBHelper;
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.RecordingItem;
+import com.danielkim.soundrecorder.asynctasks.AsyncronusRefreshing;
+import com.danielkim.soundrecorder.asynctasks.AsyncronusTranscription;
 import com.danielkim.soundrecorder.fragments.PlaybackFragment;
 import com.danielkim.soundrecorder.listeners.OnDatabaseChangedListener;
-import com.ibm.cloud.sdk.core.security.IamAuthenticator;
-import com.ibm.watson.speech_to_text.v1.SpeechToText;
-import com.ibm.watson.speech_to_text.v1.model.RecognizeOptions;
-import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionAlternative;
-import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResult;
-import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
-import com.ibm.watson.speech_to_text.v1.websocket.BaseRecognizeCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -130,23 +124,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0){
                             if(isDeviceConnected()){
-                                FileInputStream audioInputStream;
-                                try {
-                                    audioInputStream = new FileInputStream(getItem(holder.getPosition()).getFilePath());
-
-                                    CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
-                                    customAlertDialogForExtractedText.show();
-                                    customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
-
-                                    AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(customAlertDialogForExtractedText);
-                                    AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
-
-                                    asyncronusRefreshing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-                                    asyncronusTranscription.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-
-                                } catch (FileNotFoundException e) {
-                                   Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
-                                }
+                                performSpeechToText(getItem(holder.getPosition()).getFilePath());
                             }else{
                                 new AlertDialog.Builder(mContext)
                                         .setTitle(mContext.getString(R.string.dialog_device_not_connected_title))
@@ -207,34 +185,52 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         return mContext;
     }
 
-    public void performSpeechToText(String audioFilePath){
-        System.out.println(0000);
-
+    private void performSpeechToText(String audioFilePath){
         FileInputStream audioInputStream;
         try {
             audioInputStream = new FileInputStream(audioFilePath);
-
-            System.out.println(1111);
 
             CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
             customAlertDialogForExtractedText.show();
             customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
 
-            System.out.println(2222);
-
-            AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(customAlertDialogForExtractedText);
-            AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
-
-            System.out.println(3333);
+            AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(mContext, customAlertDialogForExtractedText);
+            AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(mContext, customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
 
             asyncronusRefreshing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
             asyncronusTranscription.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 
-            System.out.println(4444);
+        } catch (FileNotFoundException e) {
+            Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public AsyncTask[] performSpeechToTextForTesting(String audioFilePath){
+        FileInputStream audioInputStream;
+        try {
+            audioInputStream = new FileInputStream(audioFilePath);
+
+            CustomAlertDialogForExtractedText customAlertDialogForExtractedText = new CustomAlertDialogForExtractedText(mContext);
+            customAlertDialogForExtractedText.show();
+            customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.textExtractionInProgress));
+
+            AsyncronusRefreshing asyncronusRefreshing = new AsyncronusRefreshing(mContext, customAlertDialogForExtractedText);
+            AsyncronusTranscription asyncronusTranscription = new AsyncronusTranscription(mContext, customAlertDialogForExtractedText, audioInputStream, asyncronusRefreshing);
+
+            asyncronusRefreshing.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+            asyncronusTranscription.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
+            AsyncTask[] asyncTasks = new AsyncTask[2];
+            asyncTasks[0] = asyncronusRefreshing;
+            asyncTasks[1] = asyncronusTranscription;
+
+            return asyncTasks;
 
         } catch (FileNotFoundException e) {
             Toast.makeText(mContext, mContext.getResources().getString(R.string.toast_file_does_not_exist), Toast.LENGTH_LONG).show();
         }
+
+        return null;
     }
 
     @Override
@@ -443,148 +439,5 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
         if(ni != null) isConnected = ni.isConnected();
 
         return isConnected;
-    }
-
-    private class AsyncronusRefreshing extends AsyncTask{
-        private boolean isLoadingEnded;
-        private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
-
-        public AsyncronusRefreshing(CustomAlertDialogForExtractedText customAlertDialogForExtractedText){
-            this.isLoadingEnded = false;
-            this.customAlertDialogForExtractedText = customAlertDialogForExtractedText;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-            final String baseText = mContext.getResources().getString(R.string.textExtractionInProgress);
-            String loadingText = baseText;
-
-            while (!this.isLoadingEnded){
-                try {
-                    loadingText = loadingText + ".";
-                    publishProgress(loadingText);
-
-                    if (loadingText.equals(baseText + "...")) loadingText = baseText;
-
-                    Thread.sleep(500);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Object[] values) {
-            String loadingText = (String) values[0];
-            this.customAlertDialogForExtractedText.setText(loadingText);
-        }
-
-        public void endTask(){
-            this.isLoadingEnded = true;
-        }
-    }
-
-    private class AsyncronusTranscription extends AsyncTask{
-        private final String apiKey = "ifXU_ZXG_ySVNViaU19SiUnILr5BkhmZJtMIcN-AL6Qc";
-        private final String url = "https://api.eu-gb.speech-to-text.watson.cloud.ibm.com/instances/b6c2ed98-71bf-4ebf-a156-af97be159062";
-        private CustomAlertDialogForExtractedText customAlertDialogForExtractedText;
-        private FileInputStream audioInputStream;
-        private AsyncronusRefreshing asyncronusRefreshing;
-
-        public AsyncronusTranscription(CustomAlertDialogForExtractedText customAlertDialogForExtractedText, FileInputStream audioInputStream, AsyncronusRefreshing asyncronusRefreshing){
-            this.customAlertDialogForExtractedText = customAlertDialogForExtractedText;
-            this.audioInputStream = audioInputStream;
-            this.asyncronusRefreshing = asyncronusRefreshing;
-        }
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-            //Layout building test string
-            //String extractedText = (String) mContext.getResources().getString(R.string.speech_to_text_example);
-
-            String extractedText = contactServiceAndGetTranscript(this.audioInputStream);
-            this.asyncronusRefreshing.endTask();
-            return extractedText;
-        }
-
-        @Override
-        protected void onPostExecute(Object result) {
-            String extractedText = (String) result;
-
-            if (!extractedText.equals("")) this.customAlertDialogForExtractedText.setText(extractedText);
-            else {
-                this.customAlertDialogForExtractedText.setButtonCopyEnabled(false);
-                this.customAlertDialogForExtractedText.setText(mContext.getResources().getString(R.string.toast_unable_to_extract_text));
-            }
-        }
-
-        private String contactServiceAndGetTranscript(FileInputStream audioInputStream){
-            IamAuthenticator authenticator = new IamAuthenticator(this.apiKey);
-            SpeechToText speechToText = new SpeechToText(authenticator);
-            speechToText.setServiceUrl(this.url);
-
-            final String[] transcript = new String[1];
-            transcript[0] = "";
-
-            final Boolean[] transcriptionEnded = new Boolean[1];
-            transcriptionEnded[0] = false;
-
-            RecognizeOptions recognizeOptions = new RecognizeOptions.Builder()
-                    .audio(audioInputStream)
-                    .contentType("audio/wav")
-                    .model("en-US_BroadbandModel")
-                    .maxAlternatives(5)
-                    .build();
-
-            BaseRecognizeCallback baseRecognizeCallback = new BaseRecognizeCallback() {
-
-                @Override
-                public void onTranscription (SpeechRecognitionResults speechRecognitionResults) {
-                    System.out.println("Sono qui");
-                    List<SpeechRecognitionResult> results = speechRecognitionResults.getResults();
-
-                    for (int resultsIndex = 0; resultsIndex < results.size(); resultsIndex++){
-                        List<SpeechRecognitionAlternative> alternatives = results.get(resultsIndex).getAlternatives();
-
-                        int biggerConfidenceIndex = 0;
-                        double maxConfidence = 0;
-                        for (int alternativeIndex = 0; alternativeIndex < alternatives.size(); alternativeIndex++){
-                            double currentConfidence;
-
-                            if (alternatives.get(alternativeIndex).getConfidence() != null) currentConfidence = alternatives.get(alternativeIndex).getConfidence();
-                            else currentConfidence = 0;
-
-                            if(currentConfidence > maxConfidence){
-                                maxConfidence = currentConfidence;
-                                biggerConfidenceIndex = alternativeIndex;
-                            }
-                        }
-
-                        transcript[0] += alternatives.get(biggerConfidenceIndex).getTranscript() + " ";
-                    }
-                }
-
-                @Override
-                public void onDisconnected() {
-                    transcriptionEnded[0] = true;
-                }
-            };
-
-            System.out.println(recognizeOptions != null);
-            System.out.println(baseRecognizeCallback != null);
-
-
-            speechToText.recognizeUsingWebSocket(recognizeOptions, baseRecognizeCallback);
-
-            while (!transcriptionEnded[0]);
-
-            String firstChar = transcript[0].substring(0, 1);
-
-            System.out.println(transcript[0].replace(firstChar, firstChar.toUpperCase()));
-
-            return transcript[0].replace(firstChar, firstChar.toUpperCase());
-        }
     }
 }

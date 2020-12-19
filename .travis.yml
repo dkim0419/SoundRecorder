@@ -33,8 +33,8 @@ stages:
   - compile
   - static_analysis
   - unit_test
-  - coverage
   - integration_test
+  - coverage
 
 jobs:
   include:
@@ -55,6 +55,9 @@ jobs:
     - stage: unit_test
       name: "Unit Test"
       script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.unitTest.*"
+    - stage: integration_test
+      name: "Integration Test"
+      script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
     - stage: coverage
       name: "Jacoco Code Coverage analysis"
       script: ./gradlew jacocoTestReport
@@ -65,9 +68,6 @@ jobs:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
         expire_in: 4 days
         paths: app/build/reports/
-    - stage: integration_test
-      name: "Integration Test"
-      script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
 
 
 notifications:

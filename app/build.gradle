@@ -169,7 +169,8 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
             '**/com/danielkim/soundrecorder/**'
     ]
     def coverageClasses = [
-            '**/com/danielkim/soundrecorder/mockclasses/**'
+            '**/com/danielkim/soundrecorder/mockclasses/**',
+            '**/com/danielkim/soundrecorder/adapters/**'
     ]
     def javaClasses = fileTree(
             dir: "$buildDir/intermediates/javac/debug/classes/",

@@ -16,7 +16,7 @@
     <string name="toast_file_delete">%1$s eliminata con successo</string>
     <string name="toast_file_exists">Il file %1$s esiste già: scegli un nome differente per questo file</string>
     <string name="toast_file_does_not_exist">Il file selezionato non esiste.</string>
-    <string name="toast_unable_to_extract_text">Impossibile estrarre del testo da questo file</string>
+    <string name="toast_unable_to_extract_text">Impossibile estrarre del testo da questo file audio</string>
     <string name="toast_sync_with_db">Sincronizzazione tra database e file system effettuata con successo</string>
 
     <!-- Notifications -->
