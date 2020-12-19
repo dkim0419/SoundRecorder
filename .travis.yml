@@ -40,7 +40,7 @@ jobs:
   include:
     - stage: compile
       name: "Compile"
-      script: ./gradlew build
+      script: ./gradlew compileDebugJavaWithJavac
     - stage: static_analysis
       name: "Checkstyle analysis"
       script: ./gradlew checkstyle
