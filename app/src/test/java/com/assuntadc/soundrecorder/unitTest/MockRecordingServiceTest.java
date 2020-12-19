@@ -1,4 +1,4 @@
-package com.assuntadc.soundrecorder.unittest;
+package com.assuntadc.soundrecorder.unitTest;
 
 import android.content.Intent;
 
