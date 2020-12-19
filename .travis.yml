@@ -47,6 +47,7 @@ jobs:
       after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pmd/pmd.html
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+        expire_in: 4 days
         paths: app/build/reports/
     - stage: unit_test
       name: "Unit Test"
@@ -59,10 +60,11 @@ jobs:
         lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/jacocoTestReport/html/com.danielkim.soundrecorder.mockclasses/LocalRecordingService.java.html
       artifacts:
         name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+        expire_in: 4 days
         paths: app/build/reports/
-   - stage: integration_test
-     name: "Integration Test"
-     script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
+    - stage: integration_test
+      name: "Integration Test"
+      script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
 
 
 notifications:
