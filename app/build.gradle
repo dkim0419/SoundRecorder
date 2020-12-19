@@ -114,7 +114,6 @@ checkstyle {
     configFile = file("${project.rootDir}/app/checkstyle.xml")
     toolVersion = '8.+'
     ignoreFailures = false
-    checkstyleTest.enabled = false
 }
 
 task checkstyle(type: Checkstyle) {
