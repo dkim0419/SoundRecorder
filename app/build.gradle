@@ -60,7 +60,8 @@ android {
     sourceSets {
         main { java.srcDirs = ['src/main/java'] }
         androidTest { java.srcDirs = ['src/androidTest/java'] }
-        test { java.srcDirs = ['src/test/java'] }
+        test {
+            java.srcDirs = ['src/test/java']}
     }
 }
 

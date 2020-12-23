@@ -14,24 +14,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
 @LargeTest
@@ -42,7 +38,7 @@ public class DeleteFile {
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
     @Test
-    public void deleteFile() {
+    public void deleteFile() throws InterruptedException {
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
@@ -94,24 +90,26 @@ public class DeleteFile {
                                         0),
                                 0),
                         isDisplayed()));
+
         cardView.perform(longClick());
 
-        DataInteraction textView2 = onData(anything())
-                .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
-                        childAtPosition(
-                                withClassName(is("android.widget.FrameLayout")),
-                                0)))
-                .atPosition(3);
-        textView2.perform(click());
 
-        ViewInteraction button = onView(
-                allOf(withId(android.R.id.button1), withText("Yes"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                3)));
-        button.perform(scrollTo(), click());
+//        DataInteraction textView2 = onData(anything())
+//                .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
+//                        childAtPosition(
+//                                withClassName(is("android.widget.FrameLayout")),
+//                                0)))
+//                .atPosition(3);
+//        textView2.perform(click());
+//
+//        ViewInteraction button = onView(
+//                allOf(withId(android.R.id.button1), withText("Yes"),
+//                        childAtPosition(
+//                                childAtPosition(
+//                                        withClassName(is("android.widget.ScrollView")),
+//                                        0),
+//                                3)));
+//        button.perform(scrollTo(), click());
     }
 
     private static Matcher<View> childAtPosition(

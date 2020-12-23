@@ -4,5 +4,5 @@
 /.idea/libraries
 .DS_Store
 /build
-/documentation/*.pdf
 /documentation/SCMP.docx
+/documentation/SCMP.pdf
