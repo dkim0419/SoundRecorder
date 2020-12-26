@@ -10,6 +10,9 @@ android:
     - extra-android-m2repository
     - extra-google-m2repository
 
+services:
+  - docker
+
 #  Save time not downloading dependencies ad every build
 cache:
   directories:
