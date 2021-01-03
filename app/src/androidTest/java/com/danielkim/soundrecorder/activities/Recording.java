@@ -35,6 +35,10 @@ public class Recording {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    /** Test for sequence: s0
+     *  - 1. play stop
+     *  - 2. play pause stop
+     *  - 3. play pause play stop*/
     @Test
     public void recording() {
         ViewInteraction floatingActionButton = onView(
@@ -48,6 +52,31 @@ public class Recording {
                         isDisplayed()));
         floatingActionButton.perform(click());
 
+        ViewInteraction floatingActionButton2 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton2.perform(click());
+    }
+
+    @Test
+    public void recording2(){
+        ViewInteraction floatingActionButton3 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton3.perform(click());
+
         ViewInteraction button = onView(
                 allOf(withId(R.id.btnPause), withText("Pause"),
                         childAtPosition(
@@ -58,6 +87,28 @@ public class Recording {
                                 3),
                         isDisplayed()));
         button.perform(click());
+
+        ViewInteraction floatingActionButton4 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton4.perform(click());
+
+        ViewInteraction floatingActionButton5 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton5.perform(click());
 
         ViewInteraction button2 = onView(
                 allOf(withId(R.id.btnPause), withText("Pause"),
@@ -81,7 +132,7 @@ public class Recording {
                         isDisplayed()));
         button3.perform(click());
 
-        ViewInteraction floatingActionButton2 = onView(
+        ViewInteraction floatingActionButton6 = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
                                 allOf(withId(R.id.fragment_record),
@@ -90,7 +141,54 @@ public class Recording {
                                                 0)),
                                 0),
                         isDisplayed()));
-        floatingActionButton2.perform(click());
+        floatingActionButton6.perform(click());
+    }
+
+    @Test
+    public void recording3(){
+        ViewInteraction floatingActionButton5 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton5.perform(click());
+
+        ViewInteraction button2 = onView(
+                allOf(withId(R.id.btnPause), withText("Pause"),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                3),
+                        isDisplayed()));
+        button2.perform(click());
+
+        ViewInteraction button3 = onView(
+                allOf(withId(R.id.btnPause), withText("Pause"),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                3),
+                        isDisplayed()));
+        button3.perform(click());
+
+        ViewInteraction floatingActionButton6 = onView(
+                allOf(withId(R.id.btnRecord),
+                        childAtPosition(
+                                allOf(withId(R.id.fragment_record),
+                                        childAtPosition(
+                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
+                                                0)),
+                                0),
+                        isDisplayed()));
+        floatingActionButton6.perform(click());
     }
 
     private static Matcher<View> childAtPosition(

@@ -36,6 +36,7 @@ public class Playback {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    /** Test for sequence: s0 s1 s9 s1*/
     @Test
     public void playback() {
         ViewInteraction floatingActionButton = onView(
@@ -48,17 +49,6 @@ public class Playback {
                                 0),
                         isDisplayed()));
         floatingActionButton.perform(click());
-
-        ViewInteraction button = onView(
-                allOf(withId(R.id.btnPause), withText("Pause"),
-                        childAtPosition(
-                                allOf(withId(R.id.fragment_record),
-                                        childAtPosition(
-                                                withClassName(is("android.support.v4.app.NoSaveStateFrameLayout")),
-                                                0)),
-                                3),
-                        isDisplayed()));
-        button.perform(click());
 
         ViewInteraction floatingActionButton2 = onView(
                 allOf(withId(R.id.btnRecord),
@@ -121,16 +111,6 @@ public class Playback {
                                 1),
                         isDisplayed()));
         floatingActionButton4.perform(click());
-
-        ViewInteraction floatingActionButton5 = onView(
-                allOf(withId(R.id.fab_play),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.LinearLayout")),
-                                        2),
-                                1),
-                        isDisplayed()));
-        floatingActionButton5.perform(click());
     }
 
     private static Matcher<View> childAtPosition(

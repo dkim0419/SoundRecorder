@@ -43,8 +43,12 @@ public class RenameFile {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    /** Test for sequence: s0 s1 s2 s5 s1
+     * - 1. for delete cancel
+     * - 2. for delete rename*/
     @Test
-    public void renameAudio() {
+    public void renameFile() {
+        //delete - rename
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
@@ -67,13 +71,7 @@ public class RenameFile {
                         isDisplayed()));
         floatingActionButton2.perform(click());
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        ViewInteraction textView = onView(
+        ViewInteraction textView3 = onView(
                 allOf(withId(R.id.tab_title), withText("Saved Recordings"),
                         childAtPosition(
                                 childAtPosition(
@@ -81,9 +79,9 @@ public class RenameFile {
                                         0),
                                 1),
                         isDisplayed()));
-        textView.perform(click());
+        textView3.perform(click());
 
-        ViewInteraction viewPager = onView(
+        ViewInteraction viewPager3 = onView(
                 allOf(withId(R.id.pager),
                         childAtPosition(
                                 allOf(withId(R.id.main_activity),
@@ -92,7 +90,7 @@ public class RenameFile {
                                                 0)),
                                 2),
                         isDisplayed()));
-        viewPager.perform(swipeLeft());
+        viewPager3.perform(swipeLeft());
 
         ViewInteraction cardView = onView(
                 allOf(withId(R.id.card_view),
@@ -104,13 +102,41 @@ public class RenameFile {
                         isDisplayed()));
         cardView.perform(longClick());
 
-        DataInteraction textView2 = onData(anything())
+        // delete cancel
+        DataInteraction textView4 = onData(anything())
                 .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
                         childAtPosition(
                                 withClassName(is("android.widget.FrameLayout")),
                                 0)))
                 .atPosition(2);
-        textView2.perform(click());
+        textView4.perform(click());
+
+        ViewInteraction button = onView(
+                allOf(withId(android.R.id.button2), withText("Cancel"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withClassName(is("android.widget.ScrollView")),
+                                        0),
+                                2)));
+        button.perform(scrollTo(), click());
+
+        ViewInteraction cardView2 = onView(
+                allOf(withId(R.id.card_view),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.recyclerView),
+                                        0),
+                                0),
+                        isDisplayed()));
+        cardView2.perform(longClick());
+
+        DataInteraction textView5 = onData(anything())
+                .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
+                        childAtPosition(
+                                withClassName(is("android.widget.FrameLayout")),
+                                0)))
+                .atPosition(2);
+        textView5.perform(click());
 
         ViewInteraction editText = onView(
                 allOf(withId(R.id.new_name), withText("My Recording_1"),
@@ -130,66 +156,9 @@ public class RenameFile {
                                         0),
                                 0),
                         isDisplayed()));
-        editText2.perform(click());
-
-        ViewInteraction button = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                3)));
-        button.perform(scrollTo(), click());
-
-        ViewInteraction cardView2 = onView(
-                allOf(withId(R.id.card_view),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.recyclerView),
-                                        0),
-                                0),
-                        isDisplayed()));
-        cardView2.perform(longClick());
-
-        DataInteraction textView3 = onData(anything())
-                .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
-                        childAtPosition(
-                                withClassName(is("android.widget.FrameLayout")),
-                                0)))
-                .atPosition(2);
-        textView3.perform(click());
+        editText2.perform(replaceText("My Recording"));
 
         ViewInteraction editText3 = onView(
-                allOf(withId(R.id.new_name), withText("My Recording_1"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        editText3.perform(click());
-
-        ViewInteraction editText4 = onView(
-                allOf(withId(R.id.new_name), withText("My Recording_1"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        editText4.perform(click());
-
-        ViewInteraction editText5 = onView(
-                allOf(withId(R.id.new_name), withText("My Recording_1"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.custom),
-                                        0),
-                                0),
-                        isDisplayed()));
-        editText5.perform(replaceText("My Recording"));
-
-        ViewInteraction editText6 = onView(
                 allOf(withId(R.id.new_name), withText("My Recording"),
                         childAtPosition(
                                 childAtPosition(
@@ -197,7 +166,7 @@ public class RenameFile {
                                         0),
                                 0),
                         isDisplayed()));
-        editText6.perform(closeSoftKeyboard());
+        editText3.perform(closeSoftKeyboard());
 
         ViewInteraction button2 = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),

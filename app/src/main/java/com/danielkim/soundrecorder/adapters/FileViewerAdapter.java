@@ -81,6 +81,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
             )
         );
 
+
         // define an on click listener to open PlaybackFragment
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,7 +164,9 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                             deleteFileDialog(holder.getPosition());
                         }
                     }
+
                 });
+
                 builder.setCancelable(true);
                 builder.setNegativeButton(mContext.getString(R.string.dialog_action_cancel),
                         new DialogInterface.OnClickListener() {

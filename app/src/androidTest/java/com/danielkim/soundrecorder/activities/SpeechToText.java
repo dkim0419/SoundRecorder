@@ -25,7 +25,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
-import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -42,8 +41,11 @@ public class SpeechToText {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    /** Test for sequence: s0 s1 s2 s6 s1
+     * - 1. for delete copy
+     * - 2. for delete ok*/
     @Test
-    public void speechToText() {
+    public void speechToTextCopy() {
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
@@ -106,38 +108,20 @@ public class SpeechToText {
         textView2.perform(click());
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.customAlertDialaogForExtractedTextButtonOk), withText("Ok"),
+                allOf(withId(R.id.customAlertDialaogForExtractedTextButtonCopy), withText("Copy"), withContentDescription("Copy"),
                         childAtPosition(
                                 allOf(withId(R.id.constraintLayout),
                                         childAtPosition(
                                                 withClassName(is("android.widget.LinearLayout")),
                                                 2)),
-                                0),
+                                1),
                         isDisplayed()));
         button.perform(click());
+    }
 
-        ViewInteraction textView3 = onView(
-                allOf(withId(R.id.tab_title), withText("Record"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.tabs),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView3.perform(click());
-
-        ViewInteraction viewPager2 = onView(
-                allOf(withId(R.id.pager),
-                        childAtPosition(
-                                allOf(withId(R.id.main_activity),
-                                        childAtPosition(
-                                                withId(android.R.id.content),
-                                                0)),
-                                2),
-                        isDisplayed()));
-        viewPager2.perform(swipeRight());
-
-        ViewInteraction floatingActionButton3 = onView(
+    @Test
+    public void speechToTextOk() {
+        ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
                                 allOf(withId(R.id.fragment_record),
@@ -146,9 +130,9 @@ public class SpeechToText {
                                                 0)),
                                 0),
                         isDisplayed()));
-        floatingActionButton3.perform(click());
+        floatingActionButton.perform(click());
 
-        ViewInteraction floatingActionButton4 = onView(
+        ViewInteraction floatingActionButton2 = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
                                 allOf(withId(R.id.fragment_record),
@@ -157,9 +141,9 @@ public class SpeechToText {
                                                 0)),
                                 0),
                         isDisplayed()));
-        floatingActionButton4.perform(click());
+        floatingActionButton2.perform(click());
 
-        ViewInteraction textView4 = onView(
+        ViewInteraction textView = onView(
                 allOf(withId(R.id.tab_title), withText("Saved Recordings"),
                         childAtPosition(
                                 childAtPosition(
@@ -167,9 +151,9 @@ public class SpeechToText {
                                         0),
                                 1),
                         isDisplayed()));
-        textView4.perform(click());
+        textView.perform(click());
 
-        ViewInteraction viewPager3 = onView(
+        ViewInteraction viewPager = onView(
                 allOf(withId(R.id.pager),
                         childAtPosition(
                                 allOf(withId(R.id.main_activity),
@@ -178,17 +162,17 @@ public class SpeechToText {
                                                 0)),
                                 2),
                         isDisplayed()));
-        viewPager3.perform(swipeLeft());
+        viewPager.perform(swipeLeft());
 
-        ViewInteraction cardView2 = onView(
+        ViewInteraction cardView = onView(
                 allOf(withId(R.id.card_view),
                         childAtPosition(
                                 childAtPosition(
                                         withId(R.id.recyclerView),
-                                        1),
+                                        0),
                                 0),
                         isDisplayed()));
-        cardView2.perform(longClick());
+        cardView.perform(longClick());
 
         DataInteraction textView5 = onData(anything())
                 .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
@@ -199,16 +183,18 @@ public class SpeechToText {
         textView5.perform(click());
 
         ViewInteraction button2 = onView(
-                allOf(withId(R.id.customAlertDialaogForExtractedTextButtonCopy), withText("Copy"), withContentDescription("Copia"),
+                allOf(withId(R.id.customAlertDialaogForExtractedTextButtonOk), withText("Ok"),
                         childAtPosition(
                                 allOf(withId(R.id.constraintLayout),
                                         childAtPosition(
                                                 withClassName(is("android.widget.LinearLayout")),
                                                 2)),
-                                1),
+                                0),
                         isDisplayed()));
         button2.perform(click());
     }
+
+
 
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {

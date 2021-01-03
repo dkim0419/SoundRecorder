@@ -40,6 +40,8 @@ public class ShareFile {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+
+    /** Test for sequence: s0 s1 s2 s3 s1*/
     @Test
     public void shareFile() {
         ViewInteraction floatingActionButton = onView(
