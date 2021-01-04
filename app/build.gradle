@@ -38,7 +38,7 @@ android {
         abortOnError false
     }
     testOptions {
-///        execution 'ANDROID_TEST_ORCHESTRATOR'
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         animationsDisabled = true
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
@@ -51,6 +51,14 @@ android {
                 includeNoLocationClasses = true
             }
         }
+    }
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
     configurations.all {
         resolutionStrategy.dependencySubstitution {
@@ -92,6 +100,7 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestUtil 'androidx.test:orchestrator:1.1.0'
 }
 
 apply plugin: 'checkstyle'

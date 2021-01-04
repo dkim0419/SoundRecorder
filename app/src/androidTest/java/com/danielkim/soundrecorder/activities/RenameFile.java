@@ -7,12 +7,17 @@ import android.view.ViewParent;
 
 import com.danielkim.soundrecorder.R;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
+import java.io.IOException;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
@@ -43,11 +48,26 @@ public class RenameFile {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
+    // clean all files from storage dir
+    @BeforeClass
+    public static void setUp(){
+        File dir = new File("/storage/self/primary/SoundRecorder");
+        if(dir.exists() && dir.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /** Test for sequence: s0 s1 s2 s5 s1
      * - 1. for delete cancel
      * - 2. for delete rename*/
     @Test
     public void renameFile() {
+
+
         //delete - rename
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
@@ -139,7 +159,7 @@ public class RenameFile {
         textView5.perform(click());
 
         ViewInteraction editText = onView(
-                allOf(withId(R.id.new_name), withText("My Recording_1"),
+                allOf(withId(R.id.new_name),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.custom),
@@ -149,7 +169,7 @@ public class RenameFile {
         editText.perform(click());
 
         ViewInteraction editText2 = onView(
-                allOf(withId(R.id.new_name), withText("My Recording_1"),
+                allOf(withId(R.id.new_name),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.custom),

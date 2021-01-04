@@ -7,12 +7,17 @@ import android.view.ViewParent;
 
 import com.danielkim.soundrecorder.R;
 
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
+import java.io.IOException;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
@@ -35,6 +40,20 @@ public class Playback {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    // clean all files from storage dir
+    @BeforeClass
+    public static void setUp(){
+        File dir = new File("/storage/self/primary/SoundRecorder");
+        if(dir.exists() && dir.isDirectory()) {
+            try {
+                FileUtils.cleanDirectory(dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     /** Test for sequence: s0 s1 s9 s1*/
     @Test
