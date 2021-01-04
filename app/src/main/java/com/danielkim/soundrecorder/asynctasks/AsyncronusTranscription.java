@@ -137,7 +137,11 @@ public class AsyncronusTranscription extends AsyncTask {
         }
 
         String extractedText = "";
-        if(transcript[0].length() > 0) extractedText = transcript[0].substring(0, 1).toUpperCase() + transcript[0].substring(1);
+        if(transcript[0].length() > 0){
+            //check if result is a single char
+            if(transcript[0].length() == 1) extractedText = transcript[0].substring(0, 1).toUpperCase();
+            else extractedText = transcript[0].substring(0, 1).toUpperCase() + transcript[0].substring(1);
+        }
 
         return extractedText;
     }
