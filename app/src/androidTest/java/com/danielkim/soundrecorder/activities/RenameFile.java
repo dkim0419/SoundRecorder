@@ -67,8 +67,7 @@ public class RenameFile {
     @Test
     public void renameFile() {
 
-
-        //delete - rename
+        //delete - cancel
         ViewInteraction floatingActionButton = onView(
                 allOf(withId(R.id.btnRecord),
                         childAtPosition(
@@ -122,7 +121,7 @@ public class RenameFile {
                         isDisplayed()));
         cardView.perform(longClick());
 
-        // delete cancel
+        // delete - rename
         DataInteraction textView4 = onData(anything())
                 .inAdapterView(allOf(withClassName(is("com.android.internal.app.AlertController$RecycleListView")),
                         childAtPosition(
