@@ -38,9 +38,9 @@ android {
         abortOnError false
     }
     testOptions {
-        //execution 'ANDROID_TEST_ORCHESTRATOR'
-        //animationsDisabled true
-        unitTests.returnDefaultValues = true;
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        animationsDisabled = true
+        unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
         unitTests.all {
             reports {
@@ -52,6 +52,14 @@ android {
             }
         }
     }
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
     configurations.all {
         resolutionStrategy.dependencySubstitution {
             substitute module('org.hamcrest:hamcrest-core:1.1') with module('junit:junit:4.10')
@@ -60,7 +68,8 @@ android {
     sourceSets {
         main { java.srcDirs = ['src/main/java'] }
         androidTest { java.srcDirs = ['src/androidTest/java'] }
-        test { java.srcDirs = ['src/test/java'] }
+        test {
+            java.srcDirs = ['src/test/java']}
     }
 }
 
@@ -91,12 +100,14 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestUtil 'androidx.test:orchestrator:1.1.0'
 }
 
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 apply plugin: 'jacoco'
 apply plugin: 'pl.droidsonroids.pitest'
+
 
 checkstyle {
     configFile = file("${project.rootDir}/app/checkstyle.xml")
@@ -169,7 +180,8 @@ task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn:
             '**/com/danielkim/soundrecorder/**'
     ]
     def coverageClasses = [
-            '**/com/danielkim/soundrecorder/mockclasses/**'
+            '**/com/danielkim/soundrecorder/mockclasses/**',
+            '**/com/danielkim/soundrecorder/adapters/**'
     ]
     def javaClasses = fileTree(
             dir: "$buildDir/intermediates/javac/debug/classes/",
@@ -194,11 +206,7 @@ pitest{
     targetTests = ['com.assuntadc.soundrecorder.unittest.*']
     threads = 12
     outputFormats = ['HTML']
-    timestampedReports = false
+    timestampedReports = true
     verbose = false
     excludeMockableAndroidJar = true
 }
-
-
-
-
