@@ -67,9 +67,7 @@ public class MockRecordingServiceTest {
         long start = System.currentTimeMillis();
         long end = 0;
 
-        double expectedRecordingDurationInSeconds = Math.random()*10;
-        while (expectedRecordingDurationInSeconds < 0.5) expectedRecordingDurationInSeconds = Math.random()*10;
-        expectedRecordingDurationInSeconds = Math.round(expectedRecordingDurationInSeconds*10.0)/10.0;
+        double expectedRecordingDurationInSeconds = 6;
 
         goStateS0();
         assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
@@ -108,13 +106,8 @@ public class MockRecordingServiceTest {
         long start = System.currentTimeMillis();
         long end = 0;
 
-        double expectedRecordingDurationInSeconds = Math.random()*10;
-        while (expectedRecordingDurationInSeconds < 0.5) expectedRecordingDurationInSeconds = Math.random()*10;
-        expectedRecordingDurationInSeconds = Math.round(expectedRecordingDurationInSeconds*10.0)/10.0;
-
-        double expectedTotalBreakTimeInSeconds = Math.random()*10;
-        while (expectedTotalBreakTimeInSeconds < 0.5) expectedTotalBreakTimeInSeconds = Math.random()*10;
-        expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
+        double expectedRecordingDurationInSeconds = 6;
+        double expectedTotalBreakTimeInSeconds = 4;
 
         goStateS0();
         assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
@@ -164,13 +157,8 @@ public class MockRecordingServiceTest {
         long start = System.currentTimeMillis();
         long end = 0;
 
-        double expectedRecordingDurationInSeconds = Math.random()*10;
-        while (expectedRecordingDurationInSeconds < 0.5) expectedRecordingDurationInSeconds = Math.random()*10;
-        expectedRecordingDurationInSeconds = Math.round(expectedRecordingDurationInSeconds*10.0)/10.0;
-
-        double expectedTotalBreakTimeInSeconds = Math.random()*10;
-        while (expectedTotalBreakTimeInSeconds < 0.5) expectedTotalBreakTimeInSeconds = Math.random()*10;
-        expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
+        double expectedRecordingDurationInSeconds = 6;
+        double expectedTotalBreakTimeInSeconds = 4;
 
         goStateS0();
         assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
@@ -229,13 +217,8 @@ public class MockRecordingServiceTest {
         long start = System.currentTimeMillis();
         long end = 0;
 
-        double expectedRecordingDurationInSeconds = Math.random()*10;
-        while (expectedRecordingDurationInSeconds < 0.5) expectedRecordingDurationInSeconds = Math.random()*10;
-        expectedRecordingDurationInSeconds = Math.round(expectedRecordingDurationInSeconds*10.0)/10.0;
-
-        double expectedTotalBreakTimeInSeconds = Math.random()*10;
-        while (expectedTotalBreakTimeInSeconds < 0.5) expectedTotalBreakTimeInSeconds = Math.random()*10;
-        expectedTotalBreakTimeInSeconds = Math.round(expectedTotalBreakTimeInSeconds*10.0)/10.0;
+        double expectedRecordingDurationInSeconds = 6;
+        double expectedTotalBreakTimeInSeconds = 4;
 
         goStateS0();
         assertTrue("ILLEGAL STATE INVARIANTS FOR S0", mockRecordingService.isStateS0());
