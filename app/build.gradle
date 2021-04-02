@@ -2,30 +2,211 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.danielkim.soundrecorder"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 21
-        versionCode 130
-        versionName "1.3.0"
+        versionCode 150
+        versionName '1.5.0'
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled true
+        }
     }
-    lintOptions{
+    lintOptions {
         disable 'MissingTranslation'
+        abortOnError false
+    }
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        animationsDisabled = true
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            reports {
+                junitXml.enabled = true
+                html.enabled = false
+            }
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
+    }
+    defaultConfig {
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute module('org.hamcrest:hamcrest-core:1.1') with module('junit:junit:4.10')
+        }
+    }
+    sourceSets {
+        main { java.srcDirs = ['src/main/java'] }
+        androidTest { java.srcDirs = ['src/androidTest/java'] }
+        test {
+            java.srcDirs = ['src/test/java']}
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        maven {
+            url 'https://maven.google.com/'
+        }
+        jcenter()
+    }
+}
+
+
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.+'
-    compile 'com.android.support:cardview-v7:21.0.+'
-    compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'com.melnykov:floatingactionbutton:1.1.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:appcompat-v7:21.0.+'
+    implementation 'com.android.support:cardview-v7:21.0.+'
+    implementation 'com.android.support:recyclerview-v7:21.0.+'
+    implementation 'com.melnykov:floatingactionbutton:1.1.0'
+    implementation 'com.jpardogo.materialtabstrip:library:1.0.6'
+    implementation 'com.ibm.watson:ibm-watson:8.6.3'
+    implementation 'com.android.support:multidex:1.0.3'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.robolectric:robolectric:4.4'
+    androidTestImplementation 'org.testng:testng:6.14.3'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestUtil 'androidx.test:orchestrator:1.1.0'
+}
+
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: 'pl.droidsonroids.pitest'
+
+
+checkstyle {
+    configFile = file("${project.rootDir}/app/checkstyle.xml")
+    toolVersion = '8.+'
+    ignoreFailures = false
+}
+
+task checkstyle(type: Checkstyle) {
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    // exclude '**/test/**'
+    exclude '**/androidTest/**'
+    showViolations = true
+    classpath = files()
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task pmd(type: Pmd) {
+    ignoreFailures = true
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+    incrementalAnalysis = true // incremental analysis cache to improve performance when files have not changed in between builds.
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']){
+    def coverageSourceDirs = [
+            "src/main/java/"
+    ]
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*'
+    ]
+    def javaClasses = fileTree(
+            dir: "$buildDir/intermediates/javac/debug",
+            excludes: fileFilter
+    )
+    classDirectories.from(files([ javaClasses ]))
+    sourceDirectories.from(files(coverageSourceDirs))
+    executionData.from(fileTree(dir: "$project.buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec"
+    ]))
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task jacocoTestCoverageVerification(type: JacocoCoverageVerification, dependsOn: 'jacocoTestReport') {
+    def coverageSourceDirs = ["src/main/java/"]
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/com/danielkim/soundrecorder/**'
+    ]
+    def coverageClasses = [
+            '**/com/danielkim/soundrecorder/mockclasses/**',
+            '**/com/danielkim/soundrecorder/adapters/**'
+    ]
+    def javaClasses = fileTree(
+            dir: "$buildDir/intermediates/javac/debug/classes/",
+            excludes: fileFilter,
+            includes: coverageClasses
+    )
+    classDirectories.from(files([ javaClasses ]))
+    sourceDirectories.from(files(coverageSourceDirs))
+    executionData.from(fileTree(dir: "$project.buildDir", includes: ["jacoco/testDebugUnitTest.exec"]))
+    violationRules {
+        failOnViolation = true
+        rule {
+            limit {
+                minimum = 0.85
+            }
+        }
+    }
+}
+
+pitest{
+    targetClasses = ['com.danielkim.soundrecorder.mockclasses.**']
+    targetTests = ['com.assuntadc.soundrecorder.unittest.*']
+    threads = 12
+    outputFormats = ['HTML']
+    timestampedReports = true
+    verbose = false
+    excludeMockableAndroidJar = true
 }

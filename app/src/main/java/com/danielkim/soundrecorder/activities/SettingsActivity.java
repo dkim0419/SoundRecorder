@@ -1,13 +1,10 @@
 package com.danielkim.soundrecorder.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBarActivity;
 
 import com.danielkim.soundrecorder.R;
 import com.danielkim.soundrecorder.fragments.SettingsFragment;
@@ -16,7 +13,7 @@ import com.danielkim.soundrecorder.fragments.SettingsFragment;
  * Created by Daniel on 5/22/2017.
  */
 
-public class SettingsActivity extends android.support.v7.app.ActionBarActivity {
+public class SettingsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

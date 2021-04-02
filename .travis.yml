@@ -1,0 +1,74 @@
+language: android
+
+android:
+  components:
+    - tools
+    - build-tools-29.0.2
+    - android-21
+    # Additional components
+    - extra-android-support
+    - extra-android-m2repository
+    - extra-google-m2repository
+
+services:
+  - docker
+
+#  Save time not downloading dependencies ad every build
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+
+addons:
+  apt:
+    packages:
+      - lynx
+
+before_install:
+  - chmod +x ./gradlew
+  - yes | sdkmanager "platforms;android-21"
+
+stages:
+  - compile
+  - static_analysis
+  - unit_test
+  - integration_test
+  - coverage
+
+jobs:
+  include:
+    - stage: compile
+      name: "Compile"
+      script: ./gradlew compileDebugJavaWithJavac
+    - stage: static_analysis
+      name: "Checkstyle analysis"
+      script: ./gradlew checkstyle
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/checkstyle/checkstyle.html
+    - script: ./gradlew pmd
+      name: "PMD analysis"
+      after_success: lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/pmd/pmd.html
+      artifacts:
+        name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+        expire_in: 4 days
+        paths: app/build/reports/
+    - stage: unit_test
+      name: "Unit Test"
+      script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.unitTest.*"
+    - stage: integration_test
+      name: "Integration Test"
+      script: ./gradlew testDebug --tests="com.assuntadc.soundrecorder.integrationTest.*"
+    - stage: coverage
+      name: "Jacoco Code Coverage analysis"
+      script: ./gradlew jacocoTestReport
+      after_success:
+        lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/jacocoTestReport/html/index.html
+        lynx -dump file:///home/travis/build/assuntaDC/SoundRecorder/app/build/reports/jacoco/jacocoTestReport/html/com.danielkim.soundrecorder.mockclasses/LocalRecordingService.java.html
+      artifacts:
+        name: "reports_${CI_PROJECT_NAME}_${CI_BUILD_REF_NAME}"
+        expire_in: 4 days
+        paths: app/build/reports/
+
+
+notifications:
+  slack: soundrecorderteam:Nut7a5FL3Y7KkjpaJU1yhgMi

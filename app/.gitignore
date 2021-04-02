@@ -1,1 +1,8 @@
 /build
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/documentation/SCMP.docx
+/documentation/SCMP.pdf
