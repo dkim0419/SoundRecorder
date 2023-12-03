@@ -253,7 +253,7 @@ public class FileViewerAdapter extends RecyclerView.Adapter<FileViewerAdapter.Re
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         try {
-                            String value = input.getText().toString().trim() + ".mp4";
+                            String value = input.getText().toString().trim() + ".m4a";
                             rename(position, value);
 
                         } catch (Exception e) {
