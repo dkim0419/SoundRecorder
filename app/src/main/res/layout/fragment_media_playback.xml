@@ -30,7 +30,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="7dp"
                 android:layout_marginBottom="7dp"
-                android:text="file_name.mp4"
+                android:text="file_name.m4a"
                 android:textSize="18sp"
                 android:fontFamily="sans-serif-condensed"/>
 

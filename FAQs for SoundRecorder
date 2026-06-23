@@ -1,0 +1,29 @@
+Frequently Asked Questions in the Sound recorder application (FAQs)
+
+These "Frequently Asked Questions" will be explained in the app and will be explained in the app to help users find their answers to the questions they ask.
+
+What is Easy Sound Recorder ?
+
+Easy Sound Recorder is a simple Android app that can be used to record audio. This application is open source.
+
+How do I change the recording name?
+
+Click the recording you want to rename. then click rename and enter a new name for your recording.
+
+Where are my recordings stored?
+
+Your recording will be saved in the Sound recorder application. If you delete this app automatically your recording will be deleted.
+
+How do I share my recordings?
+
+First open Easy Sound Recorder. Then click and select the recording you want to share. Next step click share file.
+
+How do I delete a recording?
+
+In the saved recording menu click and select the recording you want to delete and then click delete.
+
+Where can I leave feedbacks or suggestions or report bugs?
+
+You can report them directly on :
+
+https://github.com/dkim0419/SoundRecorder/pulls

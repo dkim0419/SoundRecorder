@@ -16,12 +16,19 @@
             android:padding="10dp"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/link"/>
+
             <!-- Floating Action Button -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:layout_marginTop="10dp"
                 android:text="@string/license_title_fab"/>
             <TextView
                 android:layout_width="match_parent"
